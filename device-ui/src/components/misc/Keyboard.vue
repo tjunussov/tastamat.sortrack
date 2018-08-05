@@ -30,9 +30,10 @@ export default {
         //if(!isNaN(this.keyText)) {
         if(this.keyText != "") {
           
-          // this.$bus.$emit('keyboard:keydown:enter',this.keyText);
+          
           this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText);
           this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.substr(0,1),this.keyText.substr(1));
+          this.$bus.$emit('keyboard:keydown:enter',this.keyText);
           this.keyText = ""
           event.preventDefault();
         }
@@ -65,8 +66,8 @@ export default {
 <style lang="stylus">
 
 .keyboard
-  font-size 20rem
-  line-height 20rem
+  font-size 10rem
+  line-height 10rem
   // margin-bottom -1rem
   letter-spacing -1rem
   opacity 0.1

@@ -1,32 +1,85 @@
 <template lang="pug">
 .row
-  .col-sm-7
+  .col-12
     h1 Настройки
 
     b-form.mt-3
-      b-form-group(label="PUT timeout")
-        b-form-input(v-model="putTimeout")
-      b-form-group(label="PUT blink interval")
-        b-form-input(v-model="putBlinkInterval")
-      b-form-group(label="SAVE timeout")
-        b-form-input(v-model="saveTimeout")
-      b-form-group(label="ERROR timeout")
-        b-form-input(v-model="errorTimeout")
-      b-form-group(label="Яркость поиска")
-        b-form-input(v-model="searchBrightness")
+      b-form-group(label="Кол-во LED" horizontal)
+          b-form-input(v-model="settings.maxLeds")         
+      b-form-group(label="IP Device" horizontal)
+        b-form-input(v-model="deviceip")
+      b-form-group(label="URL Сервиса" horizontal)
+        b-form-input(v-model="apiUrl")
+      b-form-group(label="User" horizontal)
+        b-btn(@click="toggleUser") Toggle User
+      b-form-group(label="Point" horizontal)
+        b-btn(@click="togglePoint") Toggle Point
+      b-form-group(label="Printer" horizontal)
+        b-btn(@click="testPrint") Test
+      b-form-group(label="" horizontal)
+        b-btn(@click="saveSettings" variant="primary") Save
+
+        
+
 
 </template>
 
 <script>
+
+import Vue from 'vue'
+import { mapGetters, mapActions } from 'vuex'
+import {deviceLEDMixin,deviceURL,baseURL} from '@/store/api/http'
+
+
 export default {
   name: 'Settings',
+  mixins: [ deviceLEDMixin ],
+  mounted(){
+    this.deviceip = deviceURL;
+    this.apiUrl = baseURL;
+  },
   data () {
     return {
-      putTimeout: 5000,
-      saveTimeout: 5000,
-      errorTimeout: 1000,
-      putBlinkInterval: 500,
-      searchBrightness: 100
+      // maxLeds: 24,
+      deviceip:null,
+      apiUrl:null
+    }
+  },
+  computed:{
+    ...mapGetters({
+        settings: 'getSettingsSelected',
+    })
+  },
+  methods:{
+    ...mapActions([
+      'settingsUpdate',
+    ]),
+    saveSettings(){
+      localStorage.setItem('deviceip',this.deviceip);
+      localStorage.setItem('apiUrl',this.apiUrl);
+
+      this.settings.deviceip = this.deviceip
+      this.settings.apiUrl = this.apiUrl
+      // this.settings.maxLeds = this.maxLeds
+
+      this.settingsUpdate(this.settings)
+
+      location.reload();
+    },
+    publishOn(){
+      this.$ledOn(this.cmd)
+      console.log('publish',this.cmd);
+    },
+    toggleUser(){
+      var users = ['ASEM','TIMUR','NATALYA']
+      this.$bus.$emit('keyboard:keydown:enter:u',users[Math.floor(Math.random()*3)]);
+    },
+    togglePoint(){
+      var users = ['220081','320080']
+      this.$bus.$emit('keyboard:keydown:enter:i',users[Math.floor(Math.random()*2)]);
+    },
+    testPrint(){
+
     }
   }
 }

@@ -1,7 +1,7 @@
 <template lang="pug">
 doctype html
 
-#app
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 
@@ -9,19 +9,46 @@ doctype html
 
     b-navbar-brand(to="/")
       <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">B</tspan> <tspan x="307.5" y="446">V</tspan></text></svg>
-    b-navbar-brand(to="/") Sortrack®
+    b-navbar-brand(@click="toggleFullScreen()") Sortrack® {{$store.state.user}}
 
-    b-collapse(is-nav id="nav_collapse" v-if="authUser")
+    b-collapse(is-nav id="nav_collapse" v-if="user")
 
       b-navbar-nav
-        b-nav-item Панель управления
+        //- b-nav-item(to="/console") Консоль
+        b-nav-item(to="/console2") Консоль
+        b-nav-item(to="/admin") Настройки
+        //- b-nav-item(to="/admin/sortplan") Сортплан
+        b-nav-item(@click="toogleDemo(null)" ) 
+          toggle-button(:value="demo" :sync="true" :labels="{checked: 'Demo', unchecked: 'Prod'}")
+        b-nav-item(@click="toogleLed()" )
+          toggle-button(:value="ledOn" :sync="true" :labels="{checked: 'LED', unchecked: 'LED'}")
 
-      //- b-navbar-nav.ml-auto
+      b-navbar-nav.ml-auto
 
-        //- b-nav-form
-        //-   b-form-input.mr-sm-2(size="sm" placeholder="Search  ...")
+        b-nav-form
+          b-form-input.mr-sm-2(
+            size="sm" 
+            style="width:5rem"
+            v-on:focus.native="$event.target.value = '';"
+            v-on:dblclick.native="enterBagManualy;" 
+            @keyup.enter.native="enterBagManualy($event.target.value);" 
+            :placeholder="'Мешок'") 
 
-        //- b-nav-item(right to="/help") Help
+        b-nav-form
+          b-form-input.mr-sm-2(
+            size="sm" 
+            v-on:focus.native="$event.target.value = '';"
+            v-on:dblclick.native="enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');" 
+            @keyup.enter.native="enterBarcodeManualy($event.target.value);" 
+            :placeholder="barcode?barcode:'Поис поссылок  ...'") 
+        //- p {{barcode}}
+
+        b-nav-item(v-if="settings" right v-b-modal.depcode) 
+          span(v-if="depcode") {{depcode}}
+          span.text-muted(v-else) [{{autodepcode}}]
+
+        b-nav-item(right v-b-modal.user) {{user}} 
+          //- small: b-badge(:variant="mqttOnline?'success':'dark'") mqtt
 
         //- b-nav-item-dropdown(right v-if="authUser" id="loginPopover")
         //-   template(slot="button-content")
@@ -31,105 +58,226 @@ doctype html
         //-     span.i.fa.fa-exit.mr-1
         //-     | Signout
 
-        //- b-nav-item(right id="loginPopover" v-else) Login  
+        //- b-nav-item(right id="loginPopover" v-else) Login
+
+    b-navbar-nav.ml-auto(v-else)
+      b-nav-item(right v-b-modal.user) Log In
+
 
   b-container(fluid)
-    b-row.flex-xl-nowrap2
-      b-col(md="3" xl="2" cols="12").bd-sidebar
-        .bd-search.d-flex.align-items-center
-          b-form-input#bd-search-input(placeholder="Поиск посылок ..." v-model="barcode" v-focus="")
-        nav#bd-docs-nav.bd-links.navbar-collapse
-          .bd-toc-item.active
-            b-link.bd-toc-link(to='/console') Консоль
-            ul.bd-sidenav.nav
-          .bd-toc-item
-            a.bd-toc-link(href='/docs/') Статистика
-            ul.bd-sidenav.nav
-          .bd-toc-item.active
-            a.bd-toc-link(href='/docs/components/') Планы сортировки
-            ul.bd-sidenav.nav
-              li.nav-item
-                a.nav-link(href='/docs/components/alert', target='_self') Грузы
-          .bd-toc-item
-            a.bd-toc-link(href='/docs/reference/') Емкости
-            ul.bd-sidenav.nav
-              li.nav-item
-                a.nav-link(href='/docs/reference/color-variants', target='_self') Справочники
-          .bd-toc-item
-            b-link.bd-toc-link(to='/settings') Настройки
-          .bd-toc-item
-            a.bd-toc-link(href='/docs/misc/') Выход
-
-      .pt-4.pb-md-3.pl-md-5.bd-content.col-md-9.col-xl-8.col-12
-        router-view
-
+    router-view
   Keyboard
+
+
+  b-modal#depcode(title="Код департамента" ok-title="Изменить" :hide-footer="true")
+    b-form-input(v-model="depcode" palceholder="Depcode")
+
+  b-modal#user(title="CPILS Пользователь" ok-title="Войти" :hide-footer="true")
+    b-form-input(v-model="user" palceholder="CPILS Login")
 
 </template>
 
 <script>
 
+import { mapGetters, mapActions } from 'vuex'
 import Keyboard from '@/components/misc/Keyboard'
+import {$smartsort,$http,deviceLEDMixin} from '@/store/api/http'
+import {mock,mockDevice} from '@/store/api/mock'
+import populateData from '@/store/idb/data.js'
 
 export default {
   name: 'app',
   data(){
     return {
-      authUser : {
-        email:"email@email.com",
-        firstName:"User"
-      },
       ui:{
         search:null,
         showModalLogin:false
       },
-      barcode:null,
     }
   },
+  mixins:[deviceLEDMixin],
   mounted(){
-    this.$bus.$on('keyboard:keydown:enter:13',this.searchBarcode);
+    this.$bus.$on('keyboard:keydown:enter:13',this.barcodeSet);
+    this.$bus.$on('keyboard:keydown:enter:i',this.registerDepcode);
+    this.$bus.$on('keyboard:keydown:enter:u',this.auth);
+    
+    this.$ledoff();
+  },
+  created(){
+    this.$db.on("populate",()=>{
+      populateData.populate(this.$db)
+    });
+    this.toogleDemo(this.$store.state.polka.demo);
+    this.toogleLed(this.$store.state.polka.ledOn);
   },
   beforeDestroy(){
-    this.$bus.$off('keyboard:keydown:enter:13',this.searchBarcode);
+    this.$bus.$off('keyboard:keydown:enter:13',this.barcodeSet);
+    this.$bus.$off('keyboard:keydown:enter:i',this.registerDepcode);
+    this.$bus.$off('keyboard:keydown:enter:u',this.auth);
   },
   computed:{
-    // ...mapGetters({
-    //     group: 'getGroupSelected',
-    //     hydrated:'hydrated',
-    //     inited:'inited',
-    // }),
+    ...mapGetters({
+        settings: 'getSettingsSelected',
+        setting: 'getSettings',
+        depcode: 'getDepcode',
+        autodepcode: 'getAutoDepcode',        
+        ledOn: 'getLedOn',
+        demo: 'getDemo',
+        bags: 'getBags',
+        barcode: 'getBarcode',
+        hydrated:'hydrated',
+        response: 'getResponse',
+        error: 'getError',
+    }),
     online(){
       return this.$root.online
+    },
+    mqttOnline(){
+      return this.$root.mqttOnline
+    },
+    user:{
+      get: function () {
+        return this.$store.state.polka.user
+      },
+      // setter
+      set: function (newValue) {
+        this.$store.state.polka.user = newValue
+      }
+    },
+    depcode: {
+      get: function () {
+        return this.$store.state.polka.depcode
+      },
+      // setter
+      set: function (newValue) {
+        this.$store.state.polka.depcode = newValue
+      }
+    },
+  },
+  watch:{
+    hydrated(){
+      this.settingsSelect(this.setting[0]);
+    },
+    demo(val){
+      localStorage.setItem('demo',val);
+    },
+    ledOn(val){
+      localStorage.setItem('ledOn',val);
+    },
+    depcode(val){
+      localStorage.setItem('depcode',val);
+    },
+    user(val){
+      localStorage.setItem('user',val);
     }
   },
   methods:{
-    searchBarcode(barcode){
-      this.barcode = barcode;
+    ...mapActions([
+      'settingsUpdate',
+      'settingsSelect',
+    ]),
+    barcodeSet(val){
+      console.log('setting barcode',val)
+      this.$store.state.polka.barcode = val
     },
-    logout(){
+    enterBarcodeManualy(barcode){
+      console.log('enterBarcodeManualy',barcode);
+      this.$bus.$emit('keyboard:keydown:enter:13',barcode);
+    },
+    enterBagManualy(bagno){
+      console.log('enterBagManualy',bagno);
+      this.$bus.$emit('keyboard:keydown:enter:p',bagno)
+    },
+    registerDepcode(depcode){
+      this.settings.depcode = depcode
+      this.$store.state.polka.depcode = depcode
+      this.settingsUpdate(this.settings)
+      console.log('registerdepcode',depcode);
+      // this.$registerdepcode(depcode)
+    },
+    auth(user){
+      $smartsort.auth(user).then((resp)=>{
+         console.log('auth',user);
+         this.settings.user = user
+         this.$store.state.polka.user = depcode
+         this.settingsUpdate(this.settings)
+         this.$auth(user) 
+      }).catch(()=>{
+         this.$error();
+      });
+    },
+    toggleFullScreen() {
+      if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
+       (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+        if (document.documentElement.requestFullScreen) {  
+          document.documentElement.requestFullScreen();  
+        } else if (document.documentElement.mozRequestFullScreen) {  
+          document.documentElement.mozRequestFullScreen();  
+        } else if (document.documentElement.webkitRequestFullScreen) {  
+          document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+        }  
+      } else {  
+        if (document.cancelFullScreen) {  
+          document.cancelFullScreen();  
+        } else if (document.mozCancelFullScreen) {  
+          document.mozCancelFullScreen();  
+        } else if (document.webkitCancelFullScreen) {  
+          document.webkitCancelFullScreen();  
+        }  
+      }  
+    },
+    toogleDemo(state){
+
+      if(state !== null)
+        this.$store.state.polka.demo = state
+      else
+        this.$store.state.polka.demo = !this.$store.state.polka.demo;
+
+      // console.log('toogleDemo',this.$root,this.$root.demo);
+
+      if(!this.demo) {
+        mock.restore();
+      }
+    },
+    toogleLed(state){
+      if(state == null)
+        this.$store.state.polka.ledOn = !this.$store.state.polka.ledOn;
+      else 
+        this.$store.state.polka.ledOn = state
+        
+      console.log('toogleLed',this.ledOn);
+
+      if(this.ledOn) {
+        mockDevice.restore();
+      }
     }
   },
   components: {
     Keyboard
   },
 }
+
+
 </script>
 
 <style lang="stylus">
 
-/*#app
-  margin-top 60px
-*/
+#app
+  width 1024px
+
 body
   padding-top 4rem
   margin 0
 
 // Test  
 
+.modal-header 
+  display block !important
+
 .bd-navbar
   min-height 64px
   min-height 4rem
-  background-color #563d7c
+  background-color #0157a5
   -webkit-box-shadow 0 .5rem 1rem rgba(0,0,0,.05),inset 0 -1px 0 rgba(0,0,0,.1)
   box-shadow 0 .5rem 1rem rgba(0,0,0,.05),inset 0 -1px 0 rgba(0,0,0,.1)
 
@@ -169,6 +317,7 @@ body
 .bd-content>h1, .bd-content>h2, .bd-content>h3, .bd-content>h4, .bd-content>h5
   padding-top 25px
   padding-bottom 15px
+  
 
 @media (min-width:1200px)
     .bd-sidebar
@@ -385,6 +534,12 @@ body
     .bd-brand-item
         display table-cell
         width 1%
+        
+@-webkit-keyframes blink
+  from,to
+    visibility hidden
+  50%
+    visibility visible
     
 
 </style>

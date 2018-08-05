@@ -3,25 +3,31 @@
 import Vue from 'vue'
 import App from './App'
 
+import ToggleButton from 'vue-js-toggle-button'
 import BootstrapVue from 'bootstrap-vue'
 import AxiosVue from './services/axios'
 
 import router from './router'
-// import store from './store'
+import store from './store'
+
+// import VueMqtt from 'vue-mqtt'
+import VueIdb from 'vue-idb'
 // import { sync } from 'vuex-router-sync'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(BootstrapVue)
+Vue.use(ToggleButton)
 Vue.use(AxiosVue)
+Vue.use(VueIdb)
+// Vue.use(VueMqtt, 'ws://tasta.cubics.io:8443');
+// Vue.use(VueMqtt, 'ws://smartsort.kazpost.kz:8083');
 
 // Mocking Service
 import '@/services/eventBus'
 import '@/store/api/mock'
-
 import '@/components/misc/filters.js'
-// sync(store, router)
 
 Vue.config.productionTip = false
 
@@ -55,35 +61,38 @@ new Vue({
   data () {
     return {
       online:false,
+      mqttOnline:false
     }
   },
   created(){
-    window.addEventListener('keyup',this.documentKeyup)
     window.addEventListener("online",this.checkOnline)
     window.addEventListener("offline",this.checkOnline)
+    // this.$mqtt.on('connect', ()=>{ this.mqttOnline = true })
+    // this.$mqtt.on('offline', ()=>{ this.mqttOnline = false })
     this.checkOnline()
 
     // this.handleScroll = new InfiniteList(this.$refs.infinite, 'contacts', this.$store)
   },
+  mounted(){
+    // this.$mqtt.subscribe('sortrack/keyboard')
+  },
+  /*mqtt: {
+    'sortrack/keyboard' (barcode) {
+      console.log('mqtt keypreesed',barcode.toString(),'red');
+      this.$bus.$emit('keyboard:keydown:enter:13',barcode.toString(),'red');
+    }
+  },*/
   beforeDestroy(){
-    window.removeEventListener('keyup',this.documentKeyup)
     window.removeEventListener("online",this.checkOnline)
     window.removeEventListener("offline",this.checkOnline)
   },
-  mounted(){
-    
-  },
   router,
+  store,
   methods:{
     checkOnline(){
       console.log('check online',navigator.onLine);
       this.online = navigator.onLine
     },
-    documentKeyup(){
-      if (event.keyCode == 27) { // ESC
-        this.$bus.$emit('keyboard:keyup:esc');
-      }
-    }
   },
   render: h => h(App)
 })

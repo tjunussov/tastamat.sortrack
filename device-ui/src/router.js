@@ -1,23 +1,45 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Console from '@/components/Console'
+import Console2 from '@/components/Console2'
+import Admin from '@/components/Admin'
 import Settings from '@/components/Settings'
+import Debug from '@/components/Debug'
+import Sortplan from '@/components/Sortplan'
 
 Vue.use(Router)
 
 const router =  new Router({
   routes: [
     {
-      path: '/console',
+      path: '/console2',
       alias: '/',
-      name: 'Console',
-      component: Console,
+      component: Console2,
       meta: { isPublic: true }
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: Settings
+      path: '/console',
+      component: Console
+    },
+    
+    {
+      path: '/admin',
+      component: Admin,
+      children: [
+        {
+          path: 'sortplan',
+          alias: '',
+          component: Sortplan
+        },
+        {
+          path: 'settings',
+          component: Settings
+        },
+        {
+          path: 'debug',
+          component: Debug
+        }
+      ]
     },
     // { path: '*', redirect: '/console' }
   ],

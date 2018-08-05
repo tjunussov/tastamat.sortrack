@@ -2,11 +2,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
 import VueIdb from './idb'
+import polka from './modules/polka'
 
 // import * as actions from './actions'
 // import * as getters from './getters'
-
-import cart from './modules/cart'
 
 const debug = false; //process.env.NODE_ENV !== 'production'
 
@@ -22,7 +21,7 @@ export default new Vuex.Store({
   },
   modules: {
     ...VueIdb.modules,
-    cart
+    polka
   },
   getters: {
     hydrated: state => state.hydrated

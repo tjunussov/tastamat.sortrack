@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import VueIdb from 'vue-idb'
 
-// import { $fdb } from '@/store/api/firebase'
-
-// import VueIdb from 'E:\\Dev\\GitHub\\vue-idb-master'
-
 Vue.use(VueIdb)
 
 /*import {API_ROOT} from '../../settings'
@@ -17,10 +13,10 @@ export default new VueIdb({
   version: 1,
   database: 'sortrack',
   schemas: [ // Indexes ( not columns )
-    { plans: 'uuid,no,meta_.code,meta_.created,meta_.accounted,meta_.updated' },
+    { settings: 'point,meta_.updated' },
   ],
   options: {
-    plans: { type: 'list', primary: 'version', label: 'version',updated_at:'meta_.updated' },
+    settings: { type: 'list', primary: 'version', label: 'version',updated_at:'meta_.updated' },
   },
   /*Zapis: {
     orders: {
