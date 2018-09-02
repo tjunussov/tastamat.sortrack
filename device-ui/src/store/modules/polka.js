@@ -20,6 +20,7 @@ const state = {
 // getters
 const getters = {
   getBags : (state,getters) => getters.getSettings[0].bags,
+  getConfig : (state,getters) => getters.getSettings[0],
   getSortplan : (state) => state.sortplan,
   getBarcode : (state) => state.barcode,
   getDepcode : (state) => state.depcode,
@@ -33,16 +34,14 @@ const getters = {
   getCloseResponse : (state) => state.closeResponse,
   getSelected : (state) => state.selected,
   getSelectedBag: (state,getters) => {
-    if(state.selected) return getters.getBags[state.selected]
+    if(state.selected) return getters.getBags[getters.ledIndex]
   },
   ledIndex : (state,getters) => {
-    if(state.selected){
-      return Object.keys(getters.getBags).findIndex((key)=>{return state.selected == key});
-    }
+    if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.no})
   },
   bagMetaData : (state,getters) => {
     if(getters.getSelectedBag){
-      return getters.getSelectedBag[Object.keys(getters.getSelectedBag)[0]]
+      return getters.getSelectedBag.wpi[Object.keys(getters.getSelectedBag.wpi)[0]]
     }
   }
 
@@ -51,15 +50,22 @@ const getters = {
 // actions
 const actions = {
   $initBags ({ commit, dispatch, state, getters }) {
+
     if(!getters.getBags){
 
-      getters.getSettings[0].bags = {};
+      /*getters.getSettings[0].bags = {};
       var size = getters.getSettings[0].size||24;
 
       for(var i=0; i < size; i++){
         Vue.set(getters.getBags,'#'+i,{})
-      }
+      }*/
+
+      getters.getConfig.bags = [...new Array(getters.getConfig.size||24)].map((x,i) => { 
+        return {no:'#'+i,index:'#'+i,wpi:{}}
+      });
+
     }
+
 
     // TODO Rewrite to Promise Chain
     /*
@@ -80,9 +86,19 @@ const actions = {
     state.selected = null;
   },
   $selectBag({ commit, dispatch, state, getters },{bagno}) {
-    state.selected = bagno
-    // state.selected.bag = this.bags[bagno];
-    state.status = 'selectbag';
+    return new Promise((resolve,reject)=>{
+      try{
+        findBag(getters.getBags,bagno);
+        state.selected = bagno
+        // state.selected.bag = this.bags[bagno];
+        state.status = 'selectbag';
+        resolve(bagno)
+      } catch(e){
+        state.error = e
+        state.status = 'error';
+        reject(e);
+      }
+    });
   },
   $deselectBag({ commit, dispatch, state, getters }) {
     state.status = 'deselectbag';
@@ -101,25 +117,32 @@ const actions = {
       return $smartsort.putToBag(state.barcode,state.depcode,state.user)
       .then((resp)=>{
 
-        state.status = 'push';
+        // checking if bag is found in plan
+        findBag(getters.getBags,resp.data.next.bagNo);
+
         state.response = resp.data
+        state.status = 'push';
         state.selected = resp.data.next.bagNo
         state.autoDepcode = resp.data.p_depcode // проставляем автоматический индекс пользователя
         // ложим посылку в корзину
 
 
+        console.log('ZputToBag barcode',state.barcode,state.selected);
+
         //////////////// ARRAY MANAGMENT
 
             var val = {}; val[barcode] = resp.data;
 
-            if(getters.getBags[state.selected]){
-              var currentVal = getters.getBags[state.selected];
+            var indx = getters.ledIndex;
+
+            if(indx > -1){
+              var currentVal = getters.getSelectedBag.wpi;
               val = {...val,...currentVal};
             } else {
-              renameEmptyKey(getters.getBags,state.selected);
+              indx = renameEmptyKey(getters.getBags,state.selected);
             }
 
-            Vue.set(getters.getBags,state.selected,val)
+            Vue.set(getters.getBags[indx],'wpi',val)
 
         /////////////
 
@@ -129,6 +152,8 @@ const actions = {
       }).catch((error)=>{
         state.status = 'error';
         state.error = error;
+
+        console.log('errorzzz');
 
         throw error;
         // this.status = 'notfound';
@@ -170,7 +195,7 @@ const actions = {
         // Печатаем на принтере
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
-        Vue.set(getters.getBags,bagno,{})
+        Vue.set(getters.getSelectedBag,'wpi',{})
         // state.selected = bagno
         state.status = 'closebag';
 
@@ -189,11 +214,13 @@ const actions = {
         renameEmptyKey(getters.getBags,k[0])
         // getters.getBags[k[0]] = {toIndex:k[1]};
       });*/
-      var bags = {}
+      var bags = new Array();
       Object.entries(plan).forEach((item)=>{
-        return bags[item[0]] = {};
+        return bags.push({no:item[0],index:item[1],wpi:{}});
       })
-      getters.getSettings[0].bags = bags;
+
+      getters.getConfig.bags = bags;
+
 
       dispatch('settingsUpdate',getters.getSettings[0]);
 
@@ -205,7 +232,10 @@ const actions = {
     })
   },
   $remapSelectedBag({ commit, dispatch, state, getters },{bagno}){
-    renameKey(getters.getBags,bagno,state.selected)
+    findBag(getters.getBags,bagno);
+    console.log('remapSelectedBag',getters.getSelectedBag)
+    getters.getSelectedBag.no = bagno
+    dispatch('settingsUpdate',getters.getSettings[0]);
   }
 }
 
@@ -221,15 +251,18 @@ const mutations = {
   }
 }
 
-
-function renameEmptyKey(obj,newKey){
-  var oldKey = Object.keys(obj).find((e)=>{return e.startsWith('#')})
-  if(oldKey) renameKey(obj,newKey,oldKey)
+function findBag(bags,no){
+  var indx = bags.findIndex((key)=>{return no == key.no});
+  if(indx < 0) throw `Отправление ${no} не привязано к плану `;
+  return indx
 }
 
-function renameKey(obj,newKey,oldKey){
-  Vue.set(obj,newKey,obj[oldKey])
-  Vue.delete(obj,oldKey)
+function renameEmptyKey(obj,newKey){
+  var indx = obj.findIndex((e)=>{return e.no.startsWith('#')})
+  if(indx > -1) {
+    obj[indx].no = newKey
+  }
+  return indx
 }
 
 function xmlToJson(xml) {

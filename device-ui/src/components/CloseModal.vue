@@ -22,7 +22,7 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
               th КУДА Индекс 
               th DEPID / Кол-во / Вес
 
-            tr(v-for="(v,k) in selectedBag")
+            tr(v-for="(v,k) in selectedBag.wpi")
               td: i.fa-icon.fa-star/
               td(:title="JSON.stringify(v)") {{k}}
               //- td {{v.next.bagNo}}

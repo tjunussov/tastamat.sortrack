@@ -4,19 +4,18 @@ b-row.flex-xl-nowrap2
     
     b-card-group.polkas(deck)
       b-card(no-body align="center"
-        v-for="(bag,no) in bags"
-        :key="no" 
+        v-for="(bag,i) in bags"
+        :key="i" 
         :class="{'text-muted':!Object.keys(bag)[0]}"
-        :bg-variant="selected == no?'success':''"
-        :text-variant="selected == no?'white':''" 
-        @click="selectBag(no)" )
-        b-card-header {{(no)}}
-          span(v-if="Object.keys(bag)[0] && Object.keys(bag)[0].addDetailPREGMAIL") 
-            | ({{(bag[Object.keys(bag)[0]].addDetailPREGMAIL.mlcntq)}})
-          b-btn.close(v-if="Object.keys(bag).length") &times;
+        :bg-variant="selected == bag.no?'success':''"
+        :text-variant="selected == bag.no?'white':''" 
+        @click="selectBag(bag.no)" )
+        b-card-header {{(bag.no)}} 
+          small.text-muted.indx(v-if="bag.no != bag.index") {{(bag.index)}}
+          b-btn.close(v-if="Object.keys(bag.wpi).length") &times;
         b-card-body
-          h4.card-title {{Object.keys(bag).length}}
-    
+          h4.card-title {{Object.keys(bag.wpi).length}}
+          
     b-collapse#collapse1_inner 
       hr/
       code {{bags}}
@@ -32,7 +31,7 @@ b-row.flex-xl-nowrap2
         .debug.float-right.mr-3
           b-link(v-b-toggle="'collapse1_inner'") Debug | 
           b-link(v-b-modal="'msortplan'") Сортплан | 
-          b-link(@click="wizardToggle" size="sm") {{!bind.started?'Bind Start':'Bind Stop'}}
+          b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
         p(v-if="error") {{error}}
@@ -46,7 +45,7 @@ b-row.flex-xl-nowrap2
           span.text-muted.ml-5 {{response.next.bag.created}}  - 
           | {{response.next.bag.user}} 
           | ( {{response.p_depcode}} )       
-          blockquote.blockquote-footer {{response}}
+          //- blockquote.blockquote-footer {{response}}
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
@@ -62,6 +61,8 @@ import {$leds,$sounds,deviceLEDMixin} from '@/store/api/http'
 import SortplanModal from '@/components/SortplanModal'
 import {bindMixin} from '@/components/BindModal'
 import CloseModal from '@/components/CloseModal'
+
+
 
 export default {
   name: 'Console2',
@@ -79,6 +80,7 @@ export default {
   watch:{
     status(val){
       if(val){
+        console.log('sound',val);
         $leds.on(val,this.ledIndex);
         $sounds.play(val);
       } /*else {
@@ -90,6 +92,7 @@ export default {
     return {
       tmResponse:null,
       isCloseModalOpen:false,
+      kazakhstan:false,
       bind:{
         started:false,
         cursor:null
@@ -131,12 +134,19 @@ export default {
         // this.$root.$emit('bv::hide::modal','mclosebag')
       } else if(this.bind.started){
         console.log('Binding',bagno);
-        this.wizardNext(bagno);
+        this.$selectBag({bagno}).then(()=>{
+          this.wizardNext(bagno);  
+        });
       } else {
         window.clearTimeout(this.tmResponse);
         this.$clear();
-        this.$selectBag({bagno});
-        this.isCloseModalOpen = true;
+        this.$selectBag({bagno}).then(()=>{
+          this.isCloseModalOpen = true;  
+        }).catch((error)=>{
+          console.error('selectBag error',error);
+          this.timeout(5000);  
+        });
+        
       }
     },
     putToBag(barcode){
@@ -171,13 +181,12 @@ export default {
   background-color #f00
   color #fff
 
-
 .polkas  
   .card
     flex 0 0 auto
-    width 6.6rem 
-    height 6.6rem
-    margin 0.2rem
+    width 7.1rem 
+    height 7.1rem
+    margin 1px
     cursor pointer
     transition  background 0.2s ease-out, color 0.2s ease-out, border-color 0.5s ease-out
     
@@ -219,7 +228,7 @@ export default {
     
   // .card:nth-child(5),.card:nth-child(13),.card:nth-child(21),.card:nth-child(29)
   .card:nth-child(5),.card:nth-child(8n+5)
-    margin-left 4rem
+    margin-left 2rem
     background-color #ffe
     
   .card:nth-child(4),.card:nth-child(8n+4)

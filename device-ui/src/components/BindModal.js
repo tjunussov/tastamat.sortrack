@@ -23,7 +23,7 @@ export const bindMixin = {
         this.$remapSelectedBag({bagno});
       }
 
-      if(Object.keys(this.bags).length > this.bind.cursor + 1){
+      if(this.bags.length > this.bind.cursor + 1){
         if(this.bind.cursor == null) 
           this.bind.cursor = 0
         else 
@@ -31,7 +31,7 @@ export const bindMixin = {
 
         this.$deselectBag();
         window.setTimeout(()=>{
-          this.$selectBag({bagno:Object.keys(this.bags)[this.bind.cursor]});
+          this.$selectBag({bagno:this.bags[this.bind.cursor].no});
         },200);
 
       } else {

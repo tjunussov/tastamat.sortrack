@@ -283,7 +283,7 @@ export const $sounds = {
   notfoundplan: new Audio(audioURL+"notfoundplan.mp3"),
   bind: new Audio(audioURL+"bind.mp3"),
   selectbag: new Audio(audioURL+"bind.mp3"),
-  deselectbag: new Audio(audioURL+"bind.mp3"),  
+  deselectbag: new Audio(audioURL+"auth.mp3"),  
   closebag: new Audio(audioURL+"closebag.mp3"),
   registerpoint: new Audio(audioURL+"registerpoint.mp3"),
   auth: new Audio(audioURL+"auth.mp3"),

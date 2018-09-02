@@ -15,9 +15,10 @@ b-modal#msortplan(ref="msortplan" title="Сортплан" size="lg" hide-footer
       h4 Сортплан {{depcode}}
       b-card-group.sortplan(deck)
         b-card(align="center" no-body v-for="(e) in Object.entries(sortplan.plan)" :key="e[0]")
-          template(slot="header") {{e[1]}} 
+          template(slot="header") 
+            span(v-if="e[0] != e[1]") {{e[1]}} 
             b {{e[0]}}
-          .barcode {{encode('p'+e[1])}}
+          .barcode {{encode('p'+e[0])}}
 </template>
 
 <script>
