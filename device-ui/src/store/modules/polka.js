@@ -34,9 +34,9 @@ const getters = {
   getCloseResponse : (state) => state.closeResponse,
   getSelected : (state) => state.selected,
   getSelectedBag: (state,getters) => {
-    if(state.selected) return getters.getBags[getters.ledIndex]
+    if(state.selected) return getters.getBags[getters.cursor]
   },
-  ledIndex : (state,getters) => {
+  cursor : (state,getters) => {
     if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.no})
   },
   bagMetaData : (state,getters) => {
@@ -60,8 +60,10 @@ const actions = {
         Vue.set(getters.getBags,'#'+i,{})
       }*/
 
+      console.log('initBags');
+
       getters.getConfig.bags = [...new Array(getters.getConfig.size||24)].map((x,i) => { 
-        return {no:'#'+i,index:'#'+i,wpi:{}}
+        return {no:'#'+i,led:null,index:'#'+i,wpi:{}}
       });
 
     }
@@ -133,16 +135,16 @@ const actions = {
 
             var val = {}; val[barcode] = resp.data;
 
-            var indx = getters.ledIndex;
+            var pos = getters.cursor;
 
-            if(indx > -1){
+            if(pos > -1){
               var currentVal = getters.getSelectedBag.wpi;
               val = {...val,...currentVal};
             } else {
-              indx = renameEmptyKey(getters.getBags,state.selected);
+              pos = renameEmptyKey(getters.getBags,state.selected);
             }
 
-            Vue.set(getters.getBags[indx],'wpi',val)
+            Vue.set(getters.getBags[pos],'wpi',val)
 
         /////////////
 
@@ -215,8 +217,8 @@ const actions = {
         // getters.getBags[k[0]] = {toIndex:k[1]};
       });*/
       var bags = new Array();
-      Object.entries(plan).forEach((item)=>{
-        return bags.push({no:item[0],index:item[1],wpi:{}});
+      Object.entries(plan).forEach((item,i)=>{
+        return bags.push({no:item[0],led:null,index:item[1],wpi:{}});
       })
 
       getters.getConfig.bags = bags;
@@ -231,10 +233,11 @@ const actions = {
       return resp;
     })
   },
-  $remapSelectedBag({ commit, dispatch, state, getters },{bagno}){
-    findBag(getters.getBags,bagno);
-    console.log('remapSelectedBag',getters.getSelectedBag)
+  $remapSelectedBag({ commit, dispatch, state, getters },{bagno,led}){
+    findBag(getters.getBags,bagno);// just for check
+    console.log('remapSelectedBag',getters.getSelectedBag,led)
     getters.getSelectedBag.no = bagno
+    getters.getSelectedBag.led = led
     dispatch('settingsUpdate',getters.getSettings[0]);
   }
 }

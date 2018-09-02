@@ -6,7 +6,7 @@ b-row.flex-xl-nowrap2
       b-card(no-body align="center"
         v-for="(bag,i) in bags"
         :key="i" 
-        :class="{'text-muted':!Object.keys(bag)[0]}"
+        :class="{'text-muted':!Object.keys(bag)[0],'outlined':bind.cursor == i}"
         :bg-variant="selected == bag.no?'success':''"
         :text-variant="selected == bag.no?'white':''" 
         @click="selectBag(bag.no)" )
@@ -81,7 +81,12 @@ export default {
     status(val){
       if(val){
         console.log('sound',val);
-        $leds.on(val,this.ledIndex);
+
+        if(this.selectedBag && this.selectedBag.led)  // if led specified
+          $leds.on(val,this.selectedBag.led);
+        else 
+          $leds.on(val,this.cursor);
+
         $sounds.play(val);
       } /*else {
         $leds.$ledoff();
@@ -95,7 +100,10 @@ export default {
       kazakhstan:false,
       bind:{
         started:false,
-        cursor:null
+        cursor:null,
+        unmappedIndx:0,
+        unmapped:[],
+        intrvl:null
       }
     }
   },
@@ -103,12 +111,14 @@ export default {
      ...mapGetters({
         settings: 'getSettingsSelected',
         bags: 'getBags',
+        config: 'getConfig',
         status: 'getStatus',
         barcode: 'getBarcode',
         response: 'getResponse',
         error: 'getError',
+        cursor: 'cursor',
         selected: 'getSelected',
-        ledIndex: 'ledIndex'
+        selectedBag:'getSelectedBag'
     }),
   },
   mixins:[bindMixin],
@@ -189,6 +199,9 @@ export default {
     margin 1px
     cursor pointer
     transition  background 0.2s ease-out, color 0.2s ease-out, border-color 0.5s ease-out
+    
+    &.outlined
+      outline 2px solid #f00
     
     &.closed
       -webkit-animation 0.5s blink step-end infinite
