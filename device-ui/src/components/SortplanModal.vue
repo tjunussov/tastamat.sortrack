@@ -19,6 +19,13 @@ b-modal#msortplan(ref="msortplan" title="Сортплан" size="lg" hide-footer
             span(v-if="e[0] != e[1]") {{e[1]}} 
             b {{e[0]}}
           .barcode {{encode('p'+e[0])}}
+
+      h4 Пользователи
+      b-card-group.users(deck v-if="config && config.users")
+        b-card(align="center" no-body v-for="u in config.users" :key="u")
+          template(slot="header") 
+            b {{u}}
+          .barcode {{encode('u'+u)}}
 </template>
 
 <script>
@@ -32,7 +39,8 @@ export default {
   computed:{
     ...mapGetters({
         sortplan: 'getSortplan',
-        depcodeDefault: 'getAutoDepcode'
+        depcodeDefault: 'getAutoDepcode',
+        config:'config'
     }),
     depcode(){
       return this.depcodeManual?this.depcodeManual:this.depcodeDefault;
@@ -83,14 +91,18 @@ export default {
   .modal-dialog
     max-width 960px !important
   
-.sortplan
+.sortplan,.users
   .card
-    flex 0 0 auto
-    width 9rem
-    margin 0.1rem
+    flex 0 0 auto !important
+    width 9rem !important
+    margin 0.1rem !important
     
     .barcode
-      font-family 'code128'
+      font-family 'code128' !important
+      
+.users
+  .card
+    width 13rem !important
 
 </style>
 <style lang="stylus">
@@ -124,6 +136,16 @@ export default {
   .sortplan
     .card
       width 15.8rem !important
+      margin 0.01rem
+      // margin-right 10rem
+        
+      .barcode
+        font-family 'code128' !important
+        font-size 44px  !important
+        
+  .users
+    .card
+      width 30rem !important
       margin 0.01rem
       // margin-right 10rem
         

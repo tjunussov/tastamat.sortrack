@@ -97,7 +97,6 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
           code.text-danger(v-if="response && response.error")  {{response}}
           .text-center(v-if="tabIndex == 2 && response")
             b-btn(variant="primary" @click="print") Печать
-            b-link(@click="printTest") Test
 
     template(slot="modal-footer")
       b-link(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" size="sm") Scan Selected | 
@@ -152,6 +151,7 @@ export default {
         weight:this.weight,
         sendmeth:this.sendmeth}).then(()=>{
           this.tabIndex = 2
+          this.print();
         });
     },
     next(bagno){
@@ -177,7 +177,6 @@ export default {
       text = cyr().transform(text);
       text = text.replace('қ','k')
       $leds.printbag(text);
-      this.clear();
     },
     printTest(){
       $leds.printbagTest();

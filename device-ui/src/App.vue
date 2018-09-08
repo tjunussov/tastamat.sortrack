@@ -19,7 +19,7 @@ doctype html
         b-nav-item(to="/admin") Настройки
         //- b-nav-item(to="/admin/sortplan") Сортплан
         b-nav-item(@click="toogleDemo(null)" ) 
-          toggle-button(:value="demo" :sync="true" :labels="{checked: 'Demo', unchecked: 'Prod'}")
+          toggle-button(:value="demo" :sync="true" :labels="{checked: 'Prod', unchecked: 'Demo'}")
         b-nav-item(@click="toogleLed()" )
           toggle-button(:value="ledOn" :sync="true" :labels="{checked: 'LED', unchecked: 'LED'}")
 
@@ -38,8 +38,8 @@ doctype html
           b-form-input.mr-sm-2(
             size="sm" 
             v-on:focus.native="$event.target.value = '';"
-            v-on:dblclick.native="enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');" 
-            @keyup.enter.native="enterBarcodeManualy($event.target.value);" 
+            v-on:dblclick.native="enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ'); $event.target.value = ''; $event.target.blur();" 
+            @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
             :placeholder="barcode?barcode:'Поис поссылок  ...'") 
         //- p {{barcode}}
 
@@ -199,9 +199,8 @@ export default {
       $smartsort.auth(user).then((resp)=>{
          console.log('auth',user);
          this.settings.user = user
-         this.$store.state.polka.user = depcode
+         this.$store.state.polka.user = user
          this.settingsUpdate(this.settings)
-         this.$auth(user) 
       }).catch(()=>{
          this.$error();
       });
@@ -235,7 +234,7 @@ export default {
 
       // console.log('toogleDemo',this.$root,this.$root.demo);
 
-      if(!this.demo) {
+      if(this.demo) {
         mock.restore();
       }
     },

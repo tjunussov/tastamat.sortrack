@@ -12,6 +12,7 @@ export const bindMixin = {
       } else {
         this.bind.started = false
         this.bind.cursor = null
+        this.bind.unmappedIndx = null;
         window.clearInterval(this.bind.intrvl);
         this.$deselectBag();
       }
@@ -40,7 +41,7 @@ export const bindMixin = {
         // начианем мигание по очередное
         window.clearInterval(this.bind.intrvl);
         this.calcUnmappedLeds();
-        this.bind.intrvl = window.setInterval(this.scanLeds,10000);
+        this.bind.intrvl = window.setInterval(this.scanLeds,500);
 
       } else {
         this.wizardToggle();
@@ -55,15 +56,21 @@ export const bindMixin = {
       if(this.bind.unmapped.length == 0){
         if(confirm('All LEDs already calibrated, confirm reset?')){
           Object.entries(this.bags).forEach((item,i)=>{
-            item.led = null;
+            Vue.set(this.bags[i],'led',null)
           })
           console.log('bags reseted',this.bags);
         };
       }
+      this.bind.unmappedIndx = 0;
     },
     scanLeds(){
-      if(this.bind.unmapped.length == this.bind.unmappedIndx) this.bind.unmappedIndx = 0
-      $leds.on('bind',this.bind.unmapped[this.bind.unmappedIndx++]);
+      // if(this.bind.unmapped.length == this.bind.unmappedIndx) this.bind.unmappedIndx = 0
+      if(this.bags.length == this.bind.unmappedIndx) 
+        this.bind.unmappedIndx = 0
+      else 
+        this.bind.unmappedIndx++;
+
+      $leds.on('bind',this.bind.unmappedIndx);
     }
   }
 }

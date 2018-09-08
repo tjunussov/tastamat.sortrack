@@ -6,17 +6,22 @@ b-row.flex-xl-nowrap2
       b-card(no-body align="center"
         v-for="(bag,i) in bags"
         :key="i" 
-        :class="{'text-muted':!Object.keys(bag)[0],'outlined':bind.cursor == i}"
+        :class="{'text-muted':!Object.keys(bag)[0],'outlined':bind.unmappedIndx == i}"
         :bg-variant="selected == bag.no?'success':''"
         :text-variant="selected == bag.no?'white':''" 
         @click="selectBag(bag.no)" )
-        b-card-header {{(bag.no)}} 
-          small.text-muted.indx(v-if="bag.no != bag.index") {{(bag.index)}}
+        b-card-header {{(bag.no)}}
+          small.text-muted.indx(v-if="bag.no != bag.index") 
+            //- {{(bag.index)}} 
+            span.led(:class="{'remapped':bag.led!=null}") {{bag.led?bag.led:i}}
           b-btn.close(v-if="Object.keys(bag.wpi).length") &times;
         b-card-body
           h4.card-title {{Object.keys(bag.wpi).length}}
+
+    
           
     b-collapse#collapse1_inner 
+      code {{this.bind.unmapped}}
       hr/
       code {{bags}}
 
@@ -101,7 +106,7 @@ export default {
       bind:{
         started:false,
         cursor:null,
-        unmappedIndx:0,
+        unmappedIndx:null,
         unmapped:[],
         intrvl:null
       }
@@ -144,9 +149,10 @@ export default {
         // this.$root.$emit('bv::hide::modal','mclosebag')
       } else if(this.bind.started){
         console.log('Binding',bagno);
-        this.$selectBag({bagno}).then(()=>{
-          this.wizardNext(bagno);  
-        });
+        this.wizardNext(bagno);
+        // this.$selectBag({bagno}).then(()=>{
+          
+        // });
       } else {
         window.clearTimeout(this.tmResponse);
         this.$clear();
@@ -200,21 +206,22 @@ export default {
     cursor pointer
     transition  background 0.2s ease-out, color 0.2s ease-out, border-color 0.5s ease-out
     
+    .text-muted
+      opacity 0.5
+    
     &.outlined
       outline 2px solid #f00
     
     &.closed
       -webkit-animation 0.5s blink step-end infinite
-      
 
     &.text-muted
-      opacity 0.8
+      opacity 0.2
 
     .card-body, .card-header
       padding 0.5rem
       overflow hidden
       position relative
-      
 
     .card-header .close
       margin-top -3px
@@ -238,6 +245,15 @@ export default {
       position absolute
       z-index 1
       
+    .led
+      font-size 0.7rem
+      left 0.2rem
+      top -2px
+      position absolute
+      color #ddd
+      
+      &.remapped
+        color #f99
     
   // .card:nth-child(5),.card:nth-child(13),.card:nth-child(21),.card:nth-child(29)
   .card:nth-child(5),.card:nth-child(8n+5)

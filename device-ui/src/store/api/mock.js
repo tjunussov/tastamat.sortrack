@@ -161,7 +161,7 @@ x_extra_info: "6,725"
    resp.next.bagNo = bag[0];
    resp.next.bagIndex = bag[1];
 
-  if((Math.random()*10) > 8) resp.error = "Мешок уже закрыт";
+  if((Math.random()*10) > 9) resp.error = "Мешок уже закрыт";
 
   if((Math.random()*100) > 10)
     return [200,resp];
@@ -258,7 +258,7 @@ x_extra_info: "6,725"
 
 
 export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
-  console.log(cfg);
+  console.log('led',cfg.params?cfg.params.led:cfg.params);
   return [200,null];
 })
 

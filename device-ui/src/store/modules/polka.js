@@ -19,8 +19,9 @@ const state = {
 
 // getters
 const getters = {
-  getBags : (state,getters) => getters.getSettings[0].bags,
-  getConfig : (state,getters) => getters.getSettings[0],
+  config : (state,getters) => getters.getSettings[0],
+  getBags : (state,getters) => getters.config.bags,
+  getConfig : (state,getters) => getters.config,
   getSortplan : (state) => state.sortplan,
   getBarcode : (state) => state.barcode,
   getDepcode : (state) => state.depcode,
@@ -217,12 +218,12 @@ const actions = {
         // getters.getBags[k[0]] = {toIndex:k[1]};
       });*/
       var bags = new Array();
+      
       Object.entries(plan).forEach((item,i)=>{
         return bags.push({no:item[0],led:null,index:item[1],wpi:{}});
       })
 
       getters.getConfig.bags = bags;
-
 
       dispatch('settingsUpdate',getters.getSettings[0]);
 
@@ -234,15 +235,13 @@ const actions = {
     })
   },
   $remapSelectedBag({ commit, dispatch, state, getters },{bagno,led}){
-    findBag(getters.getBags,bagno);// just for check
+    // findBag(getters.getBags,bagno);// just for check
     console.log('remapSelectedBag',getters.getSelectedBag,led)
-    getters.getSelectedBag.no = bagno
     getters.getSelectedBag.led = led
+    getters.getSelectedBag.no = bagno
     dispatch('settingsUpdate',getters.getSettings[0]);
   }
 }
-
-
 
 // mutations
 const mutations = {

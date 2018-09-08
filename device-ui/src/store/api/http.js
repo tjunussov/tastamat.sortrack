@@ -10,7 +10,7 @@ if(localStorage.getItem("apiUrl") !== null){
   baseURL = localStorage.getItem("apiUrl");
 }
 
-export var deviceURL = 'http://192.168.1.49/api/v1/leds';
+export var deviceURL = 'http://192.168.10.10/api/v1/leds';
 
 if(localStorage.getItem("deviceip") !== null){
   deviceURL = localStorage.getItem("deviceip");
@@ -108,7 +108,7 @@ var auth = new Audio();
     
 var pushCnt = 0;
 var pushCntTheme = 0;
-var pushes = [push0,push1,push2,push3.push4]
+var pushes = [push0,push1,push2,push3,push4];
     
 
 export const deviceLEDMixin = {
@@ -300,14 +300,13 @@ export const $sounds = {
   pushCnt:0,
   pushCntTheme:0,
   playPush(){
-    if(this.pushCnt == 10) {
+    if(this.pushCnt == 3) {
       this.pushCntTheme = this.pushCntTheme + 1
-      if(this.pushCntTheme > this.pushes.length) this.pushCntTheme = 0
+      if(this.pushCntTheme > this.pushes().length) this.pushCntTheme = 0
       this.pushCnt = 0
       this.pushcool.play();
     } else {
       this.pushCnt = this.pushCnt + 1
-      // console.log(this.pushCntTheme,pushes.length)
       this.pushes()[this.pushCntTheme].currentTime = 0;
       this.pushes()[this.pushCntTheme].play();
     }
