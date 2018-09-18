@@ -41,7 +41,7 @@ export const bindMixin = {
         // начианем мигание по очередное
         window.clearInterval(this.bind.intrvl);
         this.calcUnmappedLeds();
-        this.bind.intrvl = window.setInterval(this.scanLeds,500);
+        this.bind.intrvl = window.setInterval(this.scanLeds,this.settings.bindscan||1500);
 
       } else {
         this.wizardToggle();
@@ -61,11 +61,11 @@ export const bindMixin = {
           console.log('bags reseted',this.bags);
         };
       }
-      this.bind.unmappedIndx = 0;
+      this.bind.unmappedIndx = -1;
     },
     scanLeds(){
       // if(this.bind.unmapped.length == this.bind.unmappedIndx) this.bind.unmappedIndx = 0
-      if(this.bags.length == this.bind.unmappedIndx) 
+      if(this.bags.length-1 == this.bind.unmappedIndx) 
         this.bind.unmappedIndx = 0
       else 
         this.bind.unmappedIndx++;

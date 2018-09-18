@@ -34,7 +34,7 @@ b-row.flex-xl-nowrap2
         span(v-if="response") конечный индекс {{response.toIndex}}
         b-btn.close(@click.stop="$clear")  &times;
         .debug.float-right.mr-3
-          b-link(v-b-toggle="'collapse1_inner'") Debug | 
+          b-link(v-b-toggle="'collapse1_inner'") Debug 2.1 | 
           b-link(v-b-modal="'msortplan'") Сортплан | 
           b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
@@ -89,8 +89,10 @@ export default {
 
         if(this.selectedBag && this.selectedBag.led)  // if led specified
           $leds.on(val,this.selectedBag.led);
-        else 
-          $leds.on(val,this.cursor);
+        else {
+          // console.log('ZZZZZZZZZZZZZZ',this.cursor)
+          if(this.cursor) $leds.on(val,this.cursor);
+        }
 
         $sounds.play(val);
       } /*else {
@@ -128,7 +130,9 @@ export default {
   },
   mixins:[bindMixin],
   created(){
-    this.$initBags()
+    if(!this.bags){
+      this.$initBags()
+    }
   },
   methods:{
     ...mapActions([
@@ -137,7 +141,8 @@ export default {
       '$selectBag',
       '$deselectBag',
       '$remapSelectedBag',
-      '$clear'
+      '$clear',
+      '$saveConfig'
     ]),
     timeout(tm){
       window.clearTimeout(this.tmResponse);
@@ -198,6 +203,9 @@ export default {
   color #fff
 
 .polkas  
+  // display: grid;
+  // grid-column-gap: 50px;
+  
   .card
     flex 0 0 auto
     width 7.1rem 

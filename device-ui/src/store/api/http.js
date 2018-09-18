@@ -300,7 +300,7 @@ export const $sounds = {
   pushCnt:0,
   pushCntTheme:0,
   playPush(){
-    if(this.pushCnt == 3) {
+    if(this.pushCnt == 5) {
       this.pushCntTheme = this.pushCntTheme + 1
       if(this.pushCntTheme > this.pushes().length) this.pushCntTheme = 0
       this.pushCnt = 0
@@ -348,7 +348,7 @@ export const $leds = {
     $device.get('/testprint');
   },
   bind(led){
-    this.$ledon({color:'all',led,duration:1000,repeat:1000,pause:100});
+    this.$ledon({color:'all',led,duration:5000,repeat:1});
   },
   notplan(){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3});

@@ -8,6 +8,8 @@ export default {
     db.settings.add({
       point:'000001',
       size:24,
+      bindscan:1500,
+      demoerror:true,
       printer:'192.168.1.40',
       meta_:{ updated:new Date() },
       sortplan:{

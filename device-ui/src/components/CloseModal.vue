@@ -2,7 +2,7 @@
 b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="closeModalRef")
     template(slot="modal-header" v-if="meta && meta.next.bag") 
       b-link.close(@click.stop="clear")  &times;
-      h3 Мешок {{meta.next.bagNo}} - {{meta.next.bag.barcode}}
+      h3 Мешок {{meta.next.bagNo}} - {{meta.next.bag.barcode}} - {{selectedBag.index}}
       .meta
         small {{meta.next.bag.created}} {{meta.next.bag.user}}
         small.pull-right.ml-2 BID : {{meta.next.bag.bid}} DEPID : {{meta.next.bag.bdepid}}
@@ -12,7 +12,8 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
     b-card(no-body)
       b-tabs.nav-justified.wizard(pills card v-model="tabIndex")
         b-tab
-          template(slot="title") Содержимое 
+          template(slot="title") 
+            span(v-b-toggle="'settings_collapse'") Содержимое 
             span(v-if="meta") {{meta.addDetailPREGMAIL.mlcntq}} шт
 
           table.table.b-table
@@ -30,7 +31,10 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
               td {{v.p_depcode}} | {{v.addDetailPREGMAIL.mlcntq}} | {{v.addDetailPREGMAIL.wghtv}}
         b-tab(title="Вес и Вид")
           b-form-group(label="Итоговый Вес" horizontal)
-            b-form-input(v-model="weight" type="number" size="lg" required palceholder="Вес")
+            b-input-group
+              b-form-input(v-model="weight" type="number" size="lg" required palceholder="Вес")
+              b-input-group-append
+                b-btn(@click="weight = 2.4" variant="white") Считать вес
           b-form-group(label="Вид отправки" horizontal)
             b-btn(@click="sendmeth = 2" v-if="sendmeth == 1") Наземный
             b-btn(variant="primary" @click="sendmeth = 1" v-else) Авия
@@ -98,6 +102,13 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
           .text-center(v-if="tabIndex == 2 && response")
             b-btn(variant="primary" @click="print") Печать
 
+    b-collapse(is-nav id="settings_collapse" v-if="selectedBag")
+      b-form.my-3
+        b-form-group(horizontal label="LED")
+          b-form-input(v-model="selectedBag.led")
+        b-form-group(horizontal)
+          b-btn(@click="$saveConfig") Save
+
     template(slot="modal-footer")
       b-link(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" size="sm") Scan Selected | 
       b-link(@click="$bus.$emit('keyboard:keydown:enter:p',Object.keys(bags)[1])" size="sm") Scan Bag 2
@@ -143,7 +154,8 @@ export default {
     ...mapActions([
       '$closeBag',
       '$clear',
-      '$deselectBag'
+      '$deselectBag',
+      '$saveConfig'
     ]),
     closeBag(){
       this.$closeBag({

@@ -20,7 +20,7 @@ const state = {
 // getters
 const getters = {
   config : (state,getters) => getters.getSettings[0],
-  getBags : (state,getters) => getters.config.bags,
+  getBags : (state,getters) => getters.getSettings[0]?getters.getSettings[0].bags:null,
   getConfig : (state,getters) => getters.config,
   getSortplan : (state) => state.sortplan,
   getBarcode : (state) => state.barcode,
@@ -52,7 +52,7 @@ const getters = {
 const actions = {
   $initBags ({ commit, dispatch, state, getters }) {
 
-    if(!getters.getBags){
+    
 
       /*getters.getSettings[0].bags = {};
       var size = getters.getSettings[0].size||24;
@@ -61,15 +61,12 @@ const actions = {
         Vue.set(getters.getBags,'#'+i,{})
       }*/
 
-      console.log('initBags');
+      console.log('initBags',getters.getConfig.size);
 
-      getters.getConfig.bags = [...new Array(getters.getConfig.size||24)].map((x,i) => { 
+      getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
         return {no:'#'+i,led:null,index:'#'+i,wpi:{}}
       });
-
-    }
-
-
+  
     // TODO Rewrite to Promise Chain
     /*
     dispatch('salesAdd',cart).then(()=>{
@@ -79,6 +76,9 @@ const actions = {
       commit(types.FISCALIZE_PENDING)
     })
     */
+  },
+  $saveConfig({ commit, dispatch, state, getters }){
+    dispatch('settingsUpdate',getters.getSettings[0]);
   },
   $clear ({ commit, dispatch, state, getters }) {
     state.response = null;
@@ -105,9 +105,10 @@ const actions = {
   },
   $deselectBag({ commit, dispatch, state, getters }) {
     state.status = 'deselectbag';
-    window.setTimeout(()=>{
+    state.selected = null
+    /*window.setTimeout(()=>{
       state.selected = null
-    },50);
+    },50);*/
   },
   $putToBag ({ commit, dispatch, state, getters },{barcode}) {
 
@@ -225,7 +226,7 @@ const actions = {
 
       getters.getConfig.bags = bags;
 
-      dispatch('settingsUpdate',getters.getSettings[0]);
+      dispatch('$saveConfig');
 
   },
   $fetchSortplan({ commit, dispatch, state, getters },{depcode}){
@@ -239,8 +240,10 @@ const actions = {
     console.log('remapSelectedBag',getters.getSelectedBag,led)
     getters.getSelectedBag.led = led
     getters.getSelectedBag.no = bagno
-    dispatch('settingsUpdate',getters.getSettings[0]);
-  }
+    dispatch('$saveConfig');
+  },
+
+
 }
 
 // mutations

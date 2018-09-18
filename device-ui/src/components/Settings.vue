@@ -5,7 +5,11 @@
 
     b-form.mt-3
       b-form-group(label="Кол-во LED" horizontal)
-          b-form-input(v-model="settings.maxLeds")         
+          b-form-input(v-model="settings.size")
+      b-form-group(label="Bind Scan" horizontal)
+          b-form-input(v-model="settings.bindscan")
+      b-form-group(label="Error Simulate" horizontal)
+          b-form-checkbox(v-model="settings.demoerror")
       b-form-group(label="IP Device" horizontal)
         b-form-input(v-model="deviceip")
       b-form-group(label="URL Сервиса" horizontal)
@@ -53,6 +57,7 @@ export default {
   methods:{
     ...mapActions([
       'settingsUpdate',
+      '$initBags'
     ]),
     saveSettings(){
       localStorage.setItem('deviceip',this.deviceip);
@@ -62,7 +67,11 @@ export default {
       this.settings.apiUrl = this.apiUrl
       // this.settings.maxLeds = this.maxLeds
 
-      this.settingsUpdate(this.settings)
+
+      this.$initBags().then(()=>{
+        console.log('settgins updated');
+        this.settingsUpdate(this.settings)
+      });
 
       location.reload();
     },

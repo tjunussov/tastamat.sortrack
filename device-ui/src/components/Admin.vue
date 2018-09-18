@@ -8,7 +8,7 @@ b-row.flex-xl-nowrap2
       //-   b-link.bd-toc-link(to='/console') Консоль
       //-   ul.bd-sidenav.nav
       .bd-toc-item
-        a.bd-toc-link(disabled href='/docs/') Статистика
+        a.bd-toc-link(disabled href='/admin/settings') Статистика
         ul.bd-sidenav.nav
       .bd-toc-item.active
         b-link.bd-toc-link(to='/admin/sortplan') Сортплан

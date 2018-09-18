@@ -133,9 +133,11 @@ x_extra_info: "6,725"
   "plan": plan
 })
 .onAny('sm_home.putToBag').reply((cfg)=>{
-  
+
+
+  var req = cfg.params;
   var resp = {
-    p_wpi: "GZ227933372KZ",
+    p_wpi: req.p_wpi,
     p_cpilslogin: "SCNEVGENIA",
     p_depcode: "220000",
     toIndex: "130099",
@@ -156,18 +158,26 @@ x_extra_info: "6,725"
     }
   };
 
+  var bagNoFromWpi = 'M'+req.p_wpi.substr(2,2);
+  var bagIndex = Object.keys(plan).findIndex((key)=>{return key == bagNoFromWpi});
+  if(bagIndex < 0) {
+    bagIndex = Math.floor(Math.random()*12)
+    console.log('random',bagIndex);
+  }
 
-   var bag = Object.entries(plan)[Math.floor(Math.random()*10)];
+  
+  var bag = Object.entries(plan)[bagIndex];
+
    resp.next.bagNo = bag[0];
    resp.next.bagIndex = bag[1];
 
-  if((Math.random()*10) > 9) resp.error = "Мешок уже закрыт";
+  // if((Math.random()*100) > 95) resp.error = "Мешок уже закрыт";
 
-  if((Math.random()*100) > 10)
+  // if((Math.random()*100) < 95)
     return [200,resp];
-  else {
-    return [400,{error:"Отправление RB508027382SG не найдено!"}]
-  }
+  // else {
+    // return [400,{error:"Отправление RB508027382SG не найдено!"}]
+  // }
 
 }).onAny('sm_home.closeBag').reply(200,
 {
