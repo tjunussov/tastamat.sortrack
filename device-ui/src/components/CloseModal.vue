@@ -7,7 +7,7 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
         small {{meta.next.bag.created}} {{meta.next.bag.user}}
         small.pull-right.ml-2 BID : {{meta.next.bag.bid}} DEPID : {{meta.next.bag.bdepid}}
     template(slot="modal-header" v-else)
-       h2.modal-title.text-primary Мешок {{selected}} 
+       h2.modal-title.text-primary Мешок {{selected}} - {{selectedBag.index}}
 
     b-card(no-body)
       b-tabs.nav-justified.wizard(pills card v-model="tabIndex")
@@ -34,7 +34,7 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
             b-input-group
               b-form-input(v-model="weight" type="number" size="lg" required palceholder="Вес")
               b-input-group-append
-                b-btn(@click="weight = 2.4" variant="white") Считать вес
+                b-btn(@click="weight = 1.5" variant="white") Считать вес
           b-form-group(label="Вид отправки" horizontal)
             b-btn(@click="sendmeth = 2" v-if="sendmeth == 1") Наземный
             b-btn(variant="primary" @click="sendmeth = 1" v-else) Авия
@@ -161,6 +161,7 @@ export default {
       this.$closeBag({
         bagno:this.selected,
         weight:this.weight,
+        depcode:this.selectedBag.index,
         sendmeth:this.sendmeth}).then(()=>{
           this.tabIndex = 2
           this.print();

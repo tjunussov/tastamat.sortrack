@@ -177,7 +177,7 @@ const actions = {
 
         
   },
-  $closeBag ({ commit, dispatch, state, getters },{bagno,weight,sendmeth}) {
+  $closeBag ({ commit, dispatch, state, getters },{bagno,weight,sendmeth,depcode}) {
 
     console.log('closeBag',bagno,weight,sendmeth);
 
@@ -191,6 +191,9 @@ const actions = {
           new DOMParser().parseFromString(
             state.closeResponse.cli_info, 'text/xml')
         ).CLIINFO;
+
+
+        state.closeResponse.cli_info.TO_DEP_NAME = depcode;
 
       } catch(e){
         console.error('xml',e);

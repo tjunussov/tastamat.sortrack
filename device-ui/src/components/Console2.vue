@@ -32,9 +32,9 @@ b-row.flex-xl-nowrap2
       b-card-header ШПИ 
         b {{barcode}} 
         span(v-if="response") конечный индекс {{response.toIndex}}
-        b-btn.close(@click.stop="$clear")  &times;
+        b-btn.close(@click.stop="clearAll")  &times;
         .debug.float-right.mr-3
-          b-link(v-b-toggle="'collapse1_inner'") Debug 2.1 | 
+          b-link(v-b-toggle="'collapse1_inner'") Debug 2.2 | 
           b-link(v-b-modal="'msortplan'") Сортплан | 
           b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
@@ -87,9 +87,10 @@ export default {
       if(val){
         console.log('sound',val);
 
-        if(this.selectedBag && this.selectedBag.led)  // if led specified
+        if(this.selectedBag && this.selectedBag.led){  // if led specified
+          console.log('LED',this.selectedBag.led);
           $leds.on(val,this.selectedBag.led);
-        else {
+        } else {
           // console.log('ZZZZZZZZZZZZZZ',this.cursor)
           if(this.cursor) $leds.on(val,this.cursor);
         }
@@ -182,6 +183,10 @@ export default {
         this.timeout(5000);
       });
 
+    },
+    clearAll(){
+      this.$clear(); 
+      $leds.$ledoff();
     }
   },
   components:{

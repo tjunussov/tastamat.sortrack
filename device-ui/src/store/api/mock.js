@@ -136,6 +136,7 @@ x_extra_info: "6,725"
 
 
   var req = cfg.params;
+  console.log(req);
   var resp = {
     p_wpi: req.p_wpi,
     p_cpilslogin: "SCNEVGENIA",
@@ -179,14 +180,18 @@ x_extra_info: "6,725"
     // return [400,{error:"Отправление RB508027382SG не найдено!"}]
   // }
 
-}).onAny('sm_home.closeBag').reply(200,
+}).onAny('sm_home.closeBag').reply((cfg)=>{
+
+
+
+  return [200,
 {
   closeBag: {
-    p_bag: "801331",
-    p_depcode: "",
-    p_weight: "1",
-    p_sendmeth: "1",
-    p_cpilslogin: "SCNEVGENIA",
+    p_bag: cfg.params.p_bag,
+    p_depcode: cfg.params.p_depcode,
+    p_weight: cfg.params.p_weight,
+    p_sendmeth: cfg.params.p_sendmeth,
+    p_cpilslogin: cfg.params.p_cpilslogin,
     bag: {
       barcode: "B201807180001912",
       todepindex: "130001",
@@ -221,13 +226,13 @@ x_extra_info: "6,725"
    <NDSTMAIL />
    <OWN_NUMBER />
    <SEAL />
-   <SNDMETH_NAME>Наземный</SNDMETH_NAME>
+   <SNDMETH_NAME>${cfg.params.p_sendmeth==1?'НАЗЕМНЫЙ':'АВИА'}</SNDMETH_NAME>
    <TO_DEP_NAME>Актау-1 [130001]</TO_DEP_NAME>
    <TSFL />
    <WGT_GR>000</WGT_GR>
-   <WGT_KG>1</WGT_KG></CLIINFO>`,
+   <WGT_KG>${cfg.params.p_weight}</WGT_KG></CLIINFO>`,
   UBAGBARCODE: "G201807180001235"
-}  
+}]; }
 )
 .onAny().reply((cfg)=>{
 
