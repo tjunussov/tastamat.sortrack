@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask # pip install flask
 from flask import request
 from flask_cors import CORS
 import threading
@@ -9,7 +9,7 @@ import subprocess
 from subprocess import call
 
 from subprocess import Popen, PIPE
-from neopixel import *
+from neopixel import * #install https://tutorials-raspberrypi.com/connect-control-raspberry-pi-ws2812-rgb-led-strips/
 
 # LED strip configuration:
 LED_COUNT      = 30      # Number of LED pixels.
@@ -224,6 +224,6 @@ if __name__ == "__main__":
     for i in range(3):
         onStart()
     try:
-        app.run(host='0.0.0.0', port=8080, debug=True)
+        app.run(host='0.0.0.0', port=8080, debug=False)
     except KeyboardInterrupt:
         exit(0)
