@@ -20,11 +20,10 @@
 //NEO_RGBW
 // NEO_RGB
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_RGB + NEO_KHZ800);
-SimpleTimer timer;
-Ticker blinker[];
 Ticker offer;
 
-
+const int trainCount = 2;
+Ticker* tickers = new Ticker[5];
 
 char paramsDefault[] = "led=10&color=ff0000&repeat=5&duration=1000&pause=500";
 char params[] = parseParams(paramsDefault);
