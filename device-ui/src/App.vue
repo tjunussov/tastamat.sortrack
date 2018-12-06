@@ -109,6 +109,14 @@ export default {
     });
     this.toogleDemo(this.$store.state.polka.demo);
     this.toogleLed(this.$store.state.polka.ledOn);
+
+    
+    // Demo
+    window.setInterval(()=>{
+      this.enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');
+    },10000);
+
+
   },
   beforeDestroy(){
     this.$bus.$off('keyboard:keydown:enter:13',this.barcodeSet);

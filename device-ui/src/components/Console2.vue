@@ -91,9 +91,12 @@ export default {
           console.log('LED',this.selectedBag.led);
           $leds.on(val,this.selectedBag.led);
         } else {
-          // console.log('ZZZZZZZZZZZZZZ',this.cursor)
-          if(this.cursor) $leds.on(val,this.cursor);
+          console.log('ZZZZZZZZZZZZZZ',this.cursor)
+          if(this.cursor != null) $leds.on(val,this.cursor);
+          else $leds.on(val);
         }
+
+
 
         $sounds.play(val);
       } /*else {

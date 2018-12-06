@@ -114,7 +114,8 @@ var pushes = [push0,push1,push2,push3,push4];
 export const deviceLEDMixin = {
   methods: {
     $search(user){
-      this.$ledon('color=220000&led=all&duration=10&repeat=10000');
+      // this.$ledon('color=220000&led=all&duration=10&repeat=10000');
+      this.$ledon('color=r&led=all&duration=10&repeat=10000&brightness=50');
       search1.currentTime = 0;
       search1.play();
     },
@@ -315,7 +316,7 @@ export const $sounds = {
 
 export const $leds = {
   search(user){
-    this.$ledon({color:'220000',led:'all',duration:10,repeat:10000});
+    this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
   push(led){
     this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
@@ -324,25 +325,26 @@ export const $leds = {
     this.$ledon({color:'r',led,duration:100,repeat:3});
   },
   notfound(user){
-    this.$ledon({color:'r',led:'all',duration:50,repeat:3});
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
   },
   bindstart(){
-    this.$ledon({color:'all',led:'all',duration:1000});
+    this.$ledon({color:'all',led:'all',duration:1000,brightness:100});
   },
   bindend(){
-    this.$ledon({color:'all',led:'all',duration:100,repeat:3});
+    this.$ledon({color:'all',led:'all',duration:100,repeat:3,brightness:100});
   },
   selectbag(led){
-    this.$ledon({color:'all',led,duration:500,repeat:1000});
+    this.$ledon({color:'all',led,duration:500,repeat:1000,autoOff:'all'});
   },
   closebag(led){
-    this.$ledon({color:'all',led,duration:100,repeat:3});
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
   },
   deselectbag(led){
-    this.$ledon({color:'all',led,duration:100,repeat:1});
+    this.$ledon({color:'all',led,duration:100,repeat:1,autoOff:'all'});
   },
   printbag(data){
-    $device.post('/print',data);
+    // $device.post('/print',data);
+    $device.post('/proxy',data);
   },
   printbagTest(){
     $device.get('/testprint');
@@ -351,19 +353,19 @@ export const $leds = {
     this.$ledon({color:'all',led,duration:5000,repeat:1});
   },
   notplan(){
-    this.$ledon({color:'r',led:'all',duration:50,repeat:3});
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
   },
   notbind(){
-    this.$ledon({color:'r',led:'all',duration:50,repeat:3});
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
   },
   error(user){
-    this.$ledon({color:'r',led:'all',duration:50,repeat:3});
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
   },
   auth(user){
-     this.$ledon({color:'r',led:'all',duration:1000});
+     this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
   },
   registerpoint(msg){
-    this.$ledon({color:'all',led:'all',duration:1000});
+    this.$ledon({color:'all',led:'all',duration:1000,brightness:100});
   },
   deletepoint(led){
     this.$ledon({color:'all',led,duration:100,effect:'right'});

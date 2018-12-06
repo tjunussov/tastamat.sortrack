@@ -172,13 +172,13 @@ x_extra_info: "6,725"
    resp.next.bagNo = bag[0];
    resp.next.bagIndex = bag[1];
 
-  // if((Math.random()*100) > 95) resp.error = "Мешок уже закрыт";
+  if((Math.random()*100) > 95) resp.error = "Мешок уже закрыт";
 
-  // if((Math.random()*100) < 95)
+  if((Math.random()*100) < 95)
     return [200,resp];
-  // else {
-    // return [400,{error:"Отправление RB508027382SG не найдено!"}]
-  // }
+  else {
+    return [400,{error:"Отправление RB508027382SG не найдено!"}]
+  }
 
 }).onAny('sm_home.closeBag').reply((cfg)=>{
 
@@ -264,7 +264,7 @@ x_extra_info: "6,725"
     "weight":"менее 1"
   };
 
-  if((Math.random()*100) > 10)
+  if((Math.random()*100) > 50)
     return [200,resp];
   else {
     return [400,{error:"Отправление RB508027382SG не найдено!"}]

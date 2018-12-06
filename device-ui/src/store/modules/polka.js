@@ -105,10 +105,10 @@ const actions = {
   },
   $deselectBag({ commit, dispatch, state, getters }) {
     state.status = 'deselectbag';
-    state.selected = null
-    /*window.setTimeout(()=>{
+    // state.selected = null
+    window.setTimeout(()=>{
       state.selected = null
-    },50);*/
+    },50);
   },
   $putToBag ({ commit, dispatch, state, getters },{barcode}) {
 
