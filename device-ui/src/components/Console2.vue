@@ -85,13 +85,12 @@ export default {
   watch:{
     status(val){
       if(val){
-        console.log('sound',val);
 
         if(this.selectedBag && this.selectedBag.led){  // if led specified
-          console.log('LED',this.selectedBag.led);
+          console.log('watched status[selectedbag]',this.selectedBag.led);
           $leds.on(val,this.selectedBag.led);
         } else {
-          console.log('ZZZZZZZZZZZZZZ',this.cursor)
+          console.debug('watched status [cursor]',this.cursor)
           if(this.cursor != null) $leds.on(val,this.cursor);
           else $leds.on(val);
         }

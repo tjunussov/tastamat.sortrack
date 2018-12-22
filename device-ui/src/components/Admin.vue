@@ -8,7 +8,7 @@ b-row.flex-xl-nowrap2
       //-   b-link.bd-toc-link(to='/console') Консоль
       //-   ul.bd-sidenav.nav
       .bd-toc-item
-        a.bd-toc-link(disabled href='/admin/settings') Статистика
+        a.bd-toc-link(disabled) Статистика
         ul.bd-sidenav.nav
       .bd-toc-item.active
         b-link.bd-toc-link(to='/admin/sortplan') Сортплан
@@ -20,6 +20,8 @@ b-row.flex-xl-nowrap2
       //-   ul.bd-sidenav.nav
       //-     li.nav-item
       //-       a.nav-link(disabled href='/docs/reference/color-variants', target='_self') Справочники
+      .bd-toc-item
+        b-link.bd-toc-link(to='/admin/users') Пользователи
       .bd-toc-item
         b-link.bd-toc-link(to='/admin/settings') Настройки
       .bd-toc-item

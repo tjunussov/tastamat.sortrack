@@ -31,6 +31,9 @@ import '@/components/misc/filters.js'
 
 Vue.config.productionTip = false
 
+// Make store available accross all plugins
+Vue.prototype.$store = store;
+
 // Global Functions
 Vue.mixin({
   methods: {

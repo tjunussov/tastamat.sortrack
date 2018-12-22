@@ -8,6 +8,8 @@
           b-form-input(v-model="settings.size")
       b-form-group(label="Bind Scan" horizontal)
           b-form-input(v-model="settings.bindscan")
+      b-form-group(label="MockDelayResponse" horizontal)
+          b-form-checkbox(v-model="settings.mockdelay")
       b-form-group(label="Error Simulate" horizontal)
           b-form-checkbox(v-model="settings.demoerror")
       b-form-group(label="IP Device" horizontal)
@@ -73,7 +75,7 @@ export default {
         this.settingsUpdate(this.settings)
       });
 
-      location.reload();
+      // location.reload();
     },
     publishOn(){
       this.$ledOn(this.cmd)

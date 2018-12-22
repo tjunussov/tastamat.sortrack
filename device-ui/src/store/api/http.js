@@ -359,7 +359,7 @@ export const $leds = {
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
   },
   error(user){
-    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
   },
   auth(user){
      this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
@@ -377,7 +377,7 @@ export const $leds = {
     $device.get(`/off`);
   },
   on(name,data){
-    // console.log(name);
+    console.debug('ON',name);
     try { 
       this[name](data);
   } catch(e){

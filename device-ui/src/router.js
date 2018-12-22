@@ -6,6 +6,8 @@ import Admin from '@/components/Admin'
 import Settings from '@/components/Settings'
 import Debug from '@/components/Debug'
 import Sortplan from '@/components/Sortplan'
+import Users from '@/components/Users'
+
 
 Vue.use(Router)
 
@@ -35,6 +37,11 @@ const router =  new Router({
           path: 'settings',
           component: Settings
         },
+        {
+          path: 'users',
+          component: Users
+        },
+        
         {
           path: 'debug',
           component: Debug

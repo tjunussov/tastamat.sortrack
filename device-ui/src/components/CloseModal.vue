@@ -34,7 +34,7 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
             b-input-group
               b-form-input(v-model="weight" type="number" size="lg" required palceholder="Вес")
               b-input-group-append
-                b-btn(@click="weight = 1.5" variant="white") Считать вес
+                b-btn(@click="weight = 2.5" variant="white") Считать вес
           b-form-group(label="Вид отправки" horizontal)
             b-btn(@click="sendmeth = 2" v-if="sendmeth == 1") Наземный
             b-btn(variant="primary" @click="sendmeth = 1" v-else) Авия

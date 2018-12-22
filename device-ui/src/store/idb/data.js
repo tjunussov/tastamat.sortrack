@@ -9,6 +9,7 @@ export default {
       point:'000001',
       size:24,
       bindscan:1500,
+      mockdelay:true,
       demoerror:true,
       printer:'192.168.1.40',
       meta_:{ updated:new Date() },

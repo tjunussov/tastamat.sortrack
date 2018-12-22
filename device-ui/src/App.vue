@@ -112,9 +112,9 @@ export default {
 
     
     // Demo
-    window.setInterval(()=>{
+    /*window.setInterval(()=>{
       this.enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');
-    },10000);
+    },10000);*/
 
 
   },
@@ -185,15 +185,15 @@ export default {
       'settingsSelect',
     ]),
     barcodeSet(val){
-      console.log('setting barcode',val)
+      // console.log('setting barcode',val)
       this.$store.state.polka.barcode = val
     },
     enterBarcodeManualy(barcode){
-      console.log('enterBarcodeManualy',barcode);
+      // console.log('enterBarcodeManualy',barcode);
       this.$bus.$emit('keyboard:keydown:enter:13',barcode);
     },
     enterBagManualy(bagno){
-      console.log('enterBagManualy',bagno);
+      // console.log('enterBagManualy',bagno);
       this.$bus.$emit('keyboard:keydown:enter:p',bagno)
     },
     registerDepcode(depcode){

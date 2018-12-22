@@ -1,6 +1,7 @@
 // import axios from 'axios'
 import {$http,$device} from '@/store/api/http'
 import MockAdapter from 'axios-mock-adapter'
+import Vue from 'vue'
 
 
 var plan = {
@@ -32,10 +33,9 @@ var plan = {
   };
 
   
-export const mock = new MockAdapter($http,{delayResponse:500 })
-
-
-
+//INFO! dont remove delay respnose, it doesnt workk if removed
+export const mock = new MockAdapter($http,{delayResponse:50}) 
+// export const mock = new MockAdapter($http)
 
 /*.onGet('/RB508027382SG').reply(200,
   {"trackid":"RB508027382SG","timestamp":"21:56:29 06.04.2018","direction":"IMPORT","status_code":"D","status":"Вручено","x_status_code":"S_ISS","x_status":"Вручено","sender":{"country":"Сингапур","name":"1","address":"1","x_postindex":null},"origin":{"date":"01.04.2018","x_dep_id":"18907","city":"Алматы","dep_name":"Участок по обработке международной почты г. Алматы","postindex":"220096"},"receiver":{"name":"Junnussov T","address":"Astana Saryarka  15","country":"Казахстан","x_postindex":null},"last":{"date":"05.04.2018","x_dep_id":"19465","city":"","dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР","address":"Астана область, г. Астана, пр. Сарыарка, д.15","postindex":"900109"},"delivery":{"date":"05.04.2018","time":"15:41","period_fact":"4","x_period":null,"x_dep_id":"19465","city":"","dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР","address":"Астана область, г. Астана, пр. Сарыарка, д.15","gps":["",""],"phone":"","postindex":"900104"},"storage_period":"","package_type":"Мелкий пакет","category":"Заказное","delivery_method":"Авиа","dispute":"","weight":"менее 1"}
@@ -132,7 +132,7 @@ x_extra_info: "6,725"
   "date":"21.07.2018 18:26",
   "plan": plan
 })
-.onAny('sm_home.putToBag').reply((cfg)=>{
+.onAny('sm_home.putToBag').reply(async (cfg)=>{
 
 
   var req = cfg.params;
@@ -173,6 +173,13 @@ x_extra_info: "6,725"
    resp.next.bagIndex = bag[1];
 
   if((Math.random()*100) > 95) resp.error = "Мешок уже закрыт";
+
+
+  if(Vue.prototype.$store.getters.config.mockdelay){
+    var sleepTime = (Math.random()*1000);
+    console.debug('DelayingResponse',sleepTime);
+    await sleep(sleepTime);
+  }
 
   if((Math.random()*100) < 95)
     return [200,resp];
@@ -264,13 +271,16 @@ x_extra_info: "6,725"
     "weight":"менее 1"
   };
 
-  if((Math.random()*100) > 50)
+  if((Math.random()*100) > 50){
+    // await sleep((Math.random()*100));
     return [200,resp];
-  else {
+  } else {
     return [400,{error:"Отправление RB508027382SG не найдено!"}]
   }
 })
 
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
   console.log('led',cfg.params?cfg.params.led:cfg.params);

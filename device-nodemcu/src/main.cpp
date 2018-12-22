@@ -1,7 +1,6 @@
 /*
- * Blink
+ * SMARTSORT
  * Turns on an LED on for one second,
- * then off for one second, repeatedly.
  */
 
 #include "Arduino.h"
@@ -68,7 +67,7 @@ Ticker onTickers[10];
 Ticker offTickers[10];
 StripParams params[10];
 StripLeds leds[255];
-Ticker ticker;
+Ticker ticker[4]; // auxilary
 
 
 /////////// STRIP
@@ -144,8 +143,11 @@ void blinkOff(int colorIndex = -1){
     }
   else{
     onTickers[colorIndex].detach();
-    for(int l=0; l < 255; l++) leds[l].params[colorIndex]=NULL;
-    params[colorIndex].count = 0;
+    // for(int l=0; l < 255; l++) leds[l].params[colorIndex]=NULL;
+    // params[colorIndex].count = 0;
+    // TODO Reset particular Led only
+    // stripReset(0,params[colorIndex].led);
+    stripReset();
   }
     
 }
@@ -161,8 +163,8 @@ void blinkTick(int colorIndex){
 
   stripShow(led,p->color);
   
-  if(p->pause > 10){ // faster blinker
-    offTickers[colorIndex].once_ms<int>(p->pause,[](int led){
+  if(p->duration > 10){ // faster blinker
+    offTickers[colorIndex].once_ms<int>(p->duration,[](int led){
       if(debug) Serial.printf("off:\t\t%d\n",led);
       stripShow(led,0); // off led
       
@@ -214,9 +216,21 @@ void blinkOn(int colorIndex){
 /***************************/
 void tick()
 {
+  int state = digitalRead(LED_BUILTIN);
+  digitalWrite(LED_BUILTIN, !state);
+}
+
+void tickStrip()
+{
   //toggle state
-  int state = digitalRead(LED_BUILTIN);  // get the current state of GPIO1 pin
-  digitalWrite(LED_BUILTIN, !state);     // set pin to the opposite state
+  strip.setPixelColor(0,strip.Color(0, 0,10));
+  strip.show();
+
+  ticker[3].once_ms(50,[](){
+    strip.setPixelColor(0,strip.Color(0, 0,0));
+    strip.show();
+  });
+
 }
 
 void reply(int colorIndex=NULL){
@@ -239,6 +253,7 @@ void reply(int colorIndex=NULL){
     msg += "\"duration\":"+String(p->duration)+",";
     msg += "\"brightness\":"+String(p->brightness)+",";
     msg += "\"debug\":"+String(debug)+",";
+    msg += "\"autoOff\":"+String(p->autoOff)+",";    
     msg += "\"size\":"+String(NUM_LEDS)+"";
   }
 
@@ -255,7 +270,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   //if you used auto generated SSID, print it
   Serial.println(myWiFiManager->getConfigPortalSSID());
   //entered config mode, make led toggle faster
-  ticker.attach_ms(50, tick);
+  ticker[0].attach_ms(100, tick);
 }
 
 
@@ -263,7 +278,7 @@ int greetCnt = 0;
 
 void stripGreeting(){  
   onTickers[0].attach_ms(1000,[](){
-    stripShow(-1,strip.Color(10, 10, 10)); // on white
+    stripShow(-1,strip.Color(5, 5, 5)); // on white
     offTickers[0].once_ms(500,[](){
       stripShow(-1,0); // off led
       if(greetCnt == 3 ) onTickers[0].detach();
@@ -310,7 +325,7 @@ void setup()
   stripReset();
 
   // start ticker with 0.5 because we start in AP mode and try to connect
-  ticker.attach_ms(200,tick);
+  ticker[0].attach_ms(500,tick);
 
   WiFi.hostname("sortrack");
   WiFiManager wifiManager;
@@ -341,7 +356,7 @@ void setup()
 
   //if you get here you have connected to the WiFi
   Serial.println("connected...yeey :)");
-  ticker.detach();
+  ticker[0].detach();
 
   server.serveStatic("/index.html", SPIFFS, "/index.html");
   server.onNotFound([]() {                              // If the client requests any URI
@@ -413,6 +428,8 @@ void setup()
     reply();
   });
 
+  server.serveStatic("/api", SPIFFS, "/api/index.html");
+
   server.begin();
   // server.setNoDelay(true);
   
@@ -440,7 +457,10 @@ void setup()
   ArduinoOTA.begin();
 
   //keep LED on
-  digitalWrite(BUILTIN_LED, LOW);
+  // digitalWrite(BUILTIN_LED, LOW);
+  ticker[0].attach(1,tick);
+  ticker[2].attach(10,tickStrip);
+  
 
   // 3 times flash
   stripGreeting();
