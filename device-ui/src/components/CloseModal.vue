@@ -112,7 +112,7 @@ b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="
           b-input-group
             b-form-input(:placeholder="cursor+''" v-model="selectedBag.led")
             b-input-group-append
-              b-btn(variant="primary" @click="$testLed(selectedBag.led?selectedBag.led:cursor)") Тест
+              b-btn(variant="primary" @click="testLed(selectedBag.led?selectedBag.led:cursor)") Тест
         b-form-group(horizontal label="INDEX")
           b-form-input(v-model="selectedBag.ppi")
         b-form-group(horizontal)

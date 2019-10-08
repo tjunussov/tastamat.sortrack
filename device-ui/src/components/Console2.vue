@@ -85,7 +85,7 @@ export default {
   },
   watch:{
     cursor(val){
-      if(val) {
+      if(typeof val !== 'undefined') {
         this.tabIndex = Math.floor(val/24);
         console.log('tab',val,this.tabIndex);
       }

@@ -46,7 +46,7 @@ export const $device = axios.create({
 //     preload: true
 // });
 
-const audioFolder = '/static/audio/supermariobros/'
+const audioFolder = 'static/audio/supermariobros/'
 
 var search = new Audio();
     search.src = audioFolder+"search.mp3"; // assign the audio file to its src
@@ -242,7 +242,7 @@ export const $smartsort = {
       "plombaNum": "plomba",
       "comment": "Comment"
     }).then((resp)=>{
-      if(resp.data.error) return Promise.reject(resp.data.error);
+      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
       return resp;
     })
     // return $http.get(`sm_home.closeBag`)
