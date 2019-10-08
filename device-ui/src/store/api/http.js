@@ -275,7 +275,7 @@ export const $smartsort = {
 
 
 
-var audioURL = '/static/audio/supermariobros/';
+var audioURL = 'static/audio/supermariobros/';
 
 export const $sounds = {
   search: new Audio(audioURL+"search.mp3"), // assign the audio file to its src
