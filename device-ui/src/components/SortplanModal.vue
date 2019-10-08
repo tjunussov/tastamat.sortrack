@@ -1,24 +1,24 @@
 <template lang="pug">
-b-modal#msortplan(ref="msortplan" title="Сортплан" size="lg" hide-footer)
+b-modal#msortplan(ref="msortplan" visible title="Сортплан" size="lg" hide-footer)
     template(slot="modal-header") 
       b-form-group.mx-4.mt-3
         b-input-group(size="lg")
           b-input-group-text(slot="prepend") 
-            template(v-if="sortplan") {{Object.keys(sortplan.plan).length}}шт
+            template(v-if="sortplan") {{sortplan.length}}шт
           b-form-input#inputPlan(:state="error==null?null:false" v-model="depcodeManual" @keyup.enter.native="fetch(depcode)" :placeholder="'Код продразделения ' + depcodeDefault")
           b-input-group-append
-            b-btn(variant="primary" @click="$fillBags({plan:sortplan.plan})") Загрузить
+            b-btn(variant="primary" @click="$fillBags({plan:sortplan})") Загрузить
             b-btn( @click="print()") Печать
           b-form-invalid-feedback#inputPlan {{error?error.message:null}}
 
     #printSection.mx-4.mb-4(v-if="sortplan")
       h4 Сортплан {{depcode}}
       b-card-group.sortplan(deck)
-        b-card(align="center" no-body v-for="(e) in Object.entries(sortplan.plan)" :key="e[0]")
+        b-card(align="center" no-body v-for="e in sortplan" :key="e.techindex")
           template(slot="header") 
-            span(v-if="e[0] != e[1]") {{e[1]}} 
-            b {{e[0]}}
-          .barcode {{encode('p'+e[0])}}
+            //- span(v-if="e[0] != e[1]") {{e[1]}} 
+            b {{e.techindex}} {{e.nameRu}}
+          .barcode {{encode('p'+e.techindex)}}
 
       h4 Пользователи
       b-card-group.users(deck v-if="config && config.users")
@@ -47,7 +47,6 @@ export default {
     }
   },
   created(){
-
     this.fetch(this.depcodeDefault);
   },
   data () {

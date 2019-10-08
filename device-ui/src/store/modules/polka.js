@@ -8,8 +8,8 @@ const state = {
   closeResponse:null,
   error:null,
   depcode:null||localStorage.getItem('depcode'),
-  autoDepcode:'200088',
-  user:'SCNEVGENIA'||localStorage.getItem('user'),
+  autoDepcode:'055990',
+  user:'test.alm21.rpo1'||localStorage.getItem('user'),
   demo:false||(localStorage.getItem('demo') === 'true'),
   ledOn: false||(localStorage.getItem('ledOn') === 'true'),
   selected:null,
@@ -24,7 +24,7 @@ const getters = {
   getConfig : (state,getters) => getters.config,
   getSortplan : (state) => state.sortplan,
   getBarcode : (state) => state.barcode,
-  getDepcode : (state) => state.depcode,
+  getDepcode : (state) => state.depcode ? state.depcode : state.autoDepcode,
   getAutoDepcode : (state) => state.depcode ? state.depcode : state.autoDepcode,  
   getLedOn : (state) => state.ledOn,
   getDemo : (state) => state.demo,
@@ -38,7 +38,7 @@ const getters = {
     if(state.selected) return getters.getBags[getters.cursor]
   },
   cursor : (state,getters) => {
-    if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.no})
+    if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.ppi})
   },
   bagMetaData : (state,getters) => {
     if(getters.getSelectedBag){
@@ -64,7 +64,7 @@ const actions = {
       console.log('initBags',getters.getConfig.size);
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {no:'#'+i,led:null,index:'#'+i,wpi:{}}
+        return {ppi:'#'+i,led:null,ppn:'#'+i,wpi:{}}
       });
   
     // TODO Rewrite to Promise Chain
@@ -88,14 +88,14 @@ const actions = {
     state.error = null;
     state.selected = null;
   },
-  $selectBag({ commit, dispatch, state, getters },{bagno}) {
+  $selectBag({ commit, dispatch, state, getters },{ppi}) {
     return new Promise((resolve,reject)=>{
       try{
-        findBag(getters.getBags,bagno);
-        state.selected = bagno
-        // state.selected.bag = this.bags[bagno];
+        findBag(getters.getBags,ppi);
+        state.selected = ppi
+        // state.selected.bag = this.bags[ppi];
         state.status = 'selectbag';
-        resolve(bagno)
+        resolve(ppi)
       } catch(e){
         state.error = e
         state.status = 'error';
@@ -117,25 +117,34 @@ const actions = {
       state.barcode = barcode
       state.status = 'search';
 
+
+      // console.log('$smartsort.putToBag',state.barcode,state.depcode,state.user);
+
       //$http.get(this.barcode).then((resp)=>{
-      return $smartsort.putToBag(state.barcode,state.depcode,state.user)
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,state.user)
       .then((resp)=>{
 
-        // checking if bag is found in plan
-        findBag(getters.getBags,resp.data.next.bagNo);
+        // console.log('putToBag',resp);
 
-        state.response = resp.data
+        resp = resp.data 
+
+        console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
+
+        // checking if bag is found in plan
+        findBag(getters.getBags,resp.parentPostIndex);
+
+        state.response = resp
         state.status = 'push';
-        state.selected = resp.data.next.bagNo
-        state.autoDepcode = resp.data.p_depcode // проставляем автоматический индекс пользователя
+        state.selected = resp.parentPostIndex
+        state.autoDepcode = resp.postIndex // проставляем автоматический индекс пользователя
         // ложим посылку в корзину
 
 
-        console.log('ZputToBag barcode',state.barcode,state.selected);
+        console.log('2 ZputToBag barcode',state.barcode,state.selected);
 
         //////////////// ARRAY MANAGMENT
 
-            var val = {}; val[barcode] = resp.data;
+            var val = {}; val[barcode] = resp;
 
             var pos = getters.cursor;
 
@@ -148,16 +157,18 @@ const actions = {
 
             Vue.set(getters.getBags[pos],'wpi',val)
 
+            dispatch('settingsUpdate',getters.getSettings[0]);
+
         /////////////
 
 
-        return resp.data;
+        return resp;
 
       }).catch((error)=>{
         state.status = 'error';
         state.error = error;
 
-        console.log('errorzzz');
+        console.log('errorzzz',error);
 
         throw error;
         // this.status = 'notfound';
@@ -177,33 +188,20 @@ const actions = {
 
         
   },
-  $closeBag ({ commit, dispatch, state, getters },{bagno,weight,sendmeth,depcode}) {
+  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth}) {
 
-    console.log('closeBag',bagno,weight,sendmeth);
+    console.log('closeBag',ppi,wpi,weight,sendmeth);
 
-    return $smartsort.closeBag(bagno,weight,sendmeth,state.depcode,state.user).then((resp)=>{
+
+    return $smartsort.closeBag(ppi,wpi,String(weight),String(sendmeth),state.depcode,state.user).then((resp)=>{
 
         state.closeResponse = resp.data
-
-        // PARSING XML
-        try {
-        state.closeResponse.cli_info = xmlToJson(
-          new DOMParser().parseFromString(
-            state.closeResponse.cli_info, 'text/xml')
-        ).CLIINFO;
-
-
-        state.closeResponse.cli_info.TO_DEP_NAME = depcode;
-
-      } catch(e){
-        console.error('xml',e);
-      }
 
         // Печатаем на принтере
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
         Vue.set(getters.getSelectedBag,'wpi',{})
-        // state.selected = bagno
+        // state.selected = ppi
         state.status = 'closebag';
 
         return resp.data
@@ -223,8 +221,8 @@ const actions = {
       });*/
       var bags = new Array();
       
-      Object.entries(plan).forEach((item,i)=>{
-        return bags.push({no:item[0],led:null,index:item[1],wpi:{}});
+      plan.forEach((item,i)=>{
+        return bags.push({ppi:item.techindex,led:null,ppn:item.nameRu,wpi:{}});
       })
 
       getters.getConfig.bags = bags;
@@ -234,76 +232,46 @@ const actions = {
   },
   $fetchSortplan({ commit, dispatch, state, getters },{depcode}){
     return $smartsort.sortplan(depcode).then((resp)=>{
-      state.sortplan = resp.data
+
+      state.sortplan = resp.data.parentPostIndexes
+      console.log("sortplan",state.sortplan)
       return resp;
     })
   },
-  $remapSelectedBag({ commit, dispatch, state, getters },{bagno,led}){
-    // findBag(getters.getBags,bagno);// just for check
-    console.log('remapSelectedBag',getters.getSelectedBag,led)
-    getters.getSelectedBag.led = led
-    getters.getSelectedBag.no = bagno
-    dispatch('$saveConfig');
-  },
+  // $remapSelectedBag({ commit, dispatch, state, getters },{ppi,led}){
+  //   // findBag(getters.getBags,ppi);// just for check
+  //   console.log('remapSelectedBag',getters.getSelectedBag,led)
+  //   getters.getSelectedBag.led = led
+  //   getters.getSelectedBag.ppi = ppi
+  //   dispatch('$saveConfig');
+  // },
 
 
 }
 
 // mutations
 const mutations = {
-  ['PUSH_TO_BAG'] (state,bagno,barcode,data) {
+  ['PUSH_TO_BAG'] (state,ppi,barcode,data) {
 
   },
-  ['CLEAR_BAG'] (state,bagno) {
-    Vue.set(state.bags,bagno,{})
+  ['CLEAR_BAG'] (state,ppi) {
+    Vue.set(state.bags,ppi,{})
   }
 }
 
-function findBag(bags,no){
-  var indx = bags.findIndex((key)=>{return no == key.no});
-  if(indx < 0) throw `Отправление ${no} не привязано к плану `;
+function findBag(bags,ppi){
+  var indx = bags.findIndex((key)=>{return ppi == key.ppi});
+  if(indx < 0) throw `Индекс назначения ${ppi} не привязан ни к одной корзине!`;
   return indx
 }
 
 function renameEmptyKey(obj,newKey){
-  var indx = obj.findIndex((e)=>{return e.no.startsWith('#')})
+  var indx = obj.findIndex((e)=>{return e.ppi.startsWith('#')})
   if(indx > -1) {
-    obj[indx].no = newKey
+    obj[indx].ppi = newKey
   }
   return indx
 }
-
-function xmlToJson(xml) {
-  var obj = {};
-
-  if (xml.nodeType == 3) { // text
-    obj = xml.nodeValue;
-  }
-
-  // do children
-  // If just one text node inside
-  if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
-    obj = xml.childNodes[0].nodeValue;
-  }
-  else if (xml.hasChildNodes()) {
-    for(var i = 0; i < xml.childNodes.length; i++) {
-      var item = xml.childNodes.item(i);
-      var nodeName = item.nodeName;
-      if (typeof(obj[nodeName]) == "undefined") {
-        obj[nodeName] = xmlToJson(item);
-      } else {
-        if (typeof(obj[nodeName].push) == "undefined") {
-          var old = obj[nodeName];
-          obj[nodeName] = [];
-          obj[nodeName].push(old);
-        }
-        obj[nodeName].push(xmlToJson(item));
-      }
-    }
-  }
-  return obj;
-}
-
 
   // return {
 

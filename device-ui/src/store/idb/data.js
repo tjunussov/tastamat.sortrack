@@ -19,7 +19,7 @@ export default {
         '822133':'L101',
       },
       users:[
-        'SCNEVGENIYA',
+        'test.alm21.rpo1',
         'SCASTAGASIL',
         'SCASTALZHANOVA',
         'SCASTGALINA',

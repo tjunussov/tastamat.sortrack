@@ -1,22 +1,25 @@
 <template lang="pug">
 b-row.flex-xl-nowrap2
   .pl-md-5.pt-2.mt-4.bd-content.col-12
-    
-    b-card-group.polkas(deck)
-      b-card(no-body align="center"
-        v-for="(bag,i) in bags"
-        :key="i" 
-        :class="{'text-muted':!Object.keys(bag)[0],'outlined':bind.unmappedIndx == i}"
-        :bg-variant="selected == bag.no?'success':''"
-        :text-variant="selected == bag.no?'white':''" 
-        @click="selectBag(bag.no)" )
-        b-card-header {{(bag.no)}}
-          small.text-muted.indx(v-if="bag.no != bag.index") 
-            //- {{(bag.index)}} 
-            span.led(:class="{'remapped':bag.led!=null}") {{bag.led?bag.led:i}}
-          b-btn.close(v-if="Object.keys(bag.wpi).length") &times;
-        b-card-body
-          h4.card-title {{Object.keys(bag.wpi).length}}
+
+    b-tabs.nav-justified.wizard(pills bottom v-model="tabIndex")
+      b-tab(v-for="(pp,p) in bagsPages" :key="p")
+        template(slot="title") {{p+1}} [{{p*24}}-{{(p+1)*24}}]
+        b-card-group.polkas.pb-4(deck)
+          b-card(no-body align="center"
+            v-for="(b,i) in filteredBags(p)"
+            :key="i" 
+            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.unmappedIndx == i}"
+            :bg-variant="selected == b.ppi?'success':''"
+            :text-variant="selected == b.ppi?'white':''" 
+            @click="selectBag(b.ppi)" )
+            b-card-header {{(b.ppi)}}
+              small.text-muted.indx(v-if="b.ppi != b.ppn") 
+                //- {{(b.index)}} 
+                span.led(:class="{'remapped':b.led!=null}") {{b.led?b.led:i}}
+              b-btn.close(v-if="Object.keys(b.wpi).length") &times;
+            b-card-body
+              h4.card-title {{Object.keys(b.wpi).length}}
 
     
           
@@ -31,30 +34,28 @@ b-row.flex-xl-nowrap2
     b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
       b-card-header ШПИ 
         b {{barcode}} 
-        span(v-if="response") конечный индекс {{response.toIndex}}
+        span(v-if="response") конечный индекс {{response.postIndex}}
         b-btn.close(@click.stop="clearAll")  &times;
         .debug.float-right.mr-3
-          b-link(v-b-toggle="'collapse1_inner'") Debug 2.2 | 
-          b-link(v-b-modal="'msortplan'") Сортплан | 
+          b-link(v-b-toggle="'collapse1_inner'") Debug 3.2 | 
+          b-link(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Сортплан | 
           b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
         p(v-if="error") {{error}}
         template(v-if="response")
-          h4.card-title Мешок {{response.next.bagNo}} 
-            span(v-if="response.next.bagIndex != response.next.bagNo") - Опорный Индекс {{response.next.bagIndex}}
-          | Кол-во : 
-          b {{response.addDetailPREGMAIL.mlcntq}} 
-          | Вес: 
-          b {{response.addDetailPREGMAIL.wghtv}}
-          span.text-muted.ml-5 {{response.next.bag.created}}  - 
-          | {{response.next.bag.user}} 
-          | ( {{response.p_depcode}} )       
+          h4.card-title Мешок {{response.parentPostIndex}} 
+          | АДРЕС : 
+          b {{response.postIndexTitle}} {{response.postIndex}}
+          span.text-muted.ml-5 
+          | {{response.mailInfo.toFullName}} 
+          | ( {{response.postIndexTitle}} {{response.postIndex}} )       
+          
           //- blockquote.blockquote-footer {{response}}
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
-  SortplanModal
+  SortplanModal(v-if="isSortplanModalOpen" @close="isSortplanModalOpen = false")
         
 </template>
 
@@ -83,6 +84,12 @@ export default {
     $leds.$ledoff();
   },
   watch:{
+    cursor(val){
+      if(val) {
+        this.tabIndex = Math.floor(val/24);
+        console.log('tab',val,this.tabIndex);
+      }
+    },
     status(val){
       if(val){
 
@@ -105,8 +112,10 @@ export default {
   },
   data () {
     return {
+      tabIndex:0,
       tmResponse:null,
       isCloseModalOpen:false,
+      isSortplanModalOpen:false,
       kazakhstan:false,
       bind:{
         started:false,
@@ -130,6 +139,12 @@ export default {
         selected: 'getSelected',
         selectedBag:'getSelectedBag'
     }),
+    filteredBags() {
+      return (page)=>{ return this.bags.slice(page*24, (page+1)*24); }
+    },
+    bagsPages(){
+      return new Array(Math.ceil(this.bags.length/24));
+    }
   },
   mixins:[bindMixin],
   created(){
@@ -151,23 +166,23 @@ export default {
       window.clearTimeout(this.tmResponse);
       this.tmResponse = window.setTimeout(this.$clear,tm);
     },
-    selectBag(bagno){
-      console.log('selectBag',bagno)
+    selectBag(ppi){
+      console.log('selectBag',ppi)
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
       } else if(this.bind.started){
-        console.log('Binding',bagno);
-        this.wizardNext(bagno);
-        // this.$selectBag({bagno}).then(()=>{
+        console.log('Binding',ppi);
+        this.wizardNext(ppi);
+        // this.$selectBag({ppi}).then(()=>{
           
         // });
       } else {
         window.clearTimeout(this.tmResponse);
         this.$clear();
-        this.$selectBag({bagno}).then(()=>{
+        this.$selectBag({ppi}).then(()=>{
           this.isCloseModalOpen = true;  
         }).catch((error)=>{
-          console.error('selectBag error',error);
+          console.log('selectBag error',error);
           this.timeout(5000);  
         });
         
@@ -175,13 +190,13 @@ export default {
     },
     putToBag(barcode){
       barcode = barcode.toUpperCase().trim()
-      console.log('putToBag barcode',barcode);
+      console.log('started putToBag barcode',barcode);
 
       this.$putToBag({barcode:barcode}).then((resp)=>{
         this.timeout(10000);
-        console.log('Положили в корзину',resp);
+        console.log('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
-        console.error('putToBag error',error);
+        console.log('putToBag error',error);
         this.timeout(5000);
       });
 

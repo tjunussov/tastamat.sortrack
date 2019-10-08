@@ -38,7 +38,7 @@ doctype html
           b-form-input.mr-sm-2(
             size="sm" 
             v-on:focus.native="$event.target.value = '';"
-            v-on:dblclick.native="enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ'); $event.target.value = ''; $event.target.blur();" 
+            v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
             @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
             :placeholder="barcode?barcode:'Поис поссылок  ...'") 
         //- p {{barcode}}
@@ -72,13 +72,24 @@ doctype html
   b-modal#depcode(title="Код департамента" ok-title="Изменить" :hide-footer="true")
     b-form-input(v-model="depcode" palceholder="Depcode")
 
-  b-modal#user(title="CPILS Пользователь" ok-title="Войти" :hide-footer="true")
-    b-form-input(v-model="user" palceholder="CPILS Login")
+  b-modal#user()
+    template(slot="modal-header")
+      h3 Авторизация
+    b-form-input(v-model="user")
+    b-row
+      b-col 
+       .barcode {{encode('u'+user)}}
+    template(slot="modal-footer")
+      p {{errorLogin}}
+      b-btn(variant="primary" @click="auth(user)") Login
+
 
 </template>
 
 <script>
 
+import Encoder from 'code-128-encoder'
+var code128= new Encoder()
 import { mapGetters, mapActions } from 'vuex'
 import Keyboard from '@/components/misc/Keyboard'
 import {$smartsort,$http,deviceLEDMixin} from '@/store/api/http'
@@ -89,6 +100,8 @@ export default {
   name: 'app',
   data(){
     return {
+      demoBarcodes:[],
+      errorLogin:null,
       ui:{
         search:null,
         showModalLogin:false
@@ -110,7 +123,6 @@ export default {
     this.toogleDemo(this.$store.state.polka.demo);
     this.toogleLed(this.$store.state.polka.ledOn);
 
-    
     // Demo
     /*window.setInterval(()=>{
       this.enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');
@@ -127,7 +139,6 @@ export default {
     ...mapGetters({
         settings: 'getSettingsSelected',
         setting: 'getSettings',
-        depcode: 'getDepcode',
         autodepcode: 'getAutoDepcode',        
         ledOn: 'getLedOn',
         demo: 'getDemo',
@@ -184,6 +195,20 @@ export default {
       'settingsUpdate',
       'settingsSelect',
     ]),
+    encode(val){
+      return code128.encode(val)
+    },
+    enterBarcodeRandom(){
+      if(this.demoBarcodes.length == 0){
+        $smartsort.fetchDemoRPO(this.autodepcode).then((resp)=>{
+             this.demoBarcodes = resp.data.mails;
+             console.log('fetchRPO',this.demoBarcodes);
+             this.enterBarcodeManualy(this.demoBarcodes.shift());
+        })
+      } else {
+        this.enterBarcodeManualy(this.demoBarcodes.shift());
+      }
+    },
     barcodeSet(val){
       // console.log('setting barcode',val)
       this.$store.state.polka.barcode = val
@@ -208,9 +233,10 @@ export default {
          console.log('auth',user);
          this.settings.user = user
          this.$store.state.polka.user = user
-         this.settingsUpdate(this.settings)
-      }).catch(()=>{
-         this.$error();
+         this.settingsUpdate(this.settings);
+         this.$root.$emit('bv::hide::modal', 'user', '#btnLogin')
+      }).catch((err)=>{
+         this.errorLogin = err;
       });
     },
     toggleFullScreen() {
@@ -276,7 +302,11 @@ body
   padding-top 4rem
   margin 0
 
-// Test  
+// Test 
+
+.barcode
+  font-family 'code128' !important
+  font-size 44px  !important
 
 .modal-header 
   display block !important
