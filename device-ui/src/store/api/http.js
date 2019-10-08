@@ -4,7 +4,7 @@ import Vue from 'vue'
 
 /*************************************/
 
-export var baseURL = "http://smartsort.kazpost.kz/api/v1/"
+export var baseURL = "https://pls-test.post.kz/api/smart-shelves/"
 
 if(localStorage.getItem("apiUrl") !== null){
   baseURL = localStorage.getItem("apiUrl");
@@ -208,27 +208,39 @@ export const deviceLEDMixin = {
 };
 
 export const $smartsort = {
-  auth(user){
-    return $http.get('auth?p_user='+user)
+  auth(user,depcode){
+    return $http.get('authorize',{
+      params:{login:user,techindex:depcode}
+    })
+  },
+  fetchDemoRPO(depcode){
+    return $http.get('getRPO',{params:{techindex:depcode}})
   },
   putToBag(barcode,depcode,user){
-    return $http.get('sm_home.putToBag',{
-      params:{p_wpi:barcode,p_depcode:depcode,p_cpilslogin:user }
+    return $http.get('findBagIndex',{
+      params:{barcode:barcode,techindex:depcode,login:user }
     }).then((resp)=>{
-      if(resp.data.error) return Promise.reject(resp.data.error);
+      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
       return resp;
     }).catch((error)=>{
-      if(error.response && error.response.data.error) 
-        throw error.response.data.error
-      else if(error.message == 'Network Error')
+      if(error.message == 'Network Error')
         return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
       else throw error
     })
     // return $http.get('sm_home.putToBag')
   },
-  closeBag(bag,weight,sendmeth,depcode,user){
-    return $http.get('sm_home.closeBag',{
-      params:{p_bag:bag,p_weight:weight,p_sendmeth:sendmeth,p_depcode:depcode,p_cpilslogin:user }
+  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user){
+    return $http.post('formBag',{
+      "login": user,
+      "techindex": depcode,
+      "parentPostIndex": bag,
+      "barcodeList": barcodesArray,
+      "totalWeight": weight,
+      "bagType": "3",
+      "taraType": "1",
+      "sendMethod": sendmeth,
+      "plombaNum": "plomba",
+      "comment": "Comment"
     }).then((resp)=>{
       if(resp.data.error) return Promise.reject(resp.data.error);
       return resp;
@@ -236,8 +248,8 @@ export const $smartsort = {
     // return $http.get(`sm_home.closeBag`)
   },
   sortplan(depcode){
-    return $http.get('sm_home.sortplan',{
-      params:{p_depcode:depcode}
+    return $http.get('listBagIndexes',{
+      params:{techindex:depcode}
     });
   },
  /* findPlan(){
@@ -319,6 +331,9 @@ export const $leds = {
     this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
   push(led){
+    this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
+  },
+  test(led){
     this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
   },
   pull(led){

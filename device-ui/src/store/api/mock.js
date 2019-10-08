@@ -5,174 +5,377 @@ import Vue from 'vue'
 
 
 var plan = {
-    "M51":"800319",
-    "M53":"800613",
-    "M54":"850144",
-    "M55":"800808",
-    "M58":"160097",
-    "M63":"801011",
-    "M68":"801331",
-    "M70":"801416",
-    "M71":"801113",
-    "M72":"800719",
-    "M73":"770054",
-    "M74":"220081",
-    "M75":"801215",
-    "M76":"120515",
-    "M77":"800218",
-    "M84":"801519",
-    "M87":"800416",
-    "M88":"040299",
-    "M89":"041599",
-    "M90":"041099",
-    "M91":"041199",
-    "M92":"041799",
-    "M93":"040599",
-    // "M94":"040199","M95":"040399","M96":"041299","M97":"040899","M98":"041399","M99":"041899","M100":"041499","M102":"040999","M103":"041699","M105":"040699","M107":"040799","M162":"040628",
-    "M300":"010000",
-  };
+    "result": "success",
+    "techindex": "055990",
+    "parentPostIndexes": [
+        {
+            "nameRu": "УОДП-8 г.Алматы",
+            "techindex": "800508",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-35",
+            "techindex": "050035",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-30",
+            "techindex": "050030",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УОиДП №6 г.Алматы",
+            "techindex": "800506",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-63",
+            "techindex": "050063",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-18",
+            "techindex": "050018",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-31",
+            "techindex": "050031",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-32",
+            "techindex": "050032",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-56",
+            "techindex": "050056",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УДОП-3 г.Алматы",
+            "techindex": "800503",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-7",
+            "techindex": "050007",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-23",
+            "techindex": "050023",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-47",
+            "techindex": "050047",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УОДП-9 г.Алматы",
+            "techindex": "800509",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-40",
+            "techindex": "050040",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-19",
+            "techindex": "050019",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-46",
+            "techindex": "050046",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-5",
+            "techindex": "050005",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-8",
+            "techindex": "050008",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-17",
+            "techindex": "050017",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-52",
+            "techindex": "050052",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УДОП 2 г.Алматы",
+            "techindex": "800502",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УОиДП-5 г.Алматы",
+            "techindex": "800505",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-28",
+            "techindex": "050028",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-53",
+            "techindex": "050053",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Центр по выдаче почтовых отправлений г.Алматы",
+            "techindex": "800510",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-27",
+            "techindex": "050027",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-64",
+            "techindex": "050064",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-71",
+            "techindex": "050071",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-36",
+            "techindex": "050036",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-65",
+            "techindex": "050065",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-67",
+            "techindex": "050067",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-69",
+            "techindex": "050069",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УОиДП-7 г.Алматы",
+            "techindex": "800507",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-58",
+            "techindex": "050058",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-26",
+            "techindex": "050026",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-70",
+            "techindex": "050070",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УДОП-4 г.Алматы",
+            "techindex": "800504",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-9",
+            "techindex": "050009",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-6",
+            "techindex": "050006",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-38",
+            "techindex": "050038",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-62",
+            "techindex": "050062",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "УД и ПП Алматински почтамт",
+            "techindex": "800519",
+            "isOfficial": false
+        },
+        {
+            "nameRu": "Алматы-44",
+            "techindex": "050044",
+            "isOfficial": false
+        }
+    ]
+};
+
+var barcodes = {
+    "result": "success",
+    "mails": [
+        "RN057495927KZ",
+        "RN056452942KZ",
+        "VS051508534KZ",
+        "VS051510422KZ",
+        "VS051524435KZ",
+        "RN056453157KZ",
+        "RN056454461KZ",
+        "RN056448982KZ",
+        "RN056826874KZ",
+        "RN057495900KZ",
+        "RN052056946KZ",
+        "RN056827605KZ",
+        "RN057497137KZ",
+        "RN056424456KZ",
+        "BP050108725KZ",
+        "RN053293249KZ",
+        "BP050108901KZ",
+        "RN057497168KZ",
+        "BP050108760KZ",
+        "RN057478314KZ",
+        "RN057478623KZ",
+        "RN057497239KZ",
+        "RN057478376KZ",
+        "RN056453072KZ",
+        "BP050110410KZ",
+        "BP050110162KZ",
+        "RN057495799KZ",
+        "RR131616464CN",
+        "RN056423963KZ",
+        "RN051966353KZ",
+        "RN052055702KZ",
+        "RN056105188KZ",
+        "RN056815655KZ",
+        "RN056815647KZ",
+        "RN052054605KZ",
+        "RN056817166KZ",
+        "RN056817121KZ",
+        "RN052054741KZ",
+        "BP050023715KZ",
+        "CO053968175KZ",
+        "RN053295647KZ",
+        "RN052055693KZ",
+        "RN052055716KZ",
+        "RN052055747KZ",
+        "RN052055755KZ",
+        "RN052055764KZ",
+        "RN052055778KZ",
+        "RN053297166KZ",
+        "RN052055818KZ",
+        "RN052055821KZ",
+        "BP050107265KZ",
+        "BP050107248KZ",
+        "BP050104683KZ",
+        "RN051966375KZ",
+        "RN051966384KZ",
+        "RN051966415KZ",
+        "RN051966424KZ",
+        "RN051966438KZ",
+        "RN056816262KZ",
+        "BP050092804KZ",
+        "BP050092818KZ",
+        "RN051966557KZ",
+        "RN053295678KZ",
+        "RN053295664KZ",
+        "RN057475556KZ",
+        "RN057475542KZ",
+        "RN057475573KZ",
+        "RN057475560KZ",
+        "RN056456825KZ",
+        "RN053416552KZ",
+        "RN056456839KZ",
+        "RN053295602KZ",
+        "RN056805874KZ",
+        "RN055763532KZ",
+        "RN056456900KZ",
+        "RN051966565KZ",
+        "RN051966574KZ",
+        "RC053358877KZ",
+        "RN056816395KZ",
+        "RN056805959KZ",
+        "RN053295695KZ",
+        "RN053295545KZ",
+        "RN056457026KZ",
+        "RN056457012KZ",
+        "RN056456961KZ",
+        "RN056457088KZ",
+        "RN056457074KZ",
+        "RN053416455KZ",
+        "BP050092835KZ",
+        "BP050092821KZ",
+        "BP050096307KZ",
+        "BP050096315KZ",
+        "BP050096324KZ",
+        "BP050096338KZ",
+        "RN052055035KZ",
+        "RN056457216KZ",
+        "RN056457202KZ",
+        "RN056457247KZ",
+        "RN056457233KZ",
+        "RN056457295KZ"
+    ]
+};
 
   
 //INFO! dont remove delay respnose, it doesnt workk if removed
 export const mock = new MockAdapter($http,{delayResponse:50}) 
 // export const mock = new MockAdapter($http)
 
-/*.onGet('/RB508027382SG').reply(200,
-  {"trackid":"RB508027382SG","timestamp":"21:56:29 06.04.2018","direction":"IMPORT","status_code":"D","status":"Вручено","x_status_code":"S_ISS","x_status":"Вручено","sender":{"country":"Сингапур","name":"1","address":"1","x_postindex":null},"origin":{"date":"01.04.2018","x_dep_id":"18907","city":"Алматы","dep_name":"Участок по обработке международной почты г. Алматы","postindex":"220096"},"receiver":{"name":"Junnussov T","address":"Astana Saryarka  15","country":"Казахстан","x_postindex":null},"last":{"date":"05.04.2018","x_dep_id":"19465","city":"","dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР","address":"Астана область, г. Астана, пр. Сарыарка, д.15","postindex":"900109"},"delivery":{"date":"05.04.2018","time":"15:41","period_fact":"4","x_period":null,"x_dep_id":"19465","city":"","dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР","address":"Астана область, г. Астана, пр. Сарыарка, д.15","gps":["",""],"phone":"","postindex":"900104"},"storage_period":"","package_type":"Мелкий пакет","category":"Заказное","delivery_method":"Авиа","dispute":"","weight":"менее 1"}
-)*/
-.onGet('/auth').reply((cfg)=>{
-    var resp = JSON.parse(cfg.data)
-    return [200,resp];
-})
-.onGet('/putToBag').reply(200,{
-    "user":"ASEL"
-  }
-)
-.onAny('/closeBag').reply((cfg)=>{
-    var resp = JSON.parse(cfg.data)
-    console.log('mock closeBag',resp);
-    if(resp.count > 0)
-      return [200,resp];
-    else
-      return [400,{error:"Мешок пустой!"}]
 
-})
-.onGet('/sortplan_json').reply(200,{
-    "user":"ASEL"
-  }
+.onGet('authorize').reply(200,{
+    "result": "success",
+    "name": "Мырзанова Гульмира"}
 )
-.onGet('/RR000000001KZ').reply(200,{
-    "trackid":"RR000000001KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Айгерим","address":"г.Тараз ул.Лермнотово 50"},
-    "next":{"x_dep_id":"19465","dep_name":"Сарыарка ГОПС 1","address":"Астана область, г. Астана, пр. Сарыарка, д.15","postindex":"010021"},
-  }
-)
-.onGet('/RR000000002KZ').reply(200,{
-    "trackid":"RR000000002KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Айгерим","address":"г.Тараз ул.Лермнотово 50"},
-    "next":{"x_dep_id":"19465","dep_name":"Сарыарка ГОПС 2","address":"Астана область, г. Астана, пр. Акыртас, д.15","postindex":"010022"},
-  }
-).onGet('/RR000000003KZ').reply(200,{
-    "trackid":"RR000000003KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Айгерим","address":"г.Тараз ул.Лермнотово 50"},
-    "next":{"x_dep_id":"19465","dep_name":"Сарыарка ГОПС 3","address":"Астана область, г. Астана, пр. Сейфулина, д.15","postindex":"010023"},
-  }
-).onGet('/RR000000004KZ').reply(200,{
-    "trackid":"RR000000004KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Азамат","address":"г.Караганда ул.Петрова 8"},
-    "next":{"x_dep_id":"19465","dep_name":"Есильский ГОПС 1","address":"Астана область, г. Астана, пр. Есиль, д.85","postindex":"010024"},
-  }
-).onGet('/RR000000005KZ').reply(200,{
-    "trackid":"RR000000005KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Азамат","address":"г.Караганда ул.Петрова 8"},
-    "next":{"x_dep_id":"19465","dep_name":"Есильский ГОПС 2","address":"Астана область, г. Астана, пр. Есиль, д.9","postindex":"010025"},
-  }
-).onGet('/RR000000006KZ').reply(200,{
-    "trackid":"RR000000006KZ",
-    "status":"Впути",
-    "sender":{"country":"Казахстан","name":"ИП Азамат","address":"г.Караганда ул.Петрова 8"},
-    "next":{"x_dep_id":"19465","dep_name":"Алматинский ГОПС 1","address":"Астана область, г. Астана, пр. Момышулы, д.1","postindex":"010026"},
-  }
-)
-
-.onAny('/api/v1/AP005470227KZ').reply(200,{
-trackid: "AP005470227KZ",
-timestamp: "11:45:47 05.08.2018",
-version: "v1",
-status_code: "S_ISSSC",
-reg_date: "22.06.2018",
-sender: "ШЕЙНЬМАН РУСЛАН АДАМОВИЧ",
-sender_address: "Акмолинская Щучинск Кокчетавская 28",
-recipient_name: "ИП ЕСБАЕВ Д.Д.",
-recipient_address: "Алматинская область пос. Заречный ул. Акбулак д. 21",
-recepient_name_real: "Ганн.Е.А",
-recipient_postcode: "040003",
-dlv_date: "03.08.2018",
-dlv_dep_name: "ГОПС-6 г.Щучинск",
-dep_name: "Талдыкорган - 3",
-dlv_postindex: "021706",
-post_type: "4",
-dispute: "",
-x_status: "Вручено из СЦ",
-x_post_type_name: "Посылка",
-x_direction: "LOCAL",
-x_num_place: "",
-x_num_stlg: "",
-x_extra_info: "6,725"
-})
-
-.onAny('sm_home.sortplan').reply(200,{
-  "depcode":"200088",
-  "ver":1,
-  "date":"21.07.2018 18:26",
-  "plan": plan
-})
-.onAny('sm_home.putToBag').reply(async (cfg)=>{
-
+.onGet('getRPO').reply(200,barcodes)
+.onAny('listBagIndexes').reply(200,plan)
+.onAny('findBagIndex').reply(async (cfg)=>{
 
   var req = cfg.params;
-  console.log(req);
-  var resp = {
-    p_wpi: req.p_wpi,
-    p_cpilslogin: "SCNEVGENIA",
-    p_depcode: "220000",
-    toIndex: "130099",
-    next: {
-      bag: {
-        bid: "913038989",
-        bdepid: "18907",
-        barcode: "B201807180001912",
-        created: "18.07.18 11:09:14",
-        user: "SCNEVGENIA"
-      },
-      bagIndex: "800319",
-      bagNo: "M51"
-    },
-    addDetailPREGMAIL: {
-    mlcntq: "4",
-    wghtv: "0"
-    }
-  };
-
-  var bagNoFromWpi = 'M'+req.p_wpi.substr(2,2);
-  var bagIndex = Object.keys(plan).findIndex((key)=>{return key == bagNoFromWpi});
-  if(bagIndex < 0) {
-    bagIndex = Math.floor(Math.random()*12)
-    console.log('random',bagIndex);
-  }
-
   
-  var bag = Object.entries(plan)[bagIndex];
+  var p = Math.floor(plan.parentPostIndexes.length * Math.random())
 
-   resp.next.bagNo = bag[0];
-   resp.next.bagIndex = bag[1];
+  console.debug('findBagIndex',req, p);
 
-  if((Math.random()*100) > 95) resp.error = "Мешок уже закрыт";
+  var resp = 
+    {
+        "result": "success",
+        "parentPostIndex": plan.parentPostIndexes[p].techindex,
+        "postIndex": "050010",
+        "postIndexTitle": "Алматы-10",
+        "mailInfo": {
+            "mailCategory": "1",
+            "mailId": req.barcode,
+            "toFullName": "КАЗ НПУ ИМ АБАЯ ",
+            "toStreet": "ПР ДОСТЫК 13 Г АЛМАТЫ ",
+            "mailStatus": "Registered",
+            "mailType2": "P101",
+            "storagePaymentPaid": false,
+            "returnPaymentPaid": false,
+            "selfPaymentPaid": false,
+            "notices": 0
+        }
+    }
 
 
   if(Vue.prototype.$store.getters.config.mockdelay){
@@ -184,106 +387,37 @@ x_extra_info: "6,725"
   if((Math.random()*100) < 95)
     return [200,resp];
   else {
-    return [400,{error:"Отправление RB508027382SG не найдено!"}]
+    return [200,{result:"error",message:"Отправление "+req.barcode+" не найдено!"}]
   }
 
-}).onAny('sm_home.closeBag').reply((cfg)=>{
-
-
-
-  return [200,
-{
-  closeBag: {
-    p_bag: cfg.params.p_bag,
-    p_depcode: cfg.params.p_depcode,
-    p_weight: cfg.params.p_weight,
-    p_sendmeth: cfg.params.p_sendmeth,
-    p_cpilslogin: cfg.params.p_cpilslogin,
-    bag: {
-      barcode: "B201807180001912",
-      todepindex: "130001",
-      bdepid: "18907",
-      bid: "913038989"
-    }
-  },
-  cli_info: /*{
-    BARCODE: "G201807180001235",
-    TSFL: "",
-    EMSFL: "0",
-    BARCODETOSTR: "B188023542560494560155515212032164551@",
-    SNDMETH_NAME: "Наземный",
-    BAGTYPE_NAME: "Мешок \"Сақтандыру\"",
-    CUSTOMCARGO: "",
-    SEAL: "",
-    OWN_NUMBER: "",
-    FR_DEP_NAME: "Участок мжд. почты г.Алматы [220096]",
-    TO_DEP_NAME: "Актау-1 [130001]",
-    WGT_KG: "1",
-    WGT_GR: "000",
-    F51FL: "",
-    NDSTMAIL: ""
-  },*/
-  `<CLIINFO><BAGTYPE_NAME>Мешок "Сақтандыру"</BAGTYPE_NAME>
-   <BARCODE>G201807180001235</BARCODE>
-   <BARCODETOSTR>B188023542560494560155515212032164551@</BARCODETOSTR>
-   <CUSTOMCARGO />
-   <EMSFL>0</EMSFL>
-   <F51FL />
-   <FR_DEP_NAME>Участок мжд. почты г.Алматы [220096]</FR_DEP_NAME>
-   <NDSTMAIL />
-   <OWN_NUMBER />
-   <SEAL />
-   <SNDMETH_NAME>${cfg.params.p_sendmeth==1?'НАЗЕМНЫЙ':'АВИА'}</SNDMETH_NAME>
-   <TO_DEP_NAME>Актау-1 [130001]</TO_DEP_NAME>
-   <TSFL />
-   <WGT_GR>000</WGT_GR>
-   <WGT_KG>${cfg.params.p_weight}</WGT_KG></CLIINFO>`,
-  UBAGBARCODE: "G201807180001235"
-}]; }
+}).onAny('formBag').reply((cfg)=>{
+  return [200,{
+    "result": "success",
+    "packetListNo": "B201910072104795",
+    "labelListNo": "G201910072104795",
+    "actualWeight": 10,
+    "workerName": "Мырзанова Гульмира",
+    "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
+    "toDepartment": "Алматы-9",
+    "route": "Наземный",
+    "date": "Mon Oct 07 21:38:49 ALMT 2019",
+    "count": 1
+}]}
 )
 .onAny().reply((cfg)=>{
 
-  var resp = {
-    "trackid":"RB508027382SG",
-    "timestamp":"21:56:29 06.04.2018",
-    "direction":"IMPORT","status_code":"D",
-    "status":"Вручено",
-    "x_status_code":"S_ISS",
-    "x_status":"Вручено",
-    "sender":{"country":"Сингапур","name":"1","address":"1","x_postindex":null},
-    "next":{"bagNo":'00'+Math.floor((Math.random()*10)),"toIndex":0,"x_dep_id":"19465","dep_name":"Сарыарка ГОПС 1","address":"Астана область, г. Астана, пр. Сарыарка, д.99","postindex":"010021"},
-    "origin":{"date":"01.04.2018","x_dep_id":"18907","city":"Алматы","dep_name":"Участок по обработке международной почты г. Алматы","postindex":"220096"},
-    "receiver":{"name":"Junnussov T","address":"Astana Saryarka  15","country":"Казахстан","x_postindex":null},
-    "last":{"date":"05.04.2018","x_dep_id":"19465","city":"","dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР","address":"Астана область, г. Астана, пр. Сарыарка, д.15","postindex":"900109"},
-    "delivery":{"date":"05.04.2018","time":"15:41","period_fact":"4","x_period":null,
-    "x_dep_id":"19465",
-    // "city":"",
-    "dep_name":"Постамат пр. Сарыарка, д. 15, БЦ ИСКЕР",
-    "address":"Астана область, г. Астана, пр. Сарыарка, д.15",
-    // "gps":["",""],
-    // "phone":"",
-    "postindex":"900104"},
-    "storage_period":"",
-    "package_type":"Мелкий пакет",
-    "category":"Заказное",
-    "delivery_method":"Авиа",
-    "dispute":"",
-    "weight":"менее 1"
-  };
+  var req = cfg.params;
+  console.debug("Mock any",req);
 
-  if((Math.random()*100) > 50){
-    // await sleep((Math.random()*100));
-    return [200,resp];
-  } else {
-    return [400,{error:"Отправление RB508027382SG не найдено!"}]
-  }
+  return [500,{error:"Mock no rule found"}]
+
 })
 
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
-  console.log('led',cfg.params?cfg.params.led:cfg.params);
+  console.debug('led',cfg.params?cfg.params.led:cfg.params);
   return [200,null];
 })
 
