@@ -7,7 +7,7 @@ b-modal#msortplan(ref="msortplan" visible title="Сортплан" size="lg" hid
             template(v-if="sortplan") {{sortplan.length}}шт
           b-form-input#inputPlan(:state="error==null?null:false" v-model="depcodeManual" @keyup.enter.native="fetch(depcode)" :placeholder="'Код продразделения ' + depcodeDefault")
           b-input-group-append
-            b-btn(variant="primary" @click="$fillBags({plan:sortplan})") Загрузить
+            b-btn(variant="primary" @click="fillBags({plan:sortplan})") Загрузить
             b-btn( @click="print()") Печать
           b-form-invalid-feedback#inputPlan {{error?error.message:null}}
 
@@ -63,6 +63,12 @@ export default {
     ]),
     encode(val){
       return code128.encode(val)
+    },
+    fillBags(sortplan){
+      if(confirm()) { 
+        this.$fillBags(sortplan);
+        this.$emit('close');
+      }
     },
     fetch(depcode){
 

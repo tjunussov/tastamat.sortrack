@@ -70,12 +70,12 @@ doctype html
 
 
   b-modal#depcode(title="Код департамента" ok-title="Изменить" :hide-footer="true")
-    b-form-input(v-model="depcode" palceholder="Depcode")
+    b-form-input(v-model="depcode" autofocus palceholder="Depcode")
 
   b-modal#user()
     template(slot="modal-header")
       h3 Авторизация
-    b-form-input(v-model="user")
+    b-form-input(v-model="user" autofocus)
     b-row
       b-col 
        .barcode {{encode('u'+user)}}

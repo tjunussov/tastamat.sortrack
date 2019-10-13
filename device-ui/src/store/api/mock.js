@@ -343,10 +343,12 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 // export const mock = new MockAdapter($http)
 
 
-.onGet('authorize').reply(200,{
-    "result": "success",
-    "name": "Мырзанова Гульмира"}
-)
+.onGet('authorize').reply(200,(cfg)=>{
+    if(cfg.params.login == 'test.alm21.rpo1')
+        return [200,{"result": "success","name": "Мырзанова Гульмира"}];
+    else
+        return [200,{"result": "error","resultInfo": "user by login not found"}];
+})
 .onGet('getRPO').reply(200,barcodes)
 .onAny('listBagIndexes').reply(200,plan)
 .onAny('findBagIndex').reply(async (cfg)=>{
@@ -361,8 +363,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     {
         "result": "success",
         "parentPostIndex": plan.parentPostIndexes[p].techindex,
-        "postIndex": "050010",
-        "postIndexTitle": "Алматы-10",
+        "postIndex": (Math.random()*10000),
+        "postIndexTitle": "Алматы-"+(Math.random()*10),
         "mailInfo": {
             "mailCategory": "1",
             "mailId": req.barcode,
@@ -387,7 +389,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   if((Math.random()*100) < 95)
     return [200,resp];
   else {
-    return [200,{result:"error",message:"Отправление "+req.barcode+" не найдено!"}]
+    return [200,{result:"error",resultInfo:"Отправление "+req.barcode+" не найдено!"}]
   }
 
 }).onAny('formBag').reply((cfg)=>{

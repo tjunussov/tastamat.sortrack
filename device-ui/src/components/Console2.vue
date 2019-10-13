@@ -37,7 +37,7 @@ b-row.flex-xl-nowrap2
         span(v-if="response") конечный индекс {{response.postIndex}}
         b-btn.close(@click.stop="clearAll")  &times;
         .debug.float-right.mr-3
-          b-link(v-b-toggle="'collapse1_inner'") Debug 3.3 | 
+          b-link(v-b-toggle="'collapse1_inner'") Debug [{{$root.version}}] | 
           b-link(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Сортплан | 
           b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)

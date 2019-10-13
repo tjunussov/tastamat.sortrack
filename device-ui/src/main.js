@@ -58,13 +58,18 @@ Vue.mixin({
   }
 });
 
+
+console.log("chuhan",process.env.NODE_ENV);
+
+var aa = process.env.VERSION;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   data () {
     return {
       online:false,
-      mqttOnline:false
+      mqttOnline:false,
+      version:process.env.VERSION
     }
   },
   created(){
