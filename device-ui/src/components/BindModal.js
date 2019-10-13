@@ -3,7 +3,24 @@ import {$leds} from '@/store/api/http'
 
 export const bindMixin = {
   methods:{
-    wizardToggle(){
+    calibrateStart(){
+      this.bind.cursor = -1;
+      this.calibrateNext();
+    },
+    calibrateStop(){
+      this.bind.cursor = null;
+      this.clearAll();
+      this.$saveConfig();
+    },
+    calibrateMap(i){
+      Vue.set(this.bags[i],'led',this.bind.cursor);
+      this.calibrateNext();
+    },
+    calibrateNext(){
+      this.bind.cursor++;
+      if(this.ledOn) $leds.on('bind',this.bind.cursor);
+    },
+    /*wizardToggle(){
       console.log('wizardToggle');
       
       if(!this.bind.started) {
@@ -71,6 +88,6 @@ export const bindMixin = {
         this.bind.unmappedIndx++;
 
       $leds.on('bind',this.bind.unmappedIndx);
-    }
+    }*/
   }
 }

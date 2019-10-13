@@ -61,6 +61,9 @@ export default {
       '$initBags'
     ]),
     saveSettings(){
+
+      if(!confirm('All settings will be reseted')) return;
+
       localStorage.setItem('deviceip',this.deviceip);
       localStorage.setItem('apiUrl',this.apiUrl);
 

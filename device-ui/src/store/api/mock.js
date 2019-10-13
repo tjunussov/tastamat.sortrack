@@ -421,9 +421,9 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
-  console.debug('led',cfg.params?cfg.params.led:cfg.params);
-  return [200,null];
-})
+// export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
+//   console.debug('led',cfg.params?cfg.params.led:cfg.params);
+//   return [200,null];
+// })
 
 

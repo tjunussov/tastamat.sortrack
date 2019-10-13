@@ -6,9 +6,9 @@ b-row.flex-xl-nowrap2
     nav#bd-docs-nav.bd-links.navbar-collapse
       //- .bd-toc-item.active
       //-   b-link.bd-toc-link(to='/console') Консоль
-      //-   ul.bd-sidenav.nav
-      .bd-toc-item
-        a.bd-toc-link(disabled) Статистика
+      //- //-   ul.bd-sidenav.nav
+      //- .bd-toc-item
+      //-   a.bd-toc-link(disabled) Статистика
         ul.bd-sidenav.nav
       .bd-toc-item.active
         b-link.bd-toc-link(to='/admin/sortplan') Сортплан

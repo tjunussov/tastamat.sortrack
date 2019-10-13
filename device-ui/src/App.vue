@@ -8,14 +8,15 @@ doctype html
     b-nav-toggle(target="nav_collapse")
 
     b-navbar-brand(to="/")
-      <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">B</tspan> <tspan x="307.5" y="446">V</tspan></text></svg>
+      <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">S</tspan> <tspan x="307.5" y="446">T</tspan></text></svg>
     b-navbar-brand 
-      span(@click="toggleFullScreen()") Sortrack® 
+      img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
+      //- span(@click="toggleFullScreen()") Sortrack® 
       b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
       b-badge.ml-1(variant="danger" v-if="!demo" @click="togleDemo(null)") &times; DEMO
       b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
 
-    b-collapse(is-nav id="nav_collapse")
+    b-collapse(is-nav id="nav_collapse" v-if="depcode")
 
       b-navbar-nav
         b-nav-item-dropdown(right id="loginPopover")
@@ -61,14 +62,15 @@ doctype html
 
         b-nav-item(right v-b-modal.user v-if="!user") 
           | Войти
-        b-nav-item-dropdown(right v-else="user" id="loginPopover")
+        b-nav-item-dropdown(right v-else="user"  @click="logout()")
           template(slot="button-content")
             i.fa.fa-user.mr-2/
             | {{user}} 
           b-dropdown-item(to="/badge") Бейдж
-          b-dropdown-item(@click="logout()") Выход
+          b-dropdown-item( @click="logout()") Выход
 
-        //- b-nav-item(right id="loginPopover" v-else) Login
+    b-navbar-nav.ml-auto(v-else)
+      b-nav-item(right v-b-modal.depcode) Установить Индекс
 
 
   b-container(fluid)
@@ -80,13 +82,13 @@ doctype html
 
 
   b-modal#depcode(title="Код департамента" size="sm" ok-title="Изменить" :hide-footer="true")
-    b-form-input(v-model="depcode" autofocus palceholder="Depcode")
+    b-form-input(v-model="depcode" autofocus palceholder="Depcode" @dblclick.native="depcode = '055990'")
 
   b-modal#user(size="sm" @hide="tmpUser=''" hide-backdrop )
     template(slot="modal-header")
       h4 Авторизация*
     b-form-group(:valid-feedback="userName" :invalid-feedback="'Ошибка! ' + errorLogin" :state="!errorLogin")
-      b-form-input(v-model="tmpUser" size="lg" v-on:dblclick.native="tmpUser = 'test.alm21.rpo1'" placeholder="Ваш логин в ПУС" autofocus)
+      b-form-input(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.alm21.rpo1'" placeholder="Ваш логин в ПУС" autofocus)
     b-button-group
       b-btn(variant="danger"): i.fa.fa-user.mr-2
       b-btn(variant="outline-success"): i.fa.fa-user.mr-2
@@ -121,7 +123,6 @@ export default {
   data(){
     return {
       demoBarcodes:[],
-      calibrating:false,
       errorLogin:null,
       tmpUser:null,
       userName:null,
@@ -137,15 +138,13 @@ export default {
     this.$bus.$on('keyboard:keydown:enter:i',this.registerDepcode);
     this.$bus.$on('keyboard:keydown:enter:u',this.auth);
     
-    $leds.$ledoff();
   },
   created(){
     this.$db.on("populate",()=>{
       populateData.populate(this.$db)
     });
-    this.togleDemo(this.$store.state.polka.demo);
-    this.togleLed(this.$store.state.polka.ledOn);
-
+    this.togleDemo(this.demo);
+    this.togleLed(this.ledOn);
     // Demo
     /*window.setInterval(()=>{
       this.enterBarcodeManualy('KZ'+Math.floor(Math.random()*1000000000)+'KZ');
@@ -165,6 +164,7 @@ export default {
         autodepcode: 'getAutoDepcode',        
         ledOn: 'getLedOn',
         demo: 'getDemo',
+        calibrating:'getCalibrating',
         bags: 'getBags',
         barcode: 'getBarcode',
         hydrated:'hydrated',
@@ -292,9 +292,11 @@ export default {
         }  
       }  
     },
-    togleCalibrate(){
-      this.calibrating = !this.calibrating;
-
+    togleCalibrate(state){
+      if(state !== null)
+        this.$store.state.polka.calibrating = state
+      else
+        this.$store.state.polka.calibrating = !this.$store.state.polka.calibrating;
     },
     togleDemo(state){
 
@@ -317,9 +319,9 @@ export default {
         
       console.log('togleLed',this.ledOn);
 
-      if(this.ledOn) {
-        mockDevice.restore();
-      }
+      // if(this.ledOn) {
+      //   mockDevice.restore();
+      // }
     }
   },
   components: {

@@ -29,13 +29,13 @@ const router =  new Router({
       component: Admin,
       children: [
         {
-          path: 'sortplan',
+          path: 'settings',
           alias: '',
-          component: Sortplan
+          component: Settings
         },
         {
-          path: 'settings',
-          component: Settings
+          path: 'sortplan',
+          component: Sortplan
         },
         {
           path: 'users',

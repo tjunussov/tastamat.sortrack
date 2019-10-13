@@ -4,22 +4,24 @@ b-row.flex-xl-nowrap2
 
     b-tabs.nav-justified.wizard(v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
-        template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}]
-        b-card-group.polkas.pt-4(deck)
+        template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}] 
+        b-card-group.polkas.pt-4(:class="{calibrating}" deck)
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
-            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.unmappedIndx == i}"
+            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,}"
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
-            @click="selectBag(b.ppi)" )
+            @click="selectBag(b.ppi,i,p)" )
             b-card-header {{(b.ppi)}}
-              small.text-muted.indx(v-if="b.ppi != b.ppn") 
+              small.text-muted.indx
                 //- {{(b.index)}} 
-                span.led(:class="{'remapped':b.led!=null}") {{b.led?b.led:i}}
+                span.led(:class="{'remapped':b.led!=null}") {{b.led!==null?b.led:i}}
               b-btn.close(v-if="Object.keys(b.wpi).length") &times;
             b-card-body
-              h4.card-title {{Object.keys(b.wpi).length}}
+              h4.card-title
+                template(v-if="bind.cursor != null") {{bind.cursor}} 
+                template(v-else) {{Object.keys(b.wpi).length}}
 
     
           
@@ -78,29 +80,32 @@ export default {
     this.$bus.$off('keyboard:keydown:enter:p',this.selectBag);
   },
   created(){
-    $leds.$ledoff();
+    if(this.ledOn) $leds.$ledoff();
   },
   watch:{
-    cursor(val){
-      if(typeof val !== 'undefined') {
-        this.tabIndex = Math.floor(val/24);
-        console.log('tab',val,this.tabIndex);
-      }
+    thor(val){
+      this.tabIndex = val;
+    },
+    calibrating(val){
+      if(val) this.calibrateStart();
+      else this.calibrateStop();
     },
     status(val){
       if(val){
 
-        if(this.selectedBag && this.selectedBag.led){  // if led specified
-          console.log('watched status[selectedbag]',this.selectedBag.led);
-          $leds.on(val,this.selectedBag.led);
-        } else {
-          console.debug('watched status [cursor]',this.cursor)
-          if(this.cursor != null) $leds.on(val,this.cursor);
-          else $leds.on(val);
-        }
-
-
-
+        // if(this.selectedBag && this.selectedBag.led){  // if led specified
+        //   console.log('watched status[selectedbag]',this.selectedBag.led);
+        //   $leds.on(val,this.selectedBag.led,this.thor);
+        // } else {
+        //   console.debug('watched status [cursor]',this.cursor)
+        //   if(this.cursor != null) $leds.on(val,this.cursor);
+        //   else $leds.on(val);
+        // }
+        
+        var led = this.selectedBag && this.selectedBag.led ? this.selectedBag : this.cursor;
+            led = led%24;
+        console.debug('watched status',val,led,this.thor);
+        if(this.ledOn) $leds.on(val,led,this.thor);
         $sounds.play(val);
       } /*else {
         $leds.$ledoff();
@@ -133,7 +138,10 @@ export default {
         error: 'getError',
         cursor: 'cursor',
         selected: 'getSelected',
-        selectedBag:'getSelectedBag'
+        selectedBag:'getSelectedBag',
+        calibrating:'getCalibrating',
+        ledOn:'getLedOn',
+        thor:'thor'
     }),
     filteredBags() {
       return (page)=>{ return this.bags.slice(page*24, (page+1)*24); }
@@ -154,7 +162,7 @@ export default {
       '$putToBag',
       '$selectBag',
       '$deselectBag',
-      '$remapSelectedBag',
+      // '$remapSelectedBag',
       '$clear',
       '$saveConfig'
     ]),
@@ -162,16 +170,13 @@ export default {
       window.clearTimeout(this.tmResponse);
       this.tmResponse = window.setTimeout(this.$clear,tm);
     },
-    selectBag(ppi){
-      console.log('selectBag',ppi)
+    selectBag(ppi,i,p){
+      console.log('selectBag',ppi,i,p)
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
-      } else if(this.bind.started){
-        console.log('Binding',ppi);
-        this.wizardNext(ppi);
-        // this.$selectBag({ppi}).then(()=>{
-          
-        // });
+      } else if(this.calibrating){
+        console.log('calibrating selectBag',ppi);
+        this.calibrateMap((p*24)+i);
       } else {
         window.clearTimeout(this.tmResponse);
         this.$clear();
@@ -200,7 +205,7 @@ export default {
     },
     clearAll(){
       this.$clear(); 
-      $leds.$ledoff();
+      if(this.ledOn) $leds.$ledoff();
     }
   },
   components:{
@@ -223,6 +228,10 @@ export default {
 .polkas  
   // display: grid;
   // grid-column-gap: 50px;
+    
+  &.calibrating .card.outlined
+    border-color #f00 !important
+    
   
   .card
     flex 0 0 auto
@@ -235,8 +244,8 @@ export default {
     .text-muted
       opacity 0.5
     
-    &.outlined
-      outline 2px solid #f00
+    // &.outlined
+    //   outline 2px solid #f00
     
     &.closed
       -webkit-animation 0.5s blink step-end infinite

@@ -331,6 +331,7 @@ export const $sounds = {
 }
 
 export const $leds = {
+  thor:null,
   search(user){
     this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
@@ -390,13 +391,18 @@ export const $leds = {
     this.$ledon({color:'all',led,duration:100,effect:'right'});
   },
   $ledon(params){
-    $device.get('/on',{params});
+    if(this.thor && this.thor > 0){
+      axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
+    } else {
+      $device.get('/on',{params});
+    }
   },
   $ledoff(){
     $device.get(`/off`);
   },
-  on(name,data){
-    console.debug('ON',name);
+  on(name,data,thor){
+    console.debug('ON',name,thor);
+    this.thor = thor;
     try { 
       this[name](data);
   } catch(e){

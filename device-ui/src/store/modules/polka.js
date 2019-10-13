@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import {$smartsort,$leds,$sounds} from '@/store/api/http'
+import {$smartsort} from '@/store/api/http'
 
 const state = {
   sortplan:null,
@@ -7,9 +7,10 @@ const state = {
   response:null,
   closeResponse:null,
   error:null,
-  depcode:'055990'||localStorage.getItem('depcode'),
-  user:'test.alm21.rpo1'||localStorage.getItem('user'),
+  depcode:localStorage.getItem('depcode'),
+  user:localStorage.getItem('user'),
   demo:false||(localStorage.getItem('demo') === 'true'),
+  calibrating:false,
   ledOn: false||(localStorage.getItem('ledOn') === 'true'),
   selected:null,
   status:null,
@@ -27,6 +28,7 @@ const getters = {
   getAutoDepcode : (state) => state.depcode ? state.depcode : state.autoDepcode,  
   getLedOn : (state) => state.ledOn,
   getDemo : (state) => state.demo,
+  getCalibrating : (state) => state.calibrating,
   getStatus : (state) => state.status,
   getUser : (state) => state.user,
   getError : (state) => state.error,
@@ -38,6 +40,9 @@ const getters = {
   },
   cursor : (state,getters) => {
     if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.ppi})
+  },
+  thor : (state,getters) => {
+      if(typeof getters.cursor !== 'undefined') return  Math.floor(getters.cursor/24)
   },
   bagMetaData : (state,getters) => {
     if(getters.getSelectedBag){
@@ -63,7 +68,7 @@ const actions = {
       console.log('initBags',getters.getConfig.size);
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:null,ppn:'#'+i,wpi:{}}
+        return {ppi:'#'+i,led:null,ppn:null,wpi:{}}
       });
   
     // TODO Rewrite to Promise Chain
@@ -218,13 +223,17 @@ const actions = {
         renameEmptyKey(getters.getBags,k[0])
         // getters.getBags[k[0]] = {toIndex:k[1]};
       });*/
-      var bags = new Array();
+      // var bags = new Array();
       
-      plan.forEach((item,i)=>{
-        return bags.push({ppi:item.techindex,led:null,ppn:item.nameRu,wpi:{}});
-      })
+      // plan.forEach((item,i)=>{
+      //   return bags.push({ppi:item.techindex,led:null,ppn:item.nameRu,wpi:{}});
+      // })
 
-      getters.getConfig.bags = bags;
+      var bags = getters.getConfig.bags;
+
+      bags.forEach((item,i)=>{
+        if(plan[i]) getters.getConfig.bags[i] = { ...item, ppi:plan[i].techindex,ppn:plan[i].nameRu, wpi:{} };
+      }),
 
       dispatch('$saveConfig');
 
@@ -260,6 +269,7 @@ const mutations = {
 
 function findBag(bags,ppi){
   var indx = bags.findIndex((key)=>{return ppi == key.ppi});
+  if(indx < 0) indx = renameEmptyKey(bags,ppi) // Пытаюсь найти свободную ячейку
   if(indx < 0) throw `Индекс назначения ${ppi} не привязан ни к одной корзине!`;
   return indx
 }

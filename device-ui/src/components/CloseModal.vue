@@ -8,18 +8,18 @@ b-modal#mclosebag(no-enforce-focus size="" no-fade @hide="clear" visible ref="cl
         b-card-title 
           i.fa.fa-inbox.mr-2(:class="{'text-success':isEditing}" @click="isEditing=!isEditing") 
           | Полка 
-          input.inline(:value="selectedBag.ppi" :disabled="!isEditing" size="8")
+          input.inline(:value="selectedBag.ppi" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
           template(v-if="isEditing")
             i.fa.fa-lightbulb-o.mr-2.ml-4
             input.inline(v-model="selectedBag.led" style="width:50px" type="number" :placeholder="cursor")
         b-card-sub-title.mb-2 Направление 
-          input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20")
+          input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
 
       b-card-header(header-tag="nav")
         b-nav.nav-justified.wizard(card-header tabs)
           b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0") ШПИ
             b-badge.ml-2(variant="primary") {{count}}шт
-          b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1") Вес
+          b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1" :disabled="!count") Вес
           b-nav-item(:active="tabIndex == 2" :disabled="!(response && response.packetListNo)" @click="tabIndex = 2") Ярлык
 
       b-card-body.p-5(v-if="tabIndex == 1")
@@ -35,7 +35,7 @@ b-modal#mclosebag(no-enforce-focus size="" no-fade @hide="clear" visible ref="cl
         //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
       b-card-body(v-if="response && response.packetListNo")
-        code.text-primary
+        code.text-primary#printSection
           .mx-4.my-4
             //- code {{response}}
             code#bagPrintData.hide
@@ -107,11 +107,11 @@ b-modal#mclosebag(no-enforce-focus size="" no-fade @hide="clear" visible ref="cl
       b-list-group(v-if="count" flush)
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
           .d-flex.w-100.justify-content-between(@click="removeWpi(k)") 
-            h5 {{k}} 
+            h5 {{k}}   &times;
             small  {{v.postIndexTitle}} ( {{v.postIndex}} )
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
       b-card-footer.text-center
-        b-btn.mr-auto(v-if="isEditing" @click="$saveConfig" variant="outline-secondary") Save
+        b-btn.mr-auto(v-if="isEditing" @click="save" variant="outline-secondary") Save
         //- b-btn.mr-auto(@click="tabIndex--" v-if="tabIndex > 0" variant="primary").left 
           i.fa.fa-arrow-left
           |  Назад 
@@ -165,9 +165,11 @@ export default {
     return {
       isEditing:false,
       tabIndex:0,
+      tempPpi:null,
       weight:null,
       sendmeth:1,
-      isWindowsPrint:true
+      isWindowsPrint:true,
+      isAutoPrint:false
     }
   },
   methods:{
@@ -175,7 +177,9 @@ export default {
       '$closeBag',
       '$clear',
       '$deselectBag',
-      '$saveConfig'
+      '$saveConfig',
+      '$selectBag',
+      '$deselectBag',
     ]),
     closeBag(){
       this.$closeBag({
@@ -184,27 +188,41 @@ export default {
         weight:this.weight,
         sendmeth:this.sendmeth}).then(()=>{
           this.tabIndex = 2
-          this.print();
+           if(this.isAutoPrint) this.print();
         });
     },
     removeWpi(k){
 
-      this.$bvModal.msgBoxConfirm("Удалить ШПИ "+k+" из мешка ?", {
-          title: "Выемка из мешка",
-          size: 'sm',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'Удалить',
-          cancelTitle: 'Отмена',
-          footerClass: 'p-2',
-          hideHeaderClose: false,
-          centered: true
-        }).then(value => {
-          if(value) Vue.delete(this.selectedBag.wpi,k);
-        })
-        .catch(err => {
-          // An error occurred
-        })
+      //if(confirm("Удалить ШПИ "+k+" из мешка ?")){
+        console.log('deleted',k,this.selectedBag.wpi[k]);
+        Vue.delete(this.selectedBag.wpi,k);
+        this.$forceUpdate(); // TODO SuperBug, Why we need this ?
+
+        // const wpi = { ...this.selectedBag.wpi };
+        // delete wpi[k];
+        // this.selectedBag.wpi = wpi
+      // }
+
+      // this.$bvModal.msgBoxConfirm("Удалить ШПИ "+k+" из мешка ?", {
+      //     title: "Выемка из мешка",
+      //     size: 'sm',
+      //     buttonSize: 'sm',
+      //     okVariant: 'danger',
+      //     okTitle: 'Удалить',
+      //     cancelTitle: 'Отмена',
+      //     footerClass: 'p-2',
+      //     hideHeaderClose: false,
+      //     centered: true
+      //   }).then(value => {
+      //     if(value) {
+      //       console.log(value,k);
+      //       Vue.delete(this.selectedBag.wpi,k);
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.error(err);
+      //     // An error occurred
+      //   })
     },
     next(ppi){
 
@@ -219,6 +237,18 @@ export default {
       } else {
         this.clear();
       }
+    },
+    save(){
+      console.log("===>",this.selectedBag.ppi,this.tempPpi);
+      if(this.tempPpi && this.selected != this.tempPpi){
+        var indx = this.cursor
+        this.clear();
+        this.bags[indx].ppi = this.tempPpi;
+        this.tempPpi = null
+      } else {
+        this.clear();
+      }
+      this.$saveConfig();
     },
     clear(){
       this.$deselectBag();
@@ -276,6 +306,33 @@ input.inline
   
   &[disabled]
     border-bottom-color transparent
+    
+
+@media print
+  body *
+    visibility hidden
+    padding 0
+    margin 0
+    
+  
+  #printSection, #printSection *
+    visibility visible !important
+    
+  .modal-dialog
+    margin 0 !important
+    border 1px solid #000
+    width 1024px  !important
+    
+  .modal-lg
+    width 100% !important
+    
+  
+  #printSection
+    visibility visible !important
+    position absolute
+    left 0
+    top 0
+    width 1024px  !important
     
   
 </style>

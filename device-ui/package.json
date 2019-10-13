@@ -1,13 +1,13 @@
 {
   "name": "sortrack",
-  "version": "3.5.2",
+  "version": "3.5.3",
   "description": "Sorting Track",
   "author": "Timur <tjunussov@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "push": "rm -rf ./../docs && cp -r ./dist ./../docs && git add -A && git commit -p",
+    "push": "rm -rf ./../docs && cp -r ./dist ./../docs && git add -A && git commit -m",
     "postpush": "git push --all",
     "build": "npm version patch && node build/build.js",
     "stats": "webpack --profile --json > stats.json --config build/webpack.prod.conf.js"
