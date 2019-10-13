@@ -1,7 +1,7 @@
 <template lang="pug">
 doctype html
 
-#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user,'isDemo':!demo, 'isLedOff':ledOn}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 
@@ -9,30 +9,47 @@ doctype html
 
     b-navbar-brand(to="/")
       <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">B</tspan> <tspan x="307.5" y="446">V</tspan></text></svg>
-    b-navbar-brand(@click="toggleFullScreen()") Sortrack® {{$store.state.user}}
+    b-navbar-brand 
+      span(@click="toggleFullScreen()") Sortrack® 
+      b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
+      b-badge.ml-1(variant="danger" v-if="!demo" @click="togleDemo(null)") &times; DEMO
+      b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
 
-    b-collapse(is-nav id="nav_collapse" v-if="user")
+    b-collapse(is-nav id="nav_collapse")
 
       b-navbar-nav
-        //- b-nav-item(to="/console") Консоль
-        b-nav-item(to="/console2") Консоль
-        b-nav-item(to="/admin") Настройки
-        //- b-nav-item(to="/admin/sortplan") Сортплан
-        b-nav-item(@click="toogleDemo(null)" ) 
-          toggle-button(:value="demo" :sync="true" :labels="{checked: 'Prod', unchecked: 'Demo'}")
-        b-nav-item(@click="toogleLed()" )
-          toggle-button(:value="ledOn" :sync="true" :labels="{checked: 'LED', unchecked: 'LED'}")
+        b-nav-item-dropdown(right id="loginPopover")
+          template(slot="button-content")
+            i.fa.fa-map-marker.mr-2
+            | {{depcode}}
+          
+          b-dropdown-header Настройки
+          b-dropdown-item(v-b-modal.depcode) Сменить Индекс
+          b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
+          b-dropdown-item(@click="togleCalibrate" ) Начать Калибровку
+          b-dropdown-item(to="/badge") Бейджики
+            //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+          b-dropdown-divider
+          b-dropdown-item(@click="togleDemo(null)" ) 
+            i.fa.mr-2(:class="{'fa-circle text-success':!demo,'fa-circle-o':demo}")/
+            | Демо
+          b-dropdown-item(@click="togleLed()" ) 
+            i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
+            | Лампочки 
+          
+          b-dropdown-divider
+          b-dropdown-item(to="/admin") Админка
 
       b-navbar-nav.ml-auto
 
-        b-nav-form
-          b-form-input.mr-sm-2(
-            size="sm" 
-            style="width:5rem"
-            v-on:focus.native="$event.target.value = '';"
-            v-on:dblclick.native="enterBagManualy;" 
-            @keyup.enter.native="enterBagManualy($event.target.value);" 
-            :placeholder="'Мешок'") 
+        //- b-nav-form
+        //-   b-form-input.mr-sm-2(
+        //-     size="sm" 
+        //-     style="width:5rem"
+        //-     v-on:focus.native="$event.target.value = '';"
+        //-     v-on:dblclick.native="enterBagManualy;" 
+        //-     @keyup.enter.native="enterBagManualy($event.target.value);" 
+        //-     :placeholder="'Мешок'") 
 
         b-nav-form
           b-form-input.mr-sm-2(
@@ -40,28 +57,18 @@ doctype html
             v-on:focus.native="$event.target.value = '';"
             v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
             @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
-            :placeholder="barcode?barcode:'Поис поссылок  ...'") 
-        //- p {{barcode}}
+            :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
 
-        b-nav-item(v-if="settings" right v-b-modal.depcode) 
-          span(v-if="depcode") {{depcode}}
-          span.text-muted(v-else) [{{autodepcode}}]
-
-        b-nav-item(right v-b-modal.user) {{user}} 
-          //- small: b-badge(:variant="mqttOnline?'success':'dark'") mqtt
-
-        //- b-nav-item-dropdown(right v-if="authUser" id="loginPopover")
-        //-   template(slot="button-content")
-        //-     span(:title="authUser.email") 
-        //-   b-dropdown-item(to="/profile") Profile
-        //-   b-dropdown-item(@click="logout()")
-        //-     span.i.fa.fa-exit.mr-1
-        //-     | Signout
+        b-nav-item(right v-b-modal.user v-if="!user") 
+          | Войти
+        b-nav-item-dropdown(right v-else="user" id="loginPopover")
+          template(slot="button-content")
+            i.fa.fa-user.mr-2/
+            | {{user}} 
+          b-dropdown-item(to="/badge") Бейдж
+          b-dropdown-item(@click="logout()") Выход
 
         //- b-nav-item(right id="loginPopover" v-else) Login
-
-    b-navbar-nav.ml-auto(v-else)
-      b-nav-item(right v-b-modal.user) Log In
 
 
   b-container(fluid)
@@ -69,20 +76,32 @@ doctype html
   Keyboard
 
 
-  b-modal#depcode(title="Код департамента" ok-title="Изменить" :hide-footer="true")
+  SortplanModal(v-if="isSortplanModalOpen" @close="isSortplanModalOpen = false")
+
+
+  b-modal#depcode(title="Код департамента" size="sm" ok-title="Изменить" :hide-footer="true")
     b-form-input(v-model="depcode" autofocus palceholder="Depcode")
 
-  b-modal#user()
+  b-modal#user(size="sm" @hide="tmpUser=''" hide-backdrop )
     template(slot="modal-header")
-      h3 Авторизация
-    b-form-input(v-model="user" autofocus)
-    b-row
-      b-col 
-       .barcode {{encode('u'+user)}}
+      h4 Авторизация*
+    b-form-group(:valid-feedback="userName" :invalid-feedback="'Ошибка! ' + errorLogin" :state="!errorLogin")
+      b-form-input(v-model="tmpUser" size="lg" v-on:dblclick.native="tmpUser = 'test.alm21.rpo1'" placeholder="Ваш логин в ПУС" autofocus)
+    b-button-group
+      b-btn(variant="danger"): i.fa.fa-user.mr-2
+      b-btn(variant="outline-success"): i.fa.fa-user.mr-2
+      b-btn(variant="outline-primary"): i.fa.fa-user.mr-2
+    
+    //- b-row
+    //-   b-col 
+    //-    .barcode {{encode('u'+user)}}
     template(slot="modal-footer")
-      p {{errorLogin}}
-      b-btn(variant="primary" @click="auth(user)") Login
+      b-btn(variant="primary" :disabled="!tmpUser" @click="login(tmpUser,depcode )") Вход
 
+  .bd-footer.text-muted
+    .container 
+      p.mb-2.pl-0 &copy; 2019 Copyright. Система "Умные Полки" для ПУС. Разработка by tastamat.com. Версия 
+        b {{$root.version}} 
 
 </template>
 
@@ -92,36 +111,40 @@ import Encoder from 'code-128-encoder'
 var code128= new Encoder()
 import { mapGetters, mapActions } from 'vuex'
 import Keyboard from '@/components/misc/Keyboard'
-import {$smartsort,$http,deviceLEDMixin} from '@/store/api/http'
+import {$smartsort,$http,$leds} from '@/store/api/http'
 import {mock,mockDevice} from '@/store/api/mock'
 import populateData from '@/store/idb/data.js'
+import SortplanModal from '@/components/SortplanModal'
 
 export default {
   name: 'app',
   data(){
     return {
       demoBarcodes:[],
+      calibrating:false,
       errorLogin:null,
+      tmpUser:null,
+      userName:null,
+      isSortplanModalOpen:false,
       ui:{
         search:null,
         showModalLogin:false
       },
     }
   },
-  mixins:[deviceLEDMixin],
   mounted(){
     this.$bus.$on('keyboard:keydown:enter:13',this.barcodeSet);
     this.$bus.$on('keyboard:keydown:enter:i',this.registerDepcode);
     this.$bus.$on('keyboard:keydown:enter:u',this.auth);
     
-    this.$ledoff();
+    $leds.$ledoff();
   },
   created(){
     this.$db.on("populate",()=>{
       populateData.populate(this.$db)
     });
-    this.toogleDemo(this.$store.state.polka.demo);
-    this.toogleLed(this.$store.state.polka.ledOn);
+    this.togleDemo(this.$store.state.polka.demo);
+    this.togleLed(this.$store.state.polka.ledOn);
 
     // Demo
     /*window.setInterval(()=>{
@@ -228,15 +251,25 @@ export default {
       console.log('registerdepcode',depcode);
       // this.$registerdepcode(depcode)
     },
-    auth(user){
-      $smartsort.auth(user).then((resp)=>{
-         console.log('auth',user);
+    logout(){
+      this.user = null;
+      this.userName = null;
+      this.settings.user = this.user
+      this.settingsUpdate(this.settings);
+    },
+    login(user,index){
+      this.errorLogin = null
+
+      $smartsort.auth(user,index).then((resp)=>{
+         console.log('login',user,index,resp);
+         this.user = user;
+         this.tmpUser = null;
          this.settings.user = user
-         this.$store.state.polka.user = user
+         this.userName = resp.data.name;
          this.settingsUpdate(this.settings);
          this.$root.$emit('bv::hide::modal', 'user', '#btnLogin')
       }).catch((err)=>{
-         this.errorLogin = err;
+        this.errorLogin = err;
       });
     },
     toggleFullScreen() {
@@ -259,26 +292,30 @@ export default {
         }  
       }  
     },
-    toogleDemo(state){
+    togleCalibrate(){
+      this.calibrating = !this.calibrating;
+
+    },
+    togleDemo(state){
 
       if(state !== null)
         this.$store.state.polka.demo = state
       else
         this.$store.state.polka.demo = !this.$store.state.polka.demo;
 
-      // console.log('toogleDemo',this.$root,this.$root.demo);
+      // console.log('togleDemo',this.$root,this.$root.demo);
 
       if(this.demo) {
         mock.restore();
       }
     },
-    toogleLed(state){
+    togleLed(state){
       if(state == null)
         this.$store.state.polka.ledOn = !this.$store.state.polka.ledOn;
       else 
         this.$store.state.polka.ledOn = state
         
-      console.log('toogleLed',this.ledOn);
+      console.log('togleLed',this.ledOn);
 
       if(this.ledOn) {
         mockDevice.restore();
@@ -286,7 +323,8 @@ export default {
     }
   },
   components: {
-    Keyboard
+    Keyboard,
+    SortplanModal
   },
 }
 
@@ -350,6 +388,40 @@ body
   z-index 1000
   height calc(100vh - 4rem)
   
+#app.disabled 
+  // background-color #000
+  
+  .bd-content
+  //   filter blur(1px)
+    pointer-events none
+  
+  &:before
+    content 'Просканируйте Ваш Бейдж'
+    font-size 30pt
+    padding-top 30%
+    text-align center
+    color #fffa
+    position absolute
+    top 0
+    bottom 0
+    left 0 
+    right 0
+    background-color rgba(0,0,10,0.7)
+    z-index 1000
+
+// .isDemo .bd-navbar:after
+//   content 'DEMO'
+//   font-size 10px
+//   color #fff
+//   padding-top 5px
+//   text-align center
+//   top 0
+//   left 0
+//   height 5px
+//   right 0
+//   position absolute
+//   z-index -1
+//   background-color rgba(255,0,0,0.8)
 
 .bd-content>h1, .bd-content>h2, .bd-content>h3, .bd-content>h4, .bd-content>h5
   padding-top 25px
@@ -510,31 +582,17 @@ body
     background-color transparent
 
 .bd-footer
+    position absolute
+    bottom 5px
+    left 0
+    width 100%
     font-size 85%
-    text-align center
-    background-color #f7f7f7
+    font-weight 100
     a
         font-weight 500
         color #495057
     p
         margin-bottom 0
-
-.bd-footer a:focus,.bd-footer a:hover
-    color #007bff
-
-@media (min-width:576px)
-    .bd-footer
-        text-align left
-
-.bd-footer-links
-    padding-left 0
-    margin-bottom 16px
-    margin-bottom 1rem
-    li
-        display inline-block
-        & + li
-            margin-left 16px
-            margin-left 1rem
 
 .bd-brand-logos
     display table

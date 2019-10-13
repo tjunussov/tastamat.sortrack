@@ -343,7 +343,10 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 // export const mock = new MockAdapter($http)
 
 
-.onGet('authorize').reply(200,(cfg)=>{
+.onGet('authorize').reply((cfg)=>{
+
+    console.log('authorize',cfg.params);
+
     if(cfg.params.login == 'test.alm21.rpo1')
         return [200,{"result": "success","name": "Мырзанова Гульмира"}];
     else
@@ -363,8 +366,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     {
         "result": "success",
         "parentPostIndex": plan.parentPostIndexes[p].techindex,
-        "postIndex": (Math.random()*10000),
-        "postIndexTitle": "Алматы-"+(Math.random()*10),
+        "postIndex": Math.ceil(Math.random()*10000),
+        "postIndexTitle": "Алматы-"+Math.ceil(Math.random()*10),
         "mailInfo": {
             "mailCategory": "1",
             "mailId": req.barcode,

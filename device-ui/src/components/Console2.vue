@@ -2,15 +2,15 @@
 b-row.flex-xl-nowrap2
   .pl-md-5.pt-2.mt-4.bd-content.col-12
 
-    b-tabs.nav-justified.wizard(pills bottom v-model="tabIndex")
+    b-tabs.nav-justified.wizard(v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
-        template(slot="title") {{p+1}} [{{p*24}}-{{(p+1)*24}}]
-        b-card-group.polkas.pb-4(deck)
+        template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}]
+        b-card-group.polkas.pt-4(deck)
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
             :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.unmappedIndx == i}"
-            :bg-variant="selected == b.ppi?'success':''"
+            :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
             @click="selectBag(b.ppi)" )
             b-card-header {{(b.ppi)}}
@@ -30,32 +30,30 @@ b-row.flex-xl-nowrap2
 
     
 
-  .m-4.p-2.fixed-bottom
+  .m-4.p-2.pb-3.fixed-bottom
     b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
-      b-card-header ШПИ 
+      b-card-header(v-b-toggle.collapse1_inner="") ШПИ 
         b {{barcode}} 
-        span(v-if="response") конечный индекс {{response.postIndex}}
         b-btn.close(@click.stop="clearAll")  &times;
-        .debug.float-right.mr-3
-          b-link(v-b-toggle="'collapse1_inner'") Debug [{{$root.version}}] | 
-          b-link(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Сортплан | 
-          b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+        //- .debug.float-right.mr-3
+        //-   b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
-        p(v-if="error") {{error}}
+        p(v-if="error") {{error}} 
         template(v-if="response")
-          h4.card-title Мешок {{response.parentPostIndex}} 
+          h4.card-title Мешок {{response.parentPostIndex}}
+            span(v-if="selectedBag.ppn") ( {{selectedBag.ppn}} )
           | АДРЕС : 
-          b {{response.postIndexTitle}} {{response.postIndex}}
+          b {{response.postIndexTitle}} 
+          | ИНДЕКС : 
+          b {{response.postIndex}}
           span.text-muted.ml-5 
           | {{response.mailInfo.toFullName}} 
-          | ( {{response.postIndexTitle}} {{response.postIndex}} )       
           
           //- blockquote.blockquote-footer {{response}}
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
-  SortplanModal(v-if="isSortplanModalOpen" @close="isSortplanModalOpen = false")
         
 </template>
 
@@ -64,7 +62,6 @@ import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import {$leds,$sounds,deviceLEDMixin} from '@/store/api/http'
 
-import SortplanModal from '@/components/SortplanModal'
 import {bindMixin} from '@/components/BindModal'
 import CloseModal from '@/components/CloseModal'
 
@@ -115,7 +112,6 @@ export default {
       tabIndex:0,
       tmResponse:null,
       isCloseModalOpen:false,
-      isSortplanModalOpen:false,
       kazakhstan:false,
       bind:{
         started:false,
@@ -191,13 +187,14 @@ export default {
     putToBag(barcode){
       barcode = barcode.toUpperCase().trim()
       console.log('started putToBag barcode',barcode);
+      window.clearTimeout(this.tmResponse);
 
       this.$putToBag({barcode:barcode}).then((resp)=>{
-        this.timeout(10000);
+        this.timeout(30000);
         console.log('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
         console.log('putToBag error',error);
-        this.timeout(5000);
+        this.timeout(10000);
       });
 
     },
@@ -207,7 +204,6 @@ export default {
     }
   },
   components:{
-    SortplanModal,
     CloseModal
   }
 }

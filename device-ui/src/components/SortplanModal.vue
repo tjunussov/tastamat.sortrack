@@ -65,7 +65,7 @@ export default {
       return code128.encode(val)
     },
     fillBags(sortplan){
-      if(confirm()) { 
+      if(confirm("Сортплан будет изменен! Вы уверены ?")) { 
         this.$fillBags(sortplan);
         this.$emit('close');
       }

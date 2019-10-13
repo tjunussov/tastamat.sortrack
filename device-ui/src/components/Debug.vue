@@ -35,19 +35,17 @@
   .col-sm-3
     pre {{cmd}}
     b-form-group
-        b-button(@click="$ledon(cmd)") On
-        b-button(@click="$ledoff" variant="outline-info") Off
+        b-button(@click="$leds.$ledon(cmd)") On
+        b-button(@click="$leds.$ledoff" variant="outline-info") Off
 
 </template>
 
 <script>
 
-import {deviceLEDMixin} from '@/store/api/http'
-
+import {$leds} from '@/store/api/http'
 
 export default {
   name: 'Debug',
-  mixins: [ deviceLEDMixin ],
   data () {
     return {
       putTimeout: 5000,
@@ -78,7 +76,7 @@ export default {
   },
   methods:{
     // publishOn(){
-    //   this.$ledOn(this.cmd)
+    //   $leds.$ledOn(this.cmd)
     //   console.log('publish',this.cmd);
     // }
   }

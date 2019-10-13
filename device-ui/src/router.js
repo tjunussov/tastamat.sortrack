@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Console from '@/components/Console'
+// import Console from '@/components/Console'
 import Console2 from '@/components/Console2'
 import Admin from '@/components/Admin'
 import Settings from '@/components/Settings'
@@ -19,10 +19,10 @@ const router =  new Router({
       component: Console2,
       meta: { isPublic: true }
     },
-    {
-      path: '/console',
-      component: Console
-    },
+    // {
+    //   path: '/console',
+    //   component: Console
+    // },
     
     {
       path: '/admin',

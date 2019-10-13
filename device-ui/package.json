@@ -1,19 +1,20 @@
 {
   "name": "sortrack",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "Sorting Track",
   "author": "Timur <tjunussov@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "push": "rm -rf ./../docs && cp -r ./dist ./../docs && git acp",
+    "push": "rm -rf ./../docs && cp -r ./dist ./../docs && git add -A && git commit -p",
+    "postpush": "git push --all",
     "build": "npm version patch && node build/build.js",
     "stats": "webpack --profile --json > stats.json --config build/webpack.prod.conf.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "bootstrap-vue": "^2.0.0-rc.6",
+    "bootstrap-vue": "^2.0.4",
     "code-128-encoder": "^2.3.1",
     "cyrillic-to-translit-js": "^2.1.0",
     "ion-sound": "^3.0.7",

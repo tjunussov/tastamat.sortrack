@@ -1,127 +1,133 @@
 <template lang="pug">
-b-modal#mclosebag(no-enforce-focus size="lg" no-fade @hide="clear" visible ref="closeModalRef")
-    template(slot="modal-header" v-if="selectedBag") 
-      b-link.close(@click.stop="clear")  &times;
-      h3 Мешок {{selectedBag.ppi}} - {{selectedBag.ppn}}
-    template(slot="modal-header" v-else)
-       h2.modal-title.text-primary Мешок {{selected}} - {{selectedBag.ppn}}
+b-modal#mclosebag(no-enforce-focus size="" no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
+    
 
     b-card(no-body)
-      b-tabs.nav-justified.wizard(pills card v-model="tabIndex")
-        b-tab
-          template(slot="title") 
-            span(v-b-toggle="'settings_collapse'") Содержимое 
-            span(v-if="selectedBag") {{Object.keys(selectedBag.wpi).length}} шт
+      b-card-header
+        b-link.close(@click.stop="clear") &times;
+        b-card-title 
+          i.fa.fa-inbox.mr-2(:class="{'text-success':isEditing}" @click="isEditing=!isEditing") 
+          | Полка 
+          input.inline(:value="selectedBag.ppi" :disabled="!isEditing" size="8")
+          template(v-if="isEditing")
+            i.fa.fa-lightbulb-o.mr-2.ml-4
+            input.inline(v-model="selectedBag.led" style="width:50px" type="number" :placeholder="cursor")
+        b-card-sub-title.mb-2 Направление 
+          input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20")
 
-          table.table.b-table
-            tr
-              th #
-              th ШПИ
-              th КУДА
+      b-card-header(header-tag="nav")
+        b-nav.nav-justified.wizard(card-header tabs)
+          b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0") ШПИ
+            b-badge.ml-2(variant="primary") {{count}}шт
+          b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1") Вес
+          b-nav-item(:active="tabIndex == 2" :disabled="!(response && response.packetListNo)" @click="tabIndex = 2") Ярлык
 
-            tr(v-for="(v,k, n) in selectedBag.wpi")
-              td {{n+1}}
-              td(:title="JSON.stringify(v)") {{k}}
-              //- td {{v.next.bagNo}}
-              td {{v.postIndex}} {{v.postIndexTitle}}
-        b-tab(title="Вес и Вид")
-          b-form-group(label="Итоговый Вес" horizontal)
-            b-input-group
-              b-form-input(v-model="weight" autofocus="true" type="number" size="lg" required palceholder="Вес")
-              b-input-group-append
-                b-btn(@click="weight = 25" variant="white") Считать вес
-          b-form-group(label="Вид отправки" horizontal)
-            b-btn(@click="sendmeth = 2" disabled v-if="sendmeth == 1") Наземный
-            b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
+      b-card-body.p-5(v-if="tabIndex == 1")
+        b-row
+          b-col Общий вес
+          b-col
+            b-form-input(v-model="weight" @dblclick.native="weight = 25" :autofocus="true" type="number" size="lg" required palceholder="Общий Вес*") 
+          b-col КГ
+          //- b-input-group-append
+          //-   b-btn(disabled) Считать вес
+        //- b-form-group(label="Вид отправки")
+        //-   b-btn(@click="sendmeth = 2" disabled variant="white" v-if="sendmeth == 1") Наземный
+        //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
-        b-tab(title="Ярлык" :disabled="!(response && response.packetListNo)")
-          code.text-primary(v-if="response && response.packetListNo")
-            .mx-4
-              //- code {{response}}
-              code#bagPrintData.hide
-                | N
-                | q720
-                | j555
-                | l8,C,001
-                | X0,40,4,710,640
-                | 
-                | A20,60,0,5,1,1,N,"response.route"
-                | A20,120,0,4,1,1,N,"KYDA"
-                | A300,120,0,4,1,1,N,"response.toDepartment"
-                | 
+      b-card-body(v-if="response && response.packetListNo")
+        code.text-primary
+          .mx-4.my-4
+            //- code {{response}}
+            code#bagPrintData.hide
+              | N
+              | q720
+              | j555
+              | l8,C,001
+              | X0,40,4,710,640
+              | 
+              | A20,60,0,5,1,1,N,"response.route"
+              | A20,120,0,4,1,1,N,"KYDA"
+              | A300,120,0,4,1,1,N,"response.toDepartment"
+              | 
 
-                | A20,150,0,4,1,1,N,"OT"
-                | A300,150,0,4,1,1,N,"response.fromDepartment"
-                | 
-                | A20,180,0,4,1,1,N,"BEC {{response.actualWeight}}"
-                | A300,180,0,4,1,1,N,"{{response.count}} Kolvo"
-                | 
-                | A20,210,0,4,1,1,N,""
-                | 
-                | B20,240,0,1,2,2,100,B,"{{response.packetListNo}}"
-                | 
-                | A20,480,0,4,1,1,N,"COTPYDHNK"
-                | A300,480,0,4,1,1,N,"{{response.workerName}}"
-                | A380,480,0,4,1,1,N,"_______________"
-                | 
-                | A20,510,0,1,1,1,N,"© 2018 Powered by SORTRACK®, KAZPOST INC"
-                | P1
-                | N
+              | A20,150,0,4,1,1,N,"OT"
+              | A300,150,0,4,1,1,N,"response.fromDepartment"
+              | 
+              | A20,180,0,4,1,1,N,"BEC {{response.actualWeight}}"
+              | A300,180,0,4,1,1,N,"{{response.count}} Kolvo"
+              | 
+              | A20,210,0,4,1,1,N,""
+              | 
+              | B20,240,0,1,2,2,100,B,"{{response.packetListNo}}"
+              | 
+              | A20,480,0,4,1,1,N,"COTPYDHNK"
+              | A300,480,0,4,1,1,N,"{{response.workerName}}"
+              | A380,480,0,4,1,1,N,"_______________"
+              | 
+              | A20,510,0,1,1,1,N,"© 2018 Powered by SORTRACK®, KAZPOST INC"
+              | P1
+              | N
 
 
-              div
-                b ШТРИХКОД 
-                span {{response.packetListNo}}
-              div
-                b ЛЭЙБЛ 
-                span {{response.labelListNo}}
-              //- div 
-              //-   b МЕТОД 
-              //-   span {{response.cli_info.SNDMETH_NAME}}
-              //- div 
-              //-   b ТИП 
-              //-   span {{response.cli_info.BAGTYPE_NAME}}
-              div 
-                b ОТ 
-                span {{response.fromDepartment}}
-              div 
-                b КУДА 
-                span {{response.toDepartment}}
-              div 
-                b ВЕС 
-                span {{response.actualWeight}} 
-                span {{response.count}}
-              div 
-                b ОПЕРАТОР 
-                span {{response.workerName}}
-              div 
-                b ДАТА
-                span {{response.date}}
+            div
+              b ШТРИХКОД 
+              span {{response.packetListNo}}
+            div
+              b ЛЭЙБЛ 
+              span {{response.labelListNo}}
+            //- div 
+            //-   b МЕТОД 
+            //-   span {{response.cli_info.SNDMETH_NAME}}
+            //- div 
+            //-   b ТИП 
+            //-   span {{response.cli_info.BAGTYPE_NAME}}
+            div 
+              b ОТ 
+              span {{response.fromDepartment}}
+            div 
+              b КУДА 
+              span {{response.toDepartment}}
+            div 
+              b ВЕС 
+              span {{response.actualWeight}} 
+            div 
+              b КОЛ-ВО 
+              span {{response.count}}
+            div 
+              b ОПЕРАТОР 
+              span {{response.workerName}}
+            div 
+              b ДАТА 
+              span {{response.date}}
 
-                
-          code.text-danger(v-if="response && response.result == 'error'")  {{response}}
-          .text-center(v-if="tabIndex == 2 && response")
-            b-btn(variant="primary" @click="print") Печать
-            b-btn(variant="primary" @click="window.print();") Печать Windows
+              
+        code.text-danger(v-if="response && response.result == 'error'")  {{response}}
 
-    b-collapse(is-nav id="settings_collapse" v-if="selectedBag")
-      b-form.my-3
-        
-        
-        b-form-group(horizontal label="LED")
-          b-input-group
-            b-form-input(:placeholder="cursor+''" v-model="selectedBag.led")
-            b-input-group-append
-              b-btn(variant="primary" @click="testLed(selectedBag.led?selectedBag.led:cursor)") Тест
-        b-form-group(horizontal label="INDEX")
-          b-form-input(v-model="selectedBag.ppi")
-        b-form-group(horizontal)
-          b-btn(@click="$saveConfig") Save
 
-    template(slot="modal-footer")
-      b-link(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" size="sm") Scan Selected 
-      //- b-link(@click="$bus.$emit('keyboard:keydown:enter:p',Object.keys(bags)[1])" size="sm") Scan Bag 2
-      b-btn(variant="primary" v-if="tabIndex == 1 && !response" @click="closeBag") Закрыть мешок
+      b-list-group(v-if="count" flush)
+        b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
+          .d-flex.w-100.justify-content-between(@click="removeWpi(k)") 
+            h5 {{k}} 
+            small  {{v.postIndexTitle}} ( {{v.postIndex}} )
+          //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
+      b-card-footer.text-center
+        b-btn.mr-auto(v-if="isEditing" @click="$saveConfig" variant="outline-secondary") Save
+        //- b-btn.mr-auto(@click="tabIndex--" v-if="tabIndex > 0" variant="primary").left 
+          i.fa.fa-arrow-left
+          |  Назад 
+        b-btn(variant="danger" v-if="tabIndex == 1 && !response" :disabled="!weight" @click="closeBag")
+          i.fa.fa-lock.mr-2
+          | Закрыть мешок
+        b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
+          i.fa.fa-tachometer
+        template(v-if="tabIndex == 2 && response")
+          b-btn(variant="primary" @click="print") 
+            i.fa.fa-print.mr-2
+            | Печать Ярлыка
+          //- b-btn.m-auto(variant="primary" @click="") Печать Windows
+
+  
+   
       
 </template>
 
@@ -150,13 +156,18 @@ export default {
         selectedBag:'getSelectedBag',
         bags: 'getBags',
         cursor: 'cursor',
-    })
+    }),
+    count(){
+      return Object.keys(this.selectedBag.wpi).length;
+    }
   },
   data () {
     return {
+      isEditing:false,
       tabIndex:0,
-      weight:0,
-      sendmeth:1
+      weight:null,
+      sendmeth:1,
+      isWindowsPrint:true
     }
   },
   methods:{
@@ -175,6 +186,25 @@ export default {
           this.tabIndex = 2
           this.print();
         });
+    },
+    removeWpi(k){
+
+      this.$bvModal.msgBoxConfirm("Удалить ШПИ "+k+" из мешка ?", {
+          title: "Выемка из мешка",
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Удалить',
+          cancelTitle: 'Отмена',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        }).then(value => {
+          if(value) Vue.delete(this.selectedBag.wpi,k);
+        })
+        .catch(err => {
+          // An error occurred
+        })
     },
     next(ppi){
 
@@ -195,10 +225,14 @@ export default {
       this.$emit('close');
     },
     print(){
-      var text = document.getElementById('bagPrintData').innerText;
-      text = cyr().transform(text);
-      text = text.replace('қ','k')
-      $leds.printbag(text);
+      if(this.isWindowsPrint){
+        window.print();
+      } else {
+        var text = document.getElementById('bagPrintData').innerText;
+          text = cyr().transform(text);
+          text = text.replace('қ','k')
+          $leds.printbag(text);
+      }
     },
     testLed(led){
       $leds.test(led);
@@ -232,4 +266,16 @@ export default {
 
 .hide
   display none
+  
+input.inline
+  border none
+  border-bottom 1px dashed #ccc
+  font inherit
+  -webkit-appearance: none
+  background-color inherit
+  
+  &[disabled]
+    border-bottom-color transparent
+    
+  
 </style>

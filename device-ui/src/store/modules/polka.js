@@ -7,8 +7,7 @@ const state = {
   response:null,
   closeResponse:null,
   error:null,
-  depcode:null||localStorage.getItem('depcode'),
-  autoDepcode:'055990',
+  depcode:'055990'||localStorage.getItem('depcode'),
   user:'test.alm21.rpo1'||localStorage.getItem('user'),
   demo:false||(localStorage.getItem('demo') === 'true'),
   ledOn: false||(localStorage.getItem('ledOn') === 'true'),
@@ -166,7 +165,7 @@ const actions = {
 
       }).catch((error)=>{
         state.status = 'error';
-        state.error = error;
+        state.error = error.message?error.message:error;
 
         console.log('errorzzz',error);
 

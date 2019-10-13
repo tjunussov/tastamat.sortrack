@@ -44,7 +44,7 @@
 <script>
 import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
-import {$http,deviceLEDMixin} from '@/store/api/http'
+import {$http,$leds} from '@/store/api/http'
 
 export default {
   name: 'Sortplan',
@@ -78,7 +78,6 @@ export default {
       sortplan:{}
     }
   },
-  mixins:[deviceLEDMixin],
   methods:{
     ...mapActions([
       'settingsUpdate',

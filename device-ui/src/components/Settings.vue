@@ -34,12 +34,11 @@
 
 import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
-import {deviceLEDMixin,deviceURL,baseURL} from '@/store/api/http'
+import {$leds,deviceURL,baseURL} from '@/store/api/http'
 
 
 export default {
   name: 'Settings',
-  mixins: [ deviceLEDMixin ],
   mounted(){
     this.deviceip = deviceURL;
     this.apiUrl = baseURL;
@@ -78,7 +77,7 @@ export default {
       // location.reload();
     },
     publishOn(){
-      this.$ledOn(this.cmd)
+      $leds.$ledOn(this.cmd)
       console.log('publish',this.cmd);
     },
     toggleUser(){

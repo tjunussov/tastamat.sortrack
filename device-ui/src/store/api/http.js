@@ -110,7 +110,7 @@ var pushCnt = 0;
 var pushCntTheme = 0;
 var pushes = [push0,push1,push2,push3,push4];
     
-
+/*
 export const deviceLEDMixin = {
   methods: {
     $search(user){
@@ -206,11 +206,15 @@ export const deviceLEDMixin = {
     }
   }
 };
+*/
 
 export const $smartsort = {
   auth(user,depcode){
     return $http.get('authorize',{
       params:{login:user,techindex:depcode}
+    }).then((resp)=>{
+      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      return resp;
     })
   },
   fetchDemoRPO(depcode){
@@ -225,7 +229,7 @@ export const $smartsort = {
     }).catch((error)=>{
       if(error.message == 'Network Error')
         return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
-      else throw error
+      else throw new Error(error.data?error.data:error)
     })
     // return $http.get('sm_home.putToBag')
   },
