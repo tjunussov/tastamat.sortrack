@@ -65,7 +65,8 @@ doctype html
         b-nav-item-dropdown(right v-else="user"  @click="logout()")
           template(slot="button-content")
             i.fa.fa-user.mr-2/
-            | {{user}} 
+            | {{userName}} 
+            .username {{user}}
           b-dropdown-item(to="/badge") Бейдж
           b-dropdown-item( @click="logout()") Выход
 
@@ -98,7 +99,7 @@ doctype html
     //-   b-col 
     //-    .barcode {{encode('u'+user)}}
     template(slot="modal-footer")
-      b-btn(variant="primary" :disabled="!tmpUser" @click="login(tmpUser,depcode )") Вход
+      b-btn(variant="primary" :disabled="!tmpUser" @click="login(tmpUser)") Вход
 
   .bd-footer.text-muted
     .container 
@@ -136,7 +137,7 @@ export default {
   mounted(){
     this.$bus.$on('keyboard:keydown:enter:13',this.barcodeSet);
     this.$bus.$on('keyboard:keydown:enter:i',this.registerDepcode);
-    this.$bus.$on('keyboard:keydown:enter:u',this.auth);
+    this.$bus.$on('keyboard:keydown:enter:u',this.loginViaBarcode);
     
   },
   created(){
@@ -155,7 +156,7 @@ export default {
   beforeDestroy(){
     this.$bus.$off('keyboard:keydown:enter:13',this.barcodeSet);
     this.$bus.$off('keyboard:keydown:enter:i',this.registerDepcode);
-    this.$bus.$off('keyboard:keydown:enter:u',this.auth);
+    this.$bus.$off('keyboard:keydown:enter:u',this.loginViaBarcode);
   },
   computed:{
     ...mapGetters({
@@ -257,8 +258,13 @@ export default {
       this.settings.user = this.user
       this.settingsUpdate(this.settings);
     },
-    login(user,index){
+    loginViaBarcode(user){
+      this.tmpUser = user;
+      this.login(user);
+    },
+    login(user){
       this.errorLogin = null
+      var index = this.depcode;
 
       $smartsort.auth(user,index).then((resp)=>{
          console.log('login',user,index,resp);
@@ -269,6 +275,8 @@ export default {
          this.settingsUpdate(this.settings);
          this.$root.$emit('bv::hide::modal', 'user', '#btnLogin')
       }).catch((err)=>{
+        this.$root.$emit('bv::show::modal', 'user')
+        console.error('login',err);
         this.errorLogin = err;
       });
     },
@@ -475,6 +483,14 @@ body
 .bd-navbar .navbar-nav .nav-link.active,.bd-navbar .navbar-nav .nav-link:hover
   color #fff
   background-color transparent
+  
+
+.username
+  position absolute
+  font-size 12  px
+  margin-left 20px
+  margin-top -5px
+  opacity 0.5
 
 
 .bd-content

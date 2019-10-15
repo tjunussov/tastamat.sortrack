@@ -349,6 +349,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
     if(cfg.params.login == 'test.alm21.rpo1')
         return [200,{"result": "success","name": "Мырзанова Гульмира"}];
+    else if(cfg.params.login == 'test')
+        return [200,{"result": "success","name": "Азамат Алимбаев"}];
     else
         return [200,{"result": "error","resultInfo": "user by login not found"}];
 })
@@ -358,7 +360,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
   var req = cfg.params;
   
-  var p = Math.floor(plan.parentPostIndexes.length * Math.random())
+  var p = barcodes.mails.findIndex((k)=> k == req.barcode )%plan.parentPostIndexes.length;
+  if(p<0) p = Math.floor(plan.parentPostIndexes.length * Math.random())
 
   console.debug('findBagIndex',req, p);
 

@@ -25,20 +25,19 @@ b-row.flex-xl-nowrap2
 
     
           
-    b-collapse#collapse1_inner 
-      code {{this.bind.unmapped}}
-      hr/
-      code {{bags}}
+    
 
     
 
   .m-4.p-2.pb-3.fixed-bottom
     b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
-      b-card-header(v-b-toggle.collapse1_inner="") ШПИ 
+      b-card-header ШПИ 
         b {{barcode}} 
         b-btn.close(@click.stop="clearAll")  &times;
-        //- .debug.float-right.mr-3
-        //-   b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+        .debug.float-right.mr-3
+          b-link.text-danger(v-b-modal.debug="")
+            i.fa.fa-bug.mr-2
+          //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
         p(v-if="error") {{error}} 
@@ -56,6 +55,8 @@ b-row.flex-xl-nowrap2
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
+  b-modal#debug(hide-header size="lg" hide-footer scrollable  body-bg-variant="dark")
+    pre {{bags}}
         
 </template>
 
@@ -102,7 +103,7 @@ export default {
         //   else $leds.on(val);
         // }
         
-        var led = this.selectedBag && this.selectedBag.led ? this.selectedBag : this.cursor;
+        var led = this.selectedBag && this.selectedBag.led ? this.selectedBag.led : this.cursor;
             led = led%24;
         console.debug('watched status',val,led,this.thor);
         if(this.ledOn) $leds.on(val,led,this.thor);
@@ -224,6 +225,12 @@ export default {
 .selected
   background-color #f00
   color #fff
+
+#debug pre 
+  color #4f4 !important
+  font-size 11px
+  overflow hidden
+  line-height 11px
 
 .polkas  
   // display: grid;

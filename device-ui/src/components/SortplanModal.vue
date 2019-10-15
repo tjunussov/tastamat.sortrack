@@ -26,6 +26,13 @@ b-modal#msortplan(ref="msortplan" visible title="Сортплан" size="lg" hid
           template(slot="header") 
             b {{u}}
           .barcode {{encode('u'+u)}}
+
+      h4 Полки
+      b-card-group.users(deck)
+        b-card(align="center" no-body v-for="u in 24" :key="u")
+          template(slot="header") 
+            b {{u}}
+          .barcode {{encode('p#'+u)}}
 </template>
 
 <script>

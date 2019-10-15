@@ -1,5 +1,5 @@
 <template lang="pug">
-b-modal#mclosebag(no-enforce-focus size="" no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
+b-modal#mclosebag(no-enforce-focus size="" scrollable  no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
     
 
     b-card(no-body)

@@ -20,7 +20,7 @@ export default {
       },
       users:[
         'test.alm21.rpo1',
-        'SCASTAGASIL',
+        'test',
         'SCASTALZHANOVA',
         'SCASTGALINA',
         'SCASTGULMIRA',
