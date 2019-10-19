@@ -1,26 +1,26 @@
 @media print
   body
-    padding 0
+    padding 0 !important
     
     
   body *
-    visibility hidden
-    padding 0
-    margin 0
+    visibility hidden !important
+    padding 0 !important !important
+    margin 0 !important
     
   #app, .modal-header
-    display none
+    display none !important
     
 
   .modal 
-    position relative
-    top 0
+    position relative !important
+    top 0 !important
     overflow visible !important
     min-width 993px  !important
     
 
   .modal-open, .modal-dialog-scrollable .modal-body, .modal-dialog-scrollable .modal-content
-    overflow visible
+    overflow visible !important
     
     
   
@@ -29,7 +29,7 @@
     
   .modal-dialog
     margin 0 !important
-    border 0px solid #000
+    border 0px solid #000 !important
     min-width 100% !important
     
   .modal-lg
@@ -38,7 +38,7 @@
   
   #printSection
     visibility visible !important
-    position absolute
-    left 0
-    top 0
+    position absolute !important
+    left 0 !important
+    top 0 !important
     min-width 100% !important
