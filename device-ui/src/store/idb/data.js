@@ -6,12 +6,23 @@ export default {
     //-------------
 
     db.settings.add({
-      point:'000001',
+      id:1,
+      depcode:null,
       size:24,
       bindscan:1500,
       mockdelay:true,
       demoerror:true,
+      isDemo:true,
+      isLedOn:false,
+      isWindowsPrint:true,
+      isPrintProxy:false,
+      isAutoPrint:false,
+      user:null,
+      apiUrl:'https://pls-test.post.kz/api/smart-shelves/',
+      ledUrl:'http://192.168.10.10/api/v1/leds',
       printer:'192.168.1.40',
+      broker:'192.168.10.1',
+      leds:["192.168.10.1","192.168.10.2","192.168.10.3"],
       meta_:{ updated:new Date() },
       sortplan:{
         '90001':'L1',
@@ -21,16 +32,10 @@ export default {
       users:[
         'test.alm21.rpo1',
         'test',
-        'SCASTALZHANOVA',
-        'SCASTGALINA',
-        'SCASTGULMIRA',
-        'SCASTKALAMKAS',
-        'SCASTNAZIPA',
-        'SCASTDARYA',
-        'SCASTRAUSHAN',
-        'SCASTHASENOVA',
-        'SCASTGULZIFA',
-        'SCASTTLEYBAEVA'],
+        'aza',
+        'tima',
+        'zarina'
+      ],
       bags:null,
       destinations:[
         '00000',

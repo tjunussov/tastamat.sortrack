@@ -13,10 +13,10 @@ export default new VueIdb({
   version: 1,
   database: 'sortrack',
   schemas: [ // Indexes ( not columns )
-    { settings: 'point,meta_.updated' },
+    { settings: 'id,meta_.updated' },
   ],
   options: {
-    settings: { type: 'list', primary: 'version', label: 'version',updated_at:'meta_.updated' },
+    settings: { type: 'list', primary: 'id', label: 'id',updated_at:'meta_.updated' },
   },
   /*Zapis: {
     orders: {

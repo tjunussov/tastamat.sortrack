@@ -1,39 +1,39 @@
 import Vue from 'vue'
-import {$smartsort} from '@/store/api/http'
+import {$smartsort,$http,$device} from '@/store/api/http'
 
 const state = {
   sortplan:null,
   barcode:null,
   response:null,
   closeResponse:null,
+  loginResponse:null,
   error:null,
-  depcode:localStorage.getItem('depcode'),
-  user:localStorage.getItem('user'),
-  demo:false||(localStorage.getItem('demo') === 'true'),
   calibrating:false,
-  ledOn: false||(localStorage.getItem('ledOn') === 'true'),
   selected:null,
   status:null,
-  index:null
+  index:null,
+  demoBarcodes:null
 }
 
 // getters
 const getters = {
-  config : (state,getters) => getters.getSettings[0],
-  getBags : (state,getters) => getters.getSettings[0]?getters.getSettings[0].bags:null,
+  config : (state,getters) => getters.getSettingsSelected,
+  getBags : (state,getters) => getters.getSettingsSelected?getters.getSettingsSelected.bags:null,
   getConfig : (state,getters) => getters.config,
   getSortplan : (state) => state.sortplan,
   getBarcode : (state) => state.barcode,
-  getDepcode : (state) => state.depcode ? state.depcode : state.autoDepcode,
-  getAutoDepcode : (state) => state.depcode ? state.depcode : state.autoDepcode,  
-  getLedOn : (state) => state.ledOn,
-  getDemo : (state) => state.demo,
+  getDepcode : (state,getters) => getters.config?getters.config.depcode:null,
+  getLedOn : (state,getters) => getters.config?getters.config.isLedOn:null,
+  getDemo : (state,getters) => getters.config?getters.config.isDemo:null,
+  getDemoBarcodes: (state) => state.demoBarcodes,
   getCalibrating : (state) => state.calibrating,
   getStatus : (state) => state.status,
-  getUser : (state) => state.user,
+  getUser : (state,getters) => getters.config?getters.config.user:null,
   getError : (state) => state.error,
   getResponse : (state) => state.response,
   getCloseResponse : (state) => state.closeResponse,
+  getLoginResponse : (state) => state.loginResponse,
+  
   getSelected : (state) => state.selected,
   getSelectedBag: (state,getters) => {
     if(state.selected) return getters.getBags[getters.cursor]
@@ -54,6 +54,14 @@ const getters = {
 
 // actions
 const actions = {
+  $onHydrated({ commit, dispatch, state, getters }){
+    dispatch('settingsSelect',getters.getSettings[0]);
+    dispatch('$initSettings');
+  },
+  $initSettings({ commit, dispatch, state, getters }){
+    $http.defaults.baseURL = getters.config.apiUrl;
+    $device.defaults.baseURL = getters.config.ledUrl;
+  },
   $initBags ({ commit, dispatch, state, getters }) {
 
     
@@ -81,8 +89,8 @@ const actions = {
     })
     */
   },
-  $saveConfig({ commit, dispatch, state, getters }){
-    dispatch('settingsUpdate',getters.getSettings[0]);
+  $save({ commit, dispatch, state, getters }){
+    dispatch('settingsUpdate',getters.getSettingsSelected);
   },
   $clear ({ commit, dispatch, state, getters }) {
     state.response = null;
@@ -140,7 +148,6 @@ const actions = {
         state.response = resp
         state.status = 'push';
         state.selected = resp.parentPostIndex
-        state.autoDepcode = resp.postIndex // проставляем автоматический индекс пользователя
         // ложим посылку в корзину
 
 
@@ -161,7 +168,7 @@ const actions = {
 
             Vue.set(getters.getBags[pos],'wpi',val)
 
-            dispatch('settingsUpdate',getters.getSettings[0]);
+            dispatch('$save');
 
         /////////////
 
@@ -172,7 +179,7 @@ const actions = {
         state.status = 'error';
         state.error = error.message?error.message:error;
 
-        console.log('errorzzz',error);
+        // console.log('errorzzz',error);
 
         throw error;
         // this.status = 'notfound';
@@ -197,7 +204,7 @@ const actions = {
     console.log('closeBag',ppi,wpi,weight,sendmeth);
 
 
-    return $smartsort.closeBag(ppi,wpi,String(weight),String(sendmeth),state.depcode,state.user).then((resp)=>{
+    return $smartsort.closeBag(ppi,wpi,String(weight),String(sendmeth),getters.getDepcode,getters.getUser.login).then((resp)=>{
 
         state.closeResponse = resp.data
 
@@ -207,6 +214,7 @@ const actions = {
         Vue.set(getters.getSelectedBag,'wpi',{})
         // state.selected = ppi
         state.status = 'closebag';
+        dispatch('$save');
 
         return resp.data
         
@@ -235,17 +243,59 @@ const actions = {
         if(plan[i]) getters.getConfig.bags[i] = { ...item, ppi:plan[i].techindex,ppn:plan[i].nameRu, wpi:{} };
       }),
 
-      dispatch('$saveConfig');
+      dispatch('$save');
 
   },
   $fetchSortplan({ commit, dispatch, state, getters },{depcode}){
     return $smartsort.sortplan(depcode).then((resp)=>{
-
       state.sortplan = resp.data.parentPostIndexes
       console.log("sortplan",state.sortplan)
       return resp;
     })
   },
+  $login({ commit, dispatch, state, getters },{user}){
+    return $smartsort.auth(user,getters.getDepcode).then((resp)=>{
+       console.log('login',user,getters.getDepcode,resp);
+       state.status = 'login';
+       Vue.set(getters.getConfig,'user',{login:user,name:resp.data.name});
+       dispatch('$save');
+    }).catch((error)=>{
+      state.status = 'error';
+      state.loginResponse = error;
+      throw error;
+    });
+  },
+  $logout({ commit, dispatch, state, getters }){
+      Vue.set(getters.getConfig,'user',null);
+      state.status = 'logout';
+      dispatch('$save');
+  },
+  $fetchDemoRPO({ commit, dispatch, state, getters }){
+    return $smartsort.fetchDemoRPO(getters.getDepcode).then((resp)=>{
+       state.demoBarcodes = resp.data.mails;
+       console.log('fetchRPO',state.demoBarcodes);
+    })
+  },
+  $registerDepcode({ commit, dispatch, state, getters },{depcode}){
+    getters.getConfig.depcode = depcode;
+    console.log('$registerdepcode',depcode);
+    state.status = 'registerpoint';
+    dispatch('$save');
+  },
+  $togleDemo({ commit, dispatch, state, getters },{val}){
+    if(val !== undefined)
+      getters.getConfig.isDemo = val
+    else
+      getters.getConfig.isDemo = !getters.getConfig.isDemo;
+    dispatch('$save');
+  },
+  $togleLed({ commit, dispatch, state, getters },{val}){
+    if(val !== undefined)
+      getters.getConfig.isLedOn = val
+    else 
+      getters.getConfig.isLedOn = !getters.getConfig.isLedOn;
+    dispatch('$save');
+  }
   // $remapSelectedBag({ commit, dispatch, state, getters },{ppi,led}){
   //   // findBag(getters.getBags,ppi);// just for check
   //   console.log('remapSelectedBag',getters.getSelectedBag,led)

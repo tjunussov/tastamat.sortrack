@@ -1,5 +1,5 @@
 <template lang="pug">
-b-modal#mclosebag(no-enforce-focus size="" scrollable  no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
+b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
     
 
     b-card(no-body)
@@ -8,26 +8,30 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable  no-fade @hide="clear" vis
         b-card-title 
           i.fa.fa-inbox.mr-2(:class="{'text-success':isEditing}" @click="isEditing=!isEditing") 
           | Полка 
-          input.inline(:value="selectedBag.ppi" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
-          template(v-if="isEditing")
-            i.fa.fa-lightbulb-o.mr-2.ml-4
-            input.inline(v-model="selectedBag.led" style="width:50px" type="number" :placeholder="cursor")
-        b-card-sub-title.mb-2 Направление 
+          input.inline(:value="selectedBag.ppi" style="width:95px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
+          .scales.pr-4(v-if="count")
+            i.fa.fa-tachometer.mr-2
+            b-form-input.inline.text-right(
+              v-model="weight" 
+              :autofocus="true"
+              @dblclick="weight = 25" 
+              style="width:90px;"
+              placeholder="Вес") 
+            .label.text-muted кг
+        b-card-sub-title.mb-2 Индекс 
           input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
+          div(v-if="isEditing") Лампочка
+            i.fa.fa-lightbulb-o.mr-2.ml-4
+            input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
 
-      b-card-header(header-tag="nav")
-        b-nav.nav-justified.wizard(card-header tabs)
-          b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0") ШПИ
-            b-badge.ml-2(variant="primary") {{count}}шт
-          b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1" :disabled="!count") Вес
-          b-nav-item(:active="tabIndex == 2" :disabled="!(response && response.packetListNo)" @click="tabIndex = 2") Ярлык
+      //- b-card-header(header-tag="nav")
+      //-   b-nav.nav-justified.wizard(card-header tabs)
+      //-     b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0") ШПИ
+      //-       b-badge.ml-2(variant="primary") {{count}}шт
+      //-     //- b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1" :disabled="!count") Вес
+      //-     b-nav-item(:active="tabIndex == 1" :disabled="!(response && response.packetListNo)" @click="tabIndex = 2") Ярлык
 
-      b-card-body.p-5(v-if="tabIndex == 1")
-        b-row
-          b-col Общий вес
-          b-col
-            b-form-input(v-model="weight" @dblclick.native="weight = 25" :autofocus="true" type="number" size="lg" required palceholder="Общий Вес*") 
-          b-col КГ
+      //- b-card-body.p-4        
           //- b-input-group-append
           //-   b-btn(disabled) Считать вес
         //- b-form-group(label="Вид отправки")
@@ -35,23 +39,51 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable  no-fade @hide="clear" vis
         //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
       b-card-body(v-if="response && response.packetListNo")
-        code.text-primary#printSection
-          .mx-4.my-4
-            //- code {{response}}
-            code#bagPrintData.hide
+        pre.text-primary#printSection
+          template(v-if="config.isWindowsPrint")
+            div
+              b ШТРИХКОД 
+              span {{response.packetListNo}}
+            div
+              b ЛЭЙБЛ 
+              span {{response.labelListNo}}
+            //- div 
+            //-   b МЕТОД 
+            //-   span {{response.cli_info.SNDMETH_NAME}}
+            //- div 
+            //-   b ТИП 
+            //-   span {{response.cli_info.BAGTYPE_NAME}}
+            div
+              b ОТ 
+              span {{response.fromDepartment}}
+            div
+              b КУДА 
+              span {{response.toDepartment}}
+            div
+              b ВЕС 
+              span {{response.actualWeight}} 
+            div
+              b КОЛ-ВО 
+              span {{response.count}}
+            div
+              b ОПЕРАТОР 
+              span {{response.workerName}}
+            div
+              b ДАТА 
+              span {{response.date}}
+          template(v-else)
               | N
               | q720
               | j555
               | l8,C,001
               | X0,40,4,710,640
               | 
-              | A20,60,0,5,1,1,N,"response.route"
+              | A20,60,0,5,1,1,N,"{{response.route}}"
               | A20,120,0,4,1,1,N,"KYDA"
-              | A300,120,0,4,1,1,N,"response.toDepartment"
+              | A300,120,0,4,1,1,N,"{{response.toDepartment}}"
               | 
-
               | A20,150,0,4,1,1,N,"OT"
-              | A300,150,0,4,1,1,N,"response.fromDepartment"
+              | A300,150,0,4,1,1,N,"{{response.fromDepartment}}"
               | 
               | A20,180,0,4,1,1,N,"BEC {{response.actualWeight}}"
               | A300,180,0,4,1,1,N,"{{response.count}} Kolvo"
@@ -68,63 +100,44 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable  no-fade @hide="clear" vis
               | P1
               | N
 
-
-            div
-              b ШТРИХКОД 
-              span {{response.packetListNo}}
-            div
-              b ЛЭЙБЛ 
-              span {{response.labelListNo}}
-            //- div 
-            //-   b МЕТОД 
-            //-   span {{response.cli_info.SNDMETH_NAME}}
-            //- div 
-            //-   b ТИП 
-            //-   span {{response.cli_info.BAGTYPE_NAME}}
-            div 
-              b ОТ 
-              span {{response.fromDepartment}}
-            div 
-              b КУДА 
-              span {{response.toDepartment}}
-            div 
-              b ВЕС 
-              span {{response.actualWeight}} 
-            div 
-              b КОЛ-ВО 
-              span {{response.count}}
-            div 
-              b ОПЕРАТОР 
-              span {{response.workerName}}
-            div 
-              b ДАТА 
-              span {{response.date}}
-
               
         code.text-danger(v-if="response && response.result == 'error'")  {{response}}
 
 
-      b-list-group(v-if="count" flush)
+      b-list-group(v-if="count" style="min-height:500px" flush)
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
           .d-flex.w-100.justify-content-between(@click="removeWpi(k)") 
             h5 {{k}}   &times;
             small  {{v.postIndexTitle}} ( {{v.postIndex}} )
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
       b-card-footer.text-center
-        b-btn.mr-auto(v-if="isEditing" @click="save" variant="outline-secondary") Save
-        //- b-btn.mr-auto(@click="tabIndex--" v-if="tabIndex > 0" variant="primary").left 
-          i.fa.fa-arrow-left
-          |  Назад 
-        b-btn(variant="danger" v-if="tabIndex == 1 && !response" :disabled="!weight" @click="closeBag")
+        b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
+        b-btn(variant="success" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
-        b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
+        //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
           i.fa.fa-tachometer
-        template(v-if="tabIndex == 2 && response")
-          b-btn(variant="primary" @click="print") 
-            i.fa.fa-print.mr-2
-            | Печать Ярлыка
-          //- b-btn.m-auto(variant="primary" @click="") Печать Windows
+        template(v-if="tabIndex == 1 && response")
+          //- b-button-group.float-left
+            b-btn(title="Автопечать" :variant="config.isAutoPrint?'primary':'outline-primary'" @click="config.isAutoPrint=!config.isAutoPrint") 
+              i.fa.fa-bolt
+            b-btn(title="Автопечать" :variant="config.isAutoPrint?'primary':'outline-primary'" @click="config.isAutoPrint=!config.isAutoPrint") 
+              i.fa.fa-bolt
+          b-dropdown.button-block(split block  size="lg" split-variant="primary" variant="outline-primary" @click="print")
+            template(slot="button-content") 
+              i.fa.fa-print.mr-2
+              | Печать Ярлыка
+            b-dropdown-item(@click="config.isAutoPrint=!config.isAutoPrint; $save();") 
+              i.fa.mr-2(:class="{'fa-circle text-success':config.isAutoPrint,'fa-circle-o':!config.isAutoPrint}")/
+              | Автопечать
+            b-dropdown-item(@click="config.isWindowsPrint=!config.isWindowsPrint; $save();")
+              i.fa.mr-2(:class="{'fa-circle text-success':!config.isWindowsPrint,'fa-circle-o':config.isWindowsPrint}")/
+              | Нативная Печать
+            b-dropdown-item(@click="config.isPrintProxy=!config.isPrintProxy; $save();")
+              i.fa.mr-2(:class="{'fa-circle text-success':config.isPrintProxy,'fa-circle-o':!config.isPrintProxy}")/
+              | Proxy Печать
+              
+            //- b-btn.m-auto(variant="primary" @click="") Печать Windows
 
   
    
@@ -145,14 +158,17 @@ export default {
   props: ['isCloseModalOpen'],
   mounted(){
     this.$bus.$on('keyboard:keydown:enter:p',this.next);
+    this.$bus.$on('keyboard:keydown:enter',this.weightEnter);
   },
   beforeDestroy(){
     this.$bus.$off('keyboard:keydown:enter:p',this.next);
+    this.$bus.$off('keyboard:keydown:enter',this.weightEnter);
   },
   computed:{
     ...mapGetters({
         response: 'getCloseResponse',
         selected:'getSelected',
+        config:'getConfig',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
         cursor: 'cursor',
@@ -168,8 +184,6 @@ export default {
       tempPpi:null,
       weight:null,
       sendmeth:1,
-      isWindowsPrint:true,
-      isAutoPrint:false
     }
   },
   methods:{
@@ -177,7 +191,7 @@ export default {
       '$closeBag',
       '$clear',
       '$deselectBag',
-      '$saveConfig',
+      '$save',
       '$selectBag',
       '$deselectBag',
     ]),
@@ -187,9 +201,12 @@ export default {
         wpi:Object.keys(this.selectedBag.wpi),
         weight:this.weight,
         sendmeth:this.sendmeth}).then(()=>{
-          this.tabIndex = 2
-           if(this.isAutoPrint) this.print();
+          this.tabIndex = 1
+           if(this.config.isAutoPrint) this.print();
         });
+    },
+    weightEnter(val){
+      if(val.indexOf('.') > 0) this.weight = val
     },
     removeWpi(k){
 
@@ -248,20 +265,20 @@ export default {
       } else {
         this.clear();
       }
-      this.$saveConfig();
+      this.$save();
     },
     clear(){
       this.$deselectBag();
       this.$emit('close');
     },
     print(){
-      if(this.isWindowsPrint){
-        window.print();
-      } else {
-        var text = document.getElementById('bagPrintData').innerText;
+      if(this.config.isPrintProxy){
+        var text = document.getElementById('printSection').innerText;
           text = cyr().transform(text);
           text = text.replace('қ','k')
           $leds.printbag(text);
+      } else {
+        this.$print();
       }
     },
     testLed(led){
@@ -294,20 +311,39 @@ export default {
   display block
   
 
+.scales
+  position absolute
+  right 0px
+  top 30px
+  font-size 2rem
+  
+  .inline 
+    outline none
+    display inline
+    padding 0
+    line-height 1
+    height auto
+    border none
+    border-bottom 1px dashed #ccc
+    font-weight normal
+    border-radius 0
+    
+    &:focus
+      box-shadow none
+      background-color transparent
+    
+  .label
+    font-size 1rem
+    display inline
+    margin-left 5px
+  
+  
+    
+  
+
 .hide
   display none
   
-input.inline
-  border none
-  border-bottom 1px dashed #ccc
-  font inherit
-  -webkit-appearance: none
-  background-color inherit
-  
-  &[disabled]
-    border-bottom-color transparent
-    
-
 @media print
   body *
     visibility hidden
@@ -333,6 +369,9 @@ input.inline
     left 0
     top 0
     width 1024px  !important
+    
+  pre
+    border none 
     
   
 </style>

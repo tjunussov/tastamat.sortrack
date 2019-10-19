@@ -5,16 +5,7 @@ import Vue from 'vue'
 /*************************************/
 
 export var baseURL = "https://pls-test.post.kz/api/smart-shelves/"
-
-if(localStorage.getItem("apiUrl") !== null){
-  baseURL = localStorage.getItem("apiUrl");
-}
-
 export var deviceURL = 'http://192.168.10.10/api/v1/leds';
-
-if(localStorage.getItem("deviceip") !== null){
-  deviceURL = localStorage.getItem("deviceip");
-}
 
 export const $http = axios.create({
   baseURL: baseURL
@@ -46,69 +37,69 @@ export const $device = axios.create({
 //     preload: true
 // });
 
-const audioFolder = 'static/audio/supermariobros/'
+// const audioFolder = 'static/audio/supermariobros/'
 
-var search = new Audio();
-    search.src = audioFolder+"search.mp3"; // assign the audio file to its src
+// var search = new Audio();
+//     search.src = audioFolder+"search.mp3"; // assign the audio file to its src
 
-var search1 = new Audio();
-    search1.src = audioFolder+"search1.mp3"; // assign the audio file to its src
+// var search1 = new Audio();
+//     search1.src = audioFolder+"search1.mp3"; // assign the audio file to its src
 
-var push0 = new Audio();
-    push0.src = audioFolder+"push0.mp3";
+// var push0 = new Audio();
+//     push0.src = audioFolder+"push0.mp3";
 
-var push1 = new Audio();
-    push1.src = audioFolder+"push1.mp3";
+// var push1 = new Audio();
+//     push1.src = audioFolder+"push1.mp3";
 
-var push2 = new Audio();
-    push2.src = audioFolder+"push2.mp3";
+// var push2 = new Audio();
+//     push2.src = audioFolder+"push2.mp3";
 
-var push3 = new Audio();
-    push3.src = audioFolder+"push3.mp3";
+// var push3 = new Audio();
+//     push3.src = audioFolder+"push3.mp3";
 
-var push4 = new Audio();
-    push4.src = audioFolder+"push4.mp3";
+// var push4 = new Audio();
+//     push4.src = audioFolder+"push4.mp3";
 
-var pushcool = new Audio();
-    pushcool.src = audioFolder+"pushcool.mp3";
+// var pushcool = new Audio();
+//     pushcool.src = audioFolder+"pushcool.mp3";
 
-var pull = new Audio();
-    pull.src = audioFolder+"pull.mp3";
+// var pull = new Audio();
+//     pull.src = audioFolder+"pull.mp3";
 
-var notfound = new Audio();
-    notfound.src = audioFolder+"notfound.mp3";
+// var notfound = new Audio();
+//     notfound.src = audioFolder+"notfound.mp3";
 
-var error = new Audio();
-    error.src = audioFolder+"error.mp3";
+// var error = new Audio();
+//     error.src = audioFolder+"error.mp3";
     
-var bindStart = new Audio();
-    bindStart.src = audioFolder+"bindstart.mp3";
+// var bindStart = new Audio();
+//     bindStart.src = audioFolder+"bindstart.mp3";
 
-var bindEnd = new Audio();
-    bindEnd.src = audioFolder+"bindend.mp3";
+// var bindEnd = new Audio();
+//     bindEnd.src = audioFolder+"bindend.mp3";
 
-var notBind = new Audio();
-    notBind.src = audioFolder+"notbound.mp3";
+// var notBind = new Audio();
+//     notBind.src = audioFolder+"notbound.mp3";
     
-var notPlan = new Audio();
-    notPlan.src = audioFolder+"notfoundplan.mp3";
+// var notPlan = new Audio();
+//     notPlan.src = audioFolder+"notfoundplan.mp3";
 
-var bind = new Audio();
-    bind.src = audioFolder+"bind.mp3";
+// var bind = new Audio();
+//     bind.src = audioFolder+"bind.mp3";
 
-var closeBag = new Audio();
-    closeBag.src = audioFolder+"closebag.mp3";
+// var closeBag = new Audio();
+//     closeBag.src = audioFolder+"closebag.mp3";
 
-var registerPoint = new Audio();
-    registerPoint.src = audioFolder+"registerpoint.mp3";
+// var registerPoint = new Audio();
+//     registerPoint.src = audioFolder+"registerpoint.mp3";
 
-var auth = new Audio();
-    auth.src = audioFolder+"auth.mp3";
+// var auth = new Audio();
+//     auth.src = audioFolder+"auth.mp3";
 
     
-var pushCnt = 0;
-var pushCntTheme = 0;
-var pushes = [push0,push1,push2,push3,push4];
+// var pushCnt = 0;
+// var pushCntTheme = 0;
+// var pushes = [push0,push1,push2,push3,push4];
     
 /*
 export const deviceLEDMixin = {
@@ -300,10 +291,11 @@ export const $sounds = {
   notfoundplan: new Audio(audioURL+"notfoundplan.mp3"),
   bind: new Audio(audioURL+"bind.mp3"),
   selectbag: new Audio(audioURL+"bind.mp3"),
-  deselectbag: new Audio(audioURL+"auth.mp3"),  
+  deselectbag: new Audio(audioURL+"deselect.mp3"),  
   closebag: new Audio(audioURL+"closebag.mp3"),
   registerpoint: new Audio(audioURL+"registerpoint.mp3"),
-  auth: new Audio(audioURL+"auth.mp3"),
+  login: new Audio(audioURL+"login.mp3"),
+  logout: new Audio(audioURL+"logout.mp3"),
 
   play(snd){
     if(snd == 'push')
@@ -381,7 +373,10 @@ export const $leds = {
   error(user){
     this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
   },
-  auth(user){
+  login(user){
+     this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
+  },
+  logout(user){
      this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
   },
   registerpoint(msg){

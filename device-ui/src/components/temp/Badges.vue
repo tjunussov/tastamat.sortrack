@@ -24,7 +24,7 @@ import Encoder from 'code-128-encoder'
 var code128= new Encoder()
 
 export default {
-  name: 'Users',
+  name: 'Badges',
   data () {
     return {
       // maxLeds: 24,

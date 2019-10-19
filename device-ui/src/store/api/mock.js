@@ -399,17 +399,22 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   }
 
 }).onAny('formBag').reply((cfg)=>{
+  
+  var req = JSON.parse(cfg.data);
+
+  console.debug('formBag',req);
+
   return [200,{
     "result": "success",
-    "packetListNo": "B201910072104795",
+    "packetListNo": "B20191007"+req.parentPostIndex,
     "labelListNo": "G201910072104795",
-    "actualWeight": 10,
-    "workerName": "Мырзанова Гульмира",
+    "actualWeight": req.totalWeight,
+    "workerName": req.login,
     "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
     "toDepartment": "Алматы-9",
     "route": "Наземный",
-    "date": "Mon Oct 07 21:38:49 ALMT 2019",
-    "count": 1
+    "date": new Date(),
+    "count": req.barcodeList.length
 }]}
 )
 .onAny().reply((cfg)=>{

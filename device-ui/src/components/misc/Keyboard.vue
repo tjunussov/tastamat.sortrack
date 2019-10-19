@@ -39,12 +39,17 @@ export default {
         }
       } else {
 
+
+        // console.log(event.keyCode, String.fromCharCode(event.keyCode));
+
         if( event.keyCode >= 96 && event.keyCode <=105 ){ // only numpad and top numbers
           this.keyText += String.fromCharCode(event.keyCode-48);
         } else if( event.keyCode >= 65 && event.keyCode <=90 ){ // only alphanumerics
           this.keyText += String.fromCharCode(event.keyCode+(event.shiftKey?0:32));
         } else if( event.keyCode >= 48 && event.keyCode <=57 ) { // numbers
           this.keyText += String.fromCharCode(event.keyCode);
+        } else if( event.keyCode == 110 ) { // "."
+          this.keyText += ".";
         }
 
         if(event.keyCode == 8 ){ // ????

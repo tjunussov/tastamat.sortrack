@@ -26,8 +26,7 @@ b-row.flex-xl-nowrap2
     
           
     
-
-    
+ 
 
   .m-4.p-2.pb-3.fixed-bottom
     b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
@@ -65,7 +64,7 @@ import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import {$leds,$sounds,deviceLEDMixin} from '@/store/api/http'
 
-import {bindMixin} from '@/components/BindModal'
+import {bindMixin} from '@/components/misc/BindModal'
 import CloseModal from '@/components/CloseModal'
 
 
@@ -74,11 +73,11 @@ export default {
   name: 'Console2',
   mounted(){
     this.$bus.$on('keyboard:keydown:enter:13',this.putToBag);
-    this.$bus.$on('keyboard:keydown:enter:p',this.selectBag);
+    this.$bus.$on('keyboard:keydown:enter:p',this.selectBagBarcode);
   },
   beforeDestroy(){
     this.$bus.$off('keyboard:keydown:enter:13',this.putToBag);
-    this.$bus.$off('keyboard:keydown:enter:p',this.selectBag);
+    this.$bus.$off('keyboard:keydown:enter:p',this.selectBagBarcode);
   },
   created(){
     if(this.ledOn) $leds.$ledoff();
@@ -103,7 +102,7 @@ export default {
         //   else $leds.on(val);
         // }
         
-        var led = this.selectedBag && this.selectedBag.led ? this.selectedBag.led : this.cursor;
+        var led = this.selectedBag && this.selectedBag.led !== null ? this.selectedBag.led : this.cursor;
             led = led%24;
         console.debug('watched status',val,led,this.thor);
         if(this.ledOn) $leds.on(val,led,this.thor);
@@ -118,10 +117,10 @@ export default {
       tabIndex:0,
       tmResponse:null,
       isCloseModalOpen:false,
-      kazakhstan:false,
       bind:{
         started:false,
         cursor:null,
+        selectedBag:null,
         unmappedIndx:null,
         unmapped:[],
         intrvl:null
@@ -165,11 +164,18 @@ export default {
       '$deselectBag',
       // '$remapSelectedBag',
       '$clear',
-      '$saveConfig'
+      '$save'
     ]),
     timeout(tm){
       window.clearTimeout(this.tmResponse);
       this.tmResponse = window.setTimeout(this.$clear,tm);
+    },
+    selectBagBarcode(barcode){
+      if(this.calibrating){
+        this.calibrateMapIndex(barcode);
+      } else {
+        this.selectBag(barcode);
+      }
     },
     selectBag(ppi,i,p){
       console.log('selectBag',ppi,i,p)

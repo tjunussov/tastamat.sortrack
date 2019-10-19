@@ -9,10 +9,15 @@ export const bindMixin = {
     },
     calibrateStop(){
       this.bind.cursor = null;
+      this.bind.selectedBag = null;
       this.clearAll();
-      this.$saveConfig();
+      this.$save();
+    },
+    calibrateMapIndex(ppi){
+      if(this.bind.selectedBag !== null) Vue.set(this.bags[this.bind.selectedBag],'ppi',ppi);
     },
     calibrateMap(i){
+      this.bind.selectedBag = i;
       Vue.set(this.bags[i],'led',this.bind.cursor);
       this.calibrateNext();
     },

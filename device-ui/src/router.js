@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 // import Console from '@/components/Console'
-import Console2 from '@/components/Console2'
+import Console from '@/components/Console'
 import Admin from '@/components/Admin'
 import Settings from '@/components/Settings'
 import Debug from '@/components/Debug'
@@ -14,9 +14,9 @@ Vue.use(Router)
 const router =  new Router({
   routes: [
     {
-      path: '/console2',
+      path: '/console',
       alias: '/',
-      component: Console2,
+      component: Console,
       meta: { isPublic: true }
     },
     // {

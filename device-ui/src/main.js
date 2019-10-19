@@ -3,11 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 
-import ToggleButton from 'vue-js-toggle-button'
+// import ToggleButton from 'vue-js-toggle-button'
 import BootstrapVue from 'bootstrap-vue'
 import AxiosVue from './services/axios'
 
-import router from './router'
+// import router from './router'
 import store from './store'
 
 // import VueMqtt from 'vue-mqtt'
@@ -18,7 +18,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(BootstrapVue)
-Vue.use(ToggleButton)
+// Vue.use(ToggleButton)
 Vue.use(AxiosVue)
 Vue.use(VueIdb)
 // Vue.use(VueMqtt, 'ws://tasta.cubics.io:8443');
@@ -54,7 +54,10 @@ Vue.mixin({
       if(index !== -1) {
         arr.splice(index, 1);
       }
-    }
+    },
+    $print(){    
+      window.print();
+    },
   }
 });
 
@@ -67,7 +70,7 @@ new Vue({
   el: '#app',
   data () {
     return {
-      online:false,
+      offline:false,
       mqttOnline:false,
       version:process.env.VERSION
     }
@@ -94,12 +97,11 @@ new Vue({
     window.removeEventListener("online",this.checkOnline)
     window.removeEventListener("offline",this.checkOnline)
   },
-  router,
   store,
   methods:{
     checkOnline(){
-      console.log('check online',navigator.onLine);
-      this.online = navigator.onLine
+      console.log('check offline',!navigator.onLine);
+      this.offline = !navigator.onLine
     },
   },
   render: h => h(App)
