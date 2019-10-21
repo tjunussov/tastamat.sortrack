@@ -386,11 +386,11 @@ export const $leds = {
     this.$ledon({color:'all',led,duration:100,effect:'right'});
   },
   $ledon(params){
-    if(this.thor && this.thor > 0){
-      axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
-    } else {
+    // if(this.thor && this.thor > 0){
+    //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
+    // } else {
       $device.get('/on',{params});
-    }
+    // }
   },
   $ledoff(){
     $device.get(`/off`);

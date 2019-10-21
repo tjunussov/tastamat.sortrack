@@ -23,10 +23,6 @@ b-row.flex-xl-nowrap2
                 template(v-if="bind.cursor != null") {{bind.cursor}} 
                 template(v-else) {{Object.keys(b.wpi).length}}
 
-    
-          
-    
- 
 
   .m-4.p-2.pb-3.fixed-bottom
     b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
@@ -103,7 +99,7 @@ export default {
         // }
         
         var led = this.selectedBag && this.selectedBag.led !== null ? this.selectedBag.led : this.cursor;
-            led = led%24;
+            // led = led%24;
         console.debug('watched status',val,led,this.thor);
         if(this.ledOn) $leds.on(val,led,this.thor);
         $sounds.play(val);
