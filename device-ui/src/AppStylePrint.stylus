@@ -21,8 +21,6 @@
 
   .modal-open, .modal-dialog-scrollable .modal-body, .modal-dialog-scrollable .modal-content
     overflow visible !important
-    
-    
   
   #printSection, #printSection *
     visibility visible !important
