@@ -133,7 +133,7 @@ const actions = {
       // console.log('$smartsort.putToBag',state.barcode,state.depcode,state.user);
 
       //$http.get(this.barcode).then((resp)=>{
-      return $smartsort.putToBag(state.barcode,getters.getDepcode,state.user)
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser.login)
       .then((resp)=>{
 
         // console.log('putToBag',resp);
@@ -283,6 +283,7 @@ const actions = {
     dispatch('$save');
   },
   $togleDemo({ commit, dispatch, state, getters },{val}){
+    // console.log('togleDemo',val)
     if(val !== undefined)
       getters.getConfig.isDemo = val
     else

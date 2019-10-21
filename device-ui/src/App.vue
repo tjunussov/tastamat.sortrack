@@ -15,7 +15,7 @@ doctype html
       //- span(@click="toggleFullScreen()") Sortrack® 
       b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
       b-badge(variant="danger" v-if="offline") OFFLINE
-      b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo(null)") &times; DEMO
+      b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
       b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
 
     b-collapse(is-nav id="nav_collapse" v-if="depcode")
@@ -34,7 +34,7 @@ doctype html
           b-dropdown-divider
           b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
           b-dropdown-item(v-b-modal.badge="") Бейджики
-          b-dropdown-item(@click="togleDemo(null)" ) 
+          b-dropdown-item(@click="togleDemo()" ) 
             i.fa.mr-2(:class="{'fa-circle text-success':demo,'fa-circle-o':!demo}")/
             | Демо
           b-dropdown-item(@click="togleLed()" ) 
@@ -294,6 +294,7 @@ export default {
         this.$store.state.polka.calibrating = !this.$store.state.polka.calibrating;
     },
     togleDemo(val){
+      console.log('togleDemo',val);
       this.$togleDemo({val});
       if(!this.demo) {
         mock.restore();

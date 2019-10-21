@@ -31,6 +31,7 @@ export default {
       },
       users:[
         'test.alm21.rpo1',
+        'test.ast17.sc1',
         'test',
         'aza',
         'tima',
