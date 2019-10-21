@@ -48,7 +48,7 @@ export default {
           this.keyText += String.fromCharCode(event.keyCode+(event.shiftKey?0:32));
         } else if( event.keyCode >= 48 && event.keyCode <=57 ) { // numbers
           this.keyText += String.fromCharCode(event.keyCode);
-        } else if( event.keyCode == 110 ) { // "."
+        } else if( event.keyCode == 110 || event.keyCode == 190 ) { // "."
           this.keyText += ".";
         }
 
