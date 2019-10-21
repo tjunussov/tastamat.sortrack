@@ -1,10 +1,11 @@
-#app
+#app, body, html
+  height 768px
   width 1024px
 
 body
   padding-top 4rem
   margin 0
-
+  
 
 input.inline
   border none

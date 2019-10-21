@@ -70,3 +70,206 @@ export const $smartsort = {
 }
 
 
+// ion.sound({
+//     sounds: [
+//         {
+//             name: "search1"
+//         },
+//         {
+//             name: "found",
+//             volume: 0.2
+//         },
+//         {
+//             name: "notfound",
+//             // volume: 0.3,
+//             // preload: false
+//         }
+//     ],
+//     volume: 0.5,
+//     path: "/static/audio/",
+//     preload: true
+// });
+
+// const audioFolder = 'static/audio/supermariobros/'
+
+// var search = new Audio();
+//     search.src = audioFolder+"search.mp3"; // assign the audio file to its src
+
+// var search1 = new Audio();
+//     search1.src = audioFolder+"search1.mp3"; // assign the audio file to its src
+
+// var push0 = new Audio();
+//     push0.src = audioFolder+"push0.mp3";
+
+// var push1 = new Audio();
+//     push1.src = audioFolder+"push1.mp3";
+
+// var push2 = new Audio();
+//     push2.src = audioFolder+"push2.mp3";
+
+// var push3 = new Audio();
+//     push3.src = audioFolder+"push3.mp3";
+
+// var push4 = new Audio();
+//     push4.src = audioFolder+"push4.mp3";
+
+// var pushcool = new Audio();
+//     pushcool.src = audioFolder+"pushcool.mp3";
+
+// var pull = new Audio();
+//     pull.src = audioFolder+"pull.mp3";
+
+// var notfound = new Audio();
+//     notfound.src = audioFolder+"notfound.mp3";
+
+// var error = new Audio();
+//     error.src = audioFolder+"error.mp3";
+    
+// var bindStart = new Audio();
+//     bindStart.src = audioFolder+"bindstart.mp3";
+
+// var bindEnd = new Audio();
+//     bindEnd.src = audioFolder+"bindend.mp3";
+
+// var notBind = new Audio();
+//     notBind.src = audioFolder+"notbound.mp3";
+    
+// var notPlan = new Audio();
+//     notPlan.src = audioFolder+"notfoundplan.mp3";
+
+// var bind = new Audio();
+//     bind.src = audioFolder+"bind.mp3";
+
+// var closeBag = new Audio();
+//     closeBag.src = audioFolder+"closebag.mp3";
+
+// var registerPoint = new Audio();
+//     registerPoint.src = audioFolder+"registerpoint.mp3";
+
+// var auth = new Audio();
+//     auth.src = audioFolder+"auth.mp3";
+
+    
+// var pushCnt = 0;
+// var pushCntTheme = 0;
+// var pushes = [push0,push1,push2,push3,push4];
+    
+/*
+export const deviceLEDMixin = {
+  methods: {
+    $search(user){
+      // this.$ledon('color=220000&led=all&duration=10&repeat=10000');
+      this.$ledon('color=r&led=all&duration=10&repeat=10000&brightness=50');
+      search1.currentTime = 0;
+      search1.play();
+    },
+    $push(user,led){
+      this.$ledon(`color=r&led=${led}&duration=1000&repeat=50&pause=500`);
+      search1.pause();
+
+      if(pushCnt == 10) {
+        pushCntTheme = pushCntTheme + 1
+        if(pushCntTheme > pushes.length) pushCntTheme = 0
+        pushCnt = 0
+        pushcool.play();
+      } else {
+        pushCnt = pushCnt + 1
+        console.log(pushCntTheme,pushes.length)
+        pushes[pushCntTheme].currentTime = 0;
+        pushes[pushCntTheme].play();
+      }
+    },
+    $pull(user,led){
+      this.$ledon(`color=r&led=${led}&duration=100&repeat=3`);
+      pull.currentTime = 0;
+      pull.play();
+    },
+    $notFound(user){
+      this.$ledon('color=r&led=all&duration=50&repeat=3');
+      search1.pause();
+      notfound.play();
+    },
+    $bindStart(){
+      this.$ledon('color=all&led=all&duration=1000');
+      bindStart.currentTime = 0;
+      bindStart.play();
+    },
+    $bindEnd(){
+      this.$ledon('color=all&led=all&duration=100&repeat=3');
+      bindEnd.play();
+    },
+    $closeBag(led){
+      this.$ledon(`color=all&led=${led}&duration=100&repeat=50`);
+      closeBag.currentTime = 0;
+      closeBag.play();
+    },
+    $printBag(data){
+      console.log('printBag',data)
+      $device.post('/print',data);
+    },
+    $bind(led){
+      this.$ledon(`color=all&led=${led}&duration=1000&repeat=1000&pause=100`);
+      bind.currentTime = 0;
+      bind.play()
+    },
+    $notPlan(){
+      this.$ledon('color=r&led=all&duration=50&repeat=3');
+      notPlan.currentTime = 0;
+      notPlan.play()
+    },
+    $notBind(){
+      this.$ledon('color=r&led=all&duration=50&repeat=3');
+      notBind.currentTime = 0;
+      notBind.play()
+    },
+    $error(user){
+      this.$ledon('color=r&led=all&duration=50&repeat=3');
+      search1.pause();
+      error.currentTime = 0;
+      error.play();
+    },
+    $auth(user){
+       this.$ledon('color=r&led=all&duration=1000');
+       auth.currentTime = 0;
+       auth.play();
+    },
+    $registerPoint(msg){
+      this.$ledon('color=all&led=all&duration=1000');
+      registerPoint.currentTime = 0;
+      registerPoint.play();
+    },
+    $deletePoint(led){
+      this.$ledon(`color=all&led=${led}&duration=100&effect=right`);
+    },
+    $ledon(param){
+      if (typeof param === 'object') param = Object.entries(param).map(e => e.join('=')).join('&');
+      $device.get('/on'+param);
+    },
+    $ledoff(){
+      $device.get(`/off`);
+    }
+  }
+};
+
+ /* findPlan(){
+    let xmls=`<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://www.webserviceX.NET/">
+          <soapenv:Header/>
+          <soapenv:Body>
+            <web:ConversionRate>
+              <web:FromCurrency>INR</web:FromCurrency>
+              <web:ToCurrency>USD</web:ToCurrency>
+            </web:ConversionRate>
+          </soapenv:Body>
+        </soapenv:Envelope>`;
+
+        $http.post('http://www.webservicex.com/CurrencyConvertor.asmx?wsdl',
+         xmls,
+         {headers:
+           {'Content-Type': 'text/xml'}
+         }).then(res=>{
+           console.log(res);
+         }).catch(err=>{console.log(err)});
+  },*/
+*/
+
+

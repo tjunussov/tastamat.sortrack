@@ -336,42 +336,9 @@ export default {
     font-size 1rem
     display inline
     margin-left 5px
-  
-  
-    
-  
 
 .hide
   display none
   
-@media print
-  body *
-    visibility hidden
-    padding 0
-    margin 0
-    
-  
-  #printSection, #printSection *
-    visibility visible !important
-    
-  .modal-dialog
-    margin 0 !important
-    border 1px solid #000
-    width 1024px  !important
-    
-  .modal-lg
-    width 100% !important
-    
-  
-  #printSection
-    visibility visible !important
-    position absolute
-    left 0
-    top 0
-    width 1024px  !important
-    
-  pre
-    border none 
-    
   
 </style>

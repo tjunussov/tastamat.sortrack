@@ -21,27 +21,32 @@ TODO
 
 
 TODO Kenmat
-- modal height fix, 
-- sortplan button bottom
-- close modal fix height if multiple
-- weight format, without .
-- Design yarlik print template for Label Printer
++ bug:user.login putToBag
++ Keyboard keyCode for "."
++ Keyboard keyCode for "."
+- modal sortplan button bottom
+-- weight format, without .
 - multiled configure 48, or splitted
-- multithor websocket support 8080
+- wrong login error shake
+- thor tab different color ( цвет активного таба тора должен быть примечательным )
 - bug: sortplan length
 - closeBag button grey
 - last closeBag respone save
 - led:search blink not working
 - reinint clears led settings
-- цвет активного таба тора должен быть примечательным
+- bug:calibrate blink timeout too quick
 - fetchRPO error simulate
 - sortplan подгружает старый индекс если без refresh
 - led connect error show
-- manuaL:calbrate screen 
-- manuaL:spd
-- manual: be carefull cors
-- wrong login error shake
-- thor tab different color
+- calibrate without login
++ manuaL:calbrate screen 
++ manuaL:spd link, GenericText
++ manual: be carefull cors
++ manual: link for firmware
+--- close modal fix height if multiple also
+--- Design yarlik print template for Label Printer
+--- yarlik native print try
+--- multithor websocket support 8080
 
 
 
@@ -54,7 +59,6 @@ TODO 4.0
 - ui:logo swipe
 - ui:fullscreen icon
 - led lenght and multitor ranges
-- calibrate without login
 - autofocus weight input
 - apply mock without refresh
 - move all to settings
