@@ -19,6 +19,32 @@ TODO
 + settings base url
 
 
+
+TODO Kenmat
+- modal height fix, 
+- sortplan button bottom
+- close modal fix height if multiple
+- weight format, without .
+- Design yarlik print template for Label Printer
+- multiled configure 48, or splitted
+- multithor websocket support 8080
+- bug: sortplan length
+- closeBag button grey
+- last closeBag respone save
+- led:search blink not working
+- reinint clears led settings
+- цвет активного таба тора должен быть примечательным
+- fetchRPO error simulate
+- sortplan подгружает старый индекс если без refresh
+- led connect error show
+- manuaL:calbrate screen 
+- manuaL:spd
+- manual: be carefull cors
+- wrong login error shake
+- thor tab different color
+
+
+
 TODO 4.0
 - overcome https issue for LEDs
 - overcome https CORS for PUS Server
@@ -30,6 +56,8 @@ TODO 4.0
 - led lenght and multitor ranges
 - calibrate without login
 - autofocus weight input
+- apply mock without refresh
+- move all to settings
 
 
 HARDWARE TODO

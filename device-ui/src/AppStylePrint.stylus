@@ -1,6 +1,12 @@
 @media print
+
+  blockquote, pre
+    border none !important
+    
   body
     padding 0 !important
+    
+
     
     
   body *
