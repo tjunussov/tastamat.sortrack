@@ -133,7 +133,7 @@ const actions = {
       // console.log('$smartsort.putToBag',state.barcode,state.depcode,state.user);
 
       //$http.get(this.barcode).then((resp)=>{
-      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser)
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser.login)
       .then((resp)=>{
 
         // console.log('putToBag',resp);
