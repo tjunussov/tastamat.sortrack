@@ -18,7 +18,6 @@ export const $device = axios.create({
 
 
 
-
 export const $smartsort = {
   auth(user,depcode){
     return $http.get('authorize',{
@@ -69,6 +68,9 @@ export const $smartsort = {
   sortplan(depcode){
     return $http.get('listBagIndexes',{
       params:{techindex:depcode}
+    }).then((resp)=>{
+      if(resp.data.result == 'error') return Promise.reject(resp.data.parentPostIndexes);
+      return resp;
     });
   },
 }
@@ -165,7 +167,7 @@ export const $leds = {
     $device.get('/testprint');
   },
   bind(led){
-    this.$ledon({color:'all',led,duration:5000,repeat:1});
+    this.$ledon({color:'all',led,duration:5000,repeat:0});
   },
   notplan(){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});

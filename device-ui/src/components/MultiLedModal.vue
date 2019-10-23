@@ -3,7 +3,7 @@ b-modal#settings(title="Настройки LED" lazy hide-header centered @ok="s
   b-form(v-if="settings")
     b-card(no-body)
       b-card-header
-        b-link.close(@click="$emit('close')") &times;
+        b-link.close(@click="close") &times;
         b-card-title Настройки
       b-tabs(card)
         b-tab(title="Стелаж" active)
@@ -73,6 +73,9 @@ export default {
       '$initBags',
       '$initSettings'
     ]),
+    close(){
+      this.$root.$emit('bv::hide::modal', 'settings', '')
+    },
     save(){
       this.$initSettings();
       this.$save();

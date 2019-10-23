@@ -6,8 +6,6 @@ doctype html
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 
-    b-container
-
       b-nav-toggle(target="nav_collapse")
 
       b-navbar-brand(to="/")
@@ -74,13 +72,11 @@ doctype html
 
     
     //- router-view
-    Console
 
-    
+    Console
   
   .bd-footer.text-muted
-    b-container
-      p.mb-2.pl-0 &copy; 2019 Copyright. Система "Умные Полки" для ПУС. 
+      p.mb-2.pl-5 &copy; 2019 Copyright. Система "Умные Полки" для ПУС. 
         | Разработка by tastamat.com. Версия 
         b {{$root.version}} 
         b-link.ml-4(v-b-modal.about="") Credits 
@@ -89,15 +85,13 @@ doctype html
 
   Keyboard
 
-  SortplanModal(v-if="isSortplanModalOpen" @close="isSortplanModalOpen = false")
+  SortplanModal(v-if="isSortplanModalOpen" @hide="isSortplanModalOpen = false")
 
 
   b-modal#depcode(title="Технологический Индекс" centered size="sm"  ok-only @ok="registerDepcode(tmpDepcode);" @hide="tmpDepcode=''")
-    b-form-input(v-model="tmpDepcode" autofocus :palceholder="depcode" @dblclick.native="tmpDepcode = '055990'")
+    b-form-input(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '055990'")
 
-  b-modal#user(size="sm" @hide="tmpUser=''" centered)
-    template(slot="modal-header")
-      h4 Авторизация*
+  b-modal#user(size="sm" title="Авторизация*" :modal-class="{'isLoginError':loginResponse}" @hide="tmpUser=''" centered="")
     b-form-group(:invalid-feedback="'Ошибка! [' + tmpUser + '] '+ loginResponse" :state="!loginResponse")
       b-form-input(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.alm21.rpo1'" placeholder="Ваш логин в ПУС" autofocus)
     b-button-group
@@ -155,6 +149,7 @@ export default {
       errorLogin:null,
       tmpUser:null,
       tmpDepcode:null,
+      tmResponse:null,
       isSortplanModalOpen:false,
       demoIndex:0
     }
@@ -266,8 +261,16 @@ export default {
          this.tmpUser = null;
          this.$root.$emit('bv::hide::modal', 'user', '#btnLogin')
       }).catch((err)=>{
+        this.timeout(3000);
         this.$root.$emit('bv::show::modal', 'user')
       });
+    },
+    clear(){
+      this.$store.state.polka.loginResponse = null;
+    },
+    timeout(tm){
+      window.clearTimeout(this.tmResponse);
+      this.tmResponse = window.setTimeout(this.clear,tm);
     },
     toggleFullScreen() {
       if ((document.fullScreenElement && document.fullScreenElement !== null) ||    

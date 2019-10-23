@@ -3,6 +3,9 @@
   blockquote, pre
     border none !important
     
+    &.text-primary
+      color #000 !important
+    
   body
     padding 0 !important
    
@@ -44,3 +47,11 @@
     left 0 !important
     top 0 !important
     min-width 100% !important
+    
+
+    &.rotate
+      transform: rotate(90deg) translateX(-75%) translateY(0%)
+      transform-origin: left bottom
+      outline: 1px solid #000
+      min-width: 400px !important
+      padding: 1rem

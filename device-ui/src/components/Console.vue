@@ -85,8 +85,14 @@ export default {
       if(val) this.calibrateStart();
       else this.calibrateStop();
     },
+    error(val){
+      if(val) this.timeout(5000);
+    },
     status(val){
+      console.log('status',val);
+      
       if(val){
+        // this.timeout(10000);
 
         // if(this.selectedBag && this.selectedBag.led){  // if led specified
         //   console.log('watched status[selectedbag]',this.selectedBag.led);
@@ -174,19 +180,19 @@ export default {
     },
     selectBag(ppi,i,p){
       console.log('selectBag',ppi,i,p)
+      window.clearTimeout(this.tmResponse);
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
       } else if(this.calibrating){
         console.log('calibrating selectBag',ppi);
         this.calibrateMap((p*24)+i);
       } else {
-        window.clearTimeout(this.tmResponse);
+
         this.$clear();
         this.$selectBag({ppi}).then(()=>{
           this.isCloseModalOpen = true;  
         }).catch((error)=>{
           console.log('selectBag error',error);
-          this.timeout(5000);  
         });
         
       }
@@ -201,7 +207,6 @@ export default {
         console.log('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
         console.log('putToBag error',error);
-        this.timeout(10000);
       });
 
     },

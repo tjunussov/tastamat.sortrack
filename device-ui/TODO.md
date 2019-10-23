@@ -25,31 +25,36 @@ TODO Kenmat
 + Keyboard keyCode for "."
 + Keyboard keyCode for "."
 + modal sortplan button bottom
-- bug:close modal dialog not working
--- weight format, without .
-- wrong login error shake
-- thor tab different color ( цвет активного таба тора должен быть примечательным )
++ fetchRPO error simulate
++ bug:close modal dialog not working
+
++ wrong login error shake
++ thor tab different color ( цвет активного таба тора должен быть примечательным )
 + bug: sortplan length
 + closeBag button grey
-- last closeBag respone save
-- led:search blink not working
-- reinint clears led settings
-- bug:calibrate blink timeout too quick
-- fetchRPO error simulate
-- sortplan подгружает старый индекс если без refresh
-- led connect error show
-- calibrate without login
++ Design yarlik print template for Label Printer
++ last closeBag respone save, and show button
+? weight format, without .
++ bug:calibrate blink timeout too quick
++ sortplan подгружает старый индекс если без refresh
++ led connect error show
 + manuaL:calbrate screen 
 + manuaL:spd link, GenericText
 + manual: be carefull cors
 + manual: link for firmware
++ bug:afterscantimeout close modal null error
++ close modal fix height if multiple also
+
 --- multiled configure 48, or splitted
---- close modal fix height if multiple also
---- Design yarlik print template for Label Printer
---- yarlik native print try
 --- multithor websocket support 8080
 
+- test all templates
+- test whole process
 
+--- yarlik native print try
+- calibrate without login
+- bug:reinint clears led settings
+- led:search blink not working
 
 TODO 4.0
 - overcome https issue for LEDs

@@ -1,5 +1,5 @@
 <template lang="pug">
-b-modal#msortplan(v-if="sortplan" ref="msortplan" header-bg-variant="primary" header-text-variant="white" visible scrollable ok-title="Печать" ok-only title="Сортплан" size="lg")
+b-modal#msortplan(v-if="sortplan" @hide="$emit('hide')" ref="msortplan" header-bg-variant="primary" header-text-variant="white" visible scrollable ok-title="Печать" ok-only title="Сортплан" size="lg")
     template(slot="modal-title") Сортплан для Индекса {{depcode}} 
       span кол-во направлений {{sortplan.length}}
         
@@ -37,8 +37,8 @@ export default {
         config:'config'
     })
   },
-  created(){
-    this.fetch(this.depcode);
+  mounted(){
+    this.fetch();
   },
   data () {
     return {
@@ -62,10 +62,12 @@ export default {
     },
     fetch(depcode){
 
+      console.log('fetching')
+
       this.status = 'loading'
       this.error = null
 
-      this.$fetchSortplan({depcode}).then((r)=>{
+      this.$fetchSortplan({depcode:this.depcode}).then((r)=>{
         this.status = r
       }).catch((e)=>{
         this.error = e

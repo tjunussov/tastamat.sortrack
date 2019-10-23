@@ -16,6 +16,7 @@ export default {
       isLedOn:false,
       isWindowsPrint:true,
       isPrintProxy:false,
+      isRotate:false,
       isAutoPrint:false,
       user:null,
       apiUrl:'https://pls-test.post.kz/api/smart-shelves/',

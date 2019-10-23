@@ -1,27 +1,33 @@
 <template lang="pug">
-b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
+b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref="closeModalRef")
+
+
+    template(slot="modal-header") 
+      b-card.w-100(no-body)
+        b-card-header
+          b-link.close(@click.stop="clear") &times;
+          b-card-title 
+            i.fa.fa-inbox.mr-2(:class="{'text-success':isEditing}" @click="isEditing=!isEditing")
+            b-badge.circle(v-if="count" pill variant="success") {{count}}
+            | Полка 
+            input.inline(:value="selectedBag.ppi" style="width:95px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
+            .scales.pr-4(v-if="count")
+              i.fa.fa-tachometer.mr-2
+              b-form-input.inline.text-right#weightscales(
+                v-model="weight" 
+                :autofocus="true"
+                @dblclick="weight = 25" 
+                style="width:90px;"
+                placeholder="Вес") 
+              .label.text-muted кг
+              b-tooltip(target="weightscales") Взвесте пожалуйста
+          b-card-sub-title.mb-2 Индекс 
+            input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
+            div(v-if="isEditing") Лампочка
+              i.fa.fa-lightbulb-o.mr-2.ml-4
+              input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
 
     b-card(no-body)
-      b-card-header
-        b-link.close(@click.stop="clear") &times;
-        b-card-title 
-          i.fa.fa-inbox.mr-2(:class="{'text-success':isEditing}" @click="isEditing=!isEditing") 
-          | Полка 
-          input.inline(:value="selectedBag.ppi" style="width:95px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
-          .scales.pr-4(v-if="count")
-            i.fa.fa-tachometer.mr-2
-            b-form-input.inline.text-right(
-              v-model="weight" 
-              :autofocus="true"
-              @dblclick="weight = 25" 
-              style="width:90px;"
-              placeholder="Вес") 
-            .label.text-muted кг
-        b-card-sub-title.mb-2 Индекс 
-          input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
-          div(v-if="isEditing") Лампочка
-            i.fa.fa-lightbulb-o.mr-2.ml-4
-            input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
 
       //- b-card-header(header-tag="nav")
       //-   b-nav.nav-justified.wizard(card-header tabs)
@@ -38,38 +44,51 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="c
         //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
       b-card-body(v-if="response && response.packetListNo")
-        pre.text-primary#printSection
+        pre.text-primary#printSection.mb-0(:class="{'rotate':config.isRotate}")
           template(v-if="config.isWindowsPrint")
             div
+              b ВИД ЗАДЕЛКИ       
+              span Заказная корреспонденция
+            //- div
               b ШТРИХКОД 
               span {{response.packetListNo}}
             div
-              b ЛЭЙБЛ 
-              span {{response.labelListNo}}
-            //- div 
-            //-   b МЕТОД 
-            //-   span {{response.cli_info.SNDMETH_NAME}}
+              b НОМЕР ЗАДЕЛКИ     
+              span {{response.labelListNo}}  
+              b ПЛОМБА 
+              span 718666
+            div
+              b СПОСОБ ПЕРЕСЫЛКИ  
+              span {{response.route}}
             //- div 
             //-   b ТИП 
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
-              b ОТ 
+              b ОТКУДА   
               span {{response.fromDepartment}}
             div
-              b КУДА 
+              b КУДА     
               span {{response.toDepartment}}
             div
-              b ВЕС 
-              span {{response.actualWeight}} 
-            div
-              b КОЛ-ВО 
-              span {{response.count}}
-            div
-              b ОПЕРАТОР 
+              b ВЕС МЕШКА 
+              span {{response.actualWeight}}кг.
+              b       ВЕС НЕТТО 
+              span {{response.totalWeight}}кг.
+              b       КОЛ-ВО 
+              span {{response.count}} 
+            div ———————————————————————————————————————————————————
+            .barcode.ml-3 {{response.labelListNo}}
+            div ———————————————————————————————————————————————————
+            div.small
+              b СОЗДАЛ 
               span {{response.workerName}}
-            div
+            div.small
               b ДАТА 
               span {{response.date}}
+            div
+              | 
+              |
+              b      ©2020 Powered by SORTRACK®, KAZPOST INC"
           template(v-else)
               | N
               | q720
@@ -97,44 +116,54 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="c
               | 
               | A20,510,0,1,1,1,N,"© 2018 Powered by SORTRACK®, KAZPOST INC"
               | P1
-              | N
-
-              
+              | N              
         code.text-danger(v-if="response && response.result == 'error'")  {{response}}
 
 
-      b-list-group(v-if="count" style="min-height:500px" flush)
+
+      b-card-body(v-if="!count && !response" style="min-height:300px;")
+        b-btn(block v-if="selectedBag.closeResponse" @click="$store.state.polka.closeResponse=selectedBag.closeResponse" variant="outline-secondary") Показать старый мешок
+
+
+      b-list-group(v-if="count && !response" style="min-height:300px;" flush)
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
           .d-flex.w-100.justify-content-between(@click="removeWpi(k)") 
             h5 {{k}}   &times;
             small  {{v.postIndexTitle}} ( {{v.postIndex}} )
+
+        
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
-      b-card-footer.text-center
+    template(slot="modal-footer") 
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(:variant="weight?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
+        b-btn(:variant="weight>0?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
           i.fa.fa-tachometer
-        template(v-if="tabIndex == 1 && response")
+
           //- b-button-group.float-left
             b-btn(title="Автопечать" :variant="config.isAutoPrint?'primary':'outline-primary'" @click="config.isAutoPrint=!config.isAutoPrint") 
               i.fa.fa-bolt
             b-btn(title="Автопечать" :variant="config.isAutoPrint?'primary':'outline-primary'" @click="config.isAutoPrint=!config.isAutoPrint") 
               i.fa.fa-bolt
-          b-dropdown.button-block(split block  size="lg" split-variant="primary" variant="outline-primary" @click="print")
-            template(slot="button-content") 
-              i.fa.fa-print.mr-2
-              | Печать Ярлыка
-            b-dropdown-item(@click="config.isAutoPrint=!config.isAutoPrint; $save();") 
-              i.fa.mr-2(:class="{'fa-circle text-success':config.isAutoPrint,'fa-circle-o':!config.isAutoPrint}")/
-              | Автопечать
-            b-dropdown-item(@click="config.isWindowsPrint=!config.isWindowsPrint; $save();")
-              i.fa.mr-2(:class="{'fa-circle text-success':!config.isWindowsPrint,'fa-circle-o':config.isWindowsPrint}")/
-              | Нативная Печать
-            b-dropdown-item(@click="config.isPrintProxy=!config.isPrintProxy; $save();")
-              i.fa.mr-2(:class="{'fa-circle text-success':config.isPrintProxy,'fa-circle-o':!config.isPrintProxy}")/
-              | Proxy Печать
+        b-dropdown.button-block.w-100(v-if="response" split size="lg" split-variant="primary" variant="outline-primary" @click="print")
+          template(slot="button-content") 
+            i.fa.fa-print.mr-2
+            | Печать Ярлыка
+          b-dropdown-item(@click="config.isAutoPrint=!config.isAutoPrint; $save();") 
+            i.fa.mr-2(:class="{'fa-circle text-success':config.isAutoPrint,'fa-circle-o':!config.isAutoPrint}")/
+            | Автопечать
+          b-dropdown-item(@click="config.isWindowsPrint=!config.isWindowsPrint; $save();")
+            i.fa.mr-2(:class="{'fa-circle text-success':!config.isWindowsPrint,'fa-circle-o':config.isWindowsPrint}")/
+            | Нативная Печать
+          b-dropdown-item(@click="config.isPrintProxy=!config.isPrintProxy; $save();")
+            i.fa.mr-2(:class="{'fa-circle text-success':config.isPrintProxy,'fa-circle-o':!config.isPrintProxy}")/
+            | Proxy Печать
+          b-dropdown-item(@click="config.isRotate=!config.isRotate; $save();")
+            i.fa.mr-2(:class="{'fa-circle text-success':config.isRotate,'fa-circle-o':!config.isRotate}")/
+            | Альбомная
+
+            
               
             //- b-btn.m-auto(variant="primary" @click="") Печать Windows
 
@@ -247,8 +276,6 @@ export default {
           this.tabIndex = 1
         } else if(this.tabIndex == 1){
           this.closeBag();
-        } else if(this.tabIndex == 2){
-          this.clear();
         }
       } else {
         this.clear();
@@ -308,6 +335,19 @@ export default {
     
 .content * 
   display block
+  
+
+#mclosebag 
+  .circle
+    position absolute
+    font-size 11px
+    margin-left -20px
+    padding 2px 4px
+  
+
+  .btn-group.button-block .btn:first-child
+    width 100%
+  
   
 
 .scales

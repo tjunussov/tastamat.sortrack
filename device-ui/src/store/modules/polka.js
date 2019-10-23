@@ -61,6 +61,14 @@ const actions = {
   $initSettings({ commit, dispatch, state, getters }){
     $http.defaults.baseURL = getters.config.apiUrl;
     $device.defaults.baseURL = getters.config.ledUrl;
+
+
+    $device.defaults.timeout = 1000;
+    $device.interceptors.response.use(function (response) {
+      return response;
+    }, function (error) {
+      getters.config.isLedOn = false;
+    });
   },
   $initBags ({ commit, dispatch, state, getters }) {
 
@@ -212,6 +220,8 @@ const actions = {
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
         Vue.set(getters.getSelectedBag,'wpi',{})
+        Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
+        
         // state.selected = ppi
         state.status = 'closebag';
         dispatch('$save');
@@ -251,7 +261,12 @@ const actions = {
       state.sortplan = resp.data.parentPostIndexes
       console.log("sortplan",state.sortplan)
       return resp;
-    })
+    }).catch((error)=>{
+      state.sortplan = null
+      state.status = 'error';
+      state.error = error;
+      throw error;
+    });
   },
   $login({ commit, dispatch, state, getters },{user}){
     return $smartsort.auth(user,getters.getDepcode).then((resp)=>{
@@ -274,7 +289,11 @@ const actions = {
     return $smartsort.fetchDemoRPO(getters.getDepcode).then((resp)=>{
        state.demoBarcodes = resp.data.mails;
        console.log('fetchRPO',state.demoBarcodes);
-    })
+    }).catch((error)=>{
+      state.status = 'error';
+      state.error = error;
+      throw error;
+    });
   },
   $registerDepcode({ commit, dispatch, state, getters },{depcode}){
     getters.getConfig.depcode = depcode;
