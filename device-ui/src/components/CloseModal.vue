@@ -19,7 +19,7 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
                 @dblclick="weight = 25" 
                 style="width:90px;"
                 placeholder="Вес") 
-              .label.text-muted кг
+              .label.text-muted гр
               b-tooltip(target="weightscales") Взвесте пожалуйста
           b-card-sub-title.mb-2 Индекс 
             input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")

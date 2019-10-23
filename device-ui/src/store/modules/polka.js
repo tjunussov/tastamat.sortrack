@@ -211,8 +211,10 @@ const actions = {
 
     console.log('closeBag',ppi,wpi,weight,sendmeth);
 
+    weight = String(weight).replace(".","").replace(",","");
 
-    return $smartsort.closeBag(ppi,wpi,String(weight),String(sendmeth),getters.getDepcode,getters.getUser.login).then((resp)=>{
+
+    return $smartsort.closeBag(ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login).then((resp)=>{
 
         state.closeResponse = resp.data
 
