@@ -1,6 +1,5 @@
 <template lang="pug">
 b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="clear" visible ref="closeModalRef" hide-header hide-footer)
-    
 
     b-card(no-body)
       b-card-header
@@ -112,7 +111,7 @@ b-modal#mclosebag(no-enforce-focus size="" scrollable centered  no-fade @hide="c
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
       b-card-footer.text-center
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(variant="success" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
+        b-btn(:variant="weight?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 

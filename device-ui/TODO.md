@@ -24,13 +24,13 @@ TODO Kenmat
 + bug:user.login putToBag
 + Keyboard keyCode for "."
 + Keyboard keyCode for "."
-- modal sortplan button bottom
++ modal sortplan button bottom
+- bug:close modal dialog not working
 -- weight format, without .
-- multiled configure 48, or splitted
 - wrong login error shake
 - thor tab different color ( цвет активного таба тора должен быть примечательным )
-- bug: sortplan length
-- closeBag button grey
++ bug: sortplan length
++ closeBag button grey
 - last closeBag respone save
 - led:search blink not working
 - reinint clears led settings
@@ -43,6 +43,7 @@ TODO Kenmat
 + manuaL:spd link, GenericText
 + manual: be carefull cors
 + manual: link for firmware
+--- multiled configure 48, or splitted
 --- close modal fix height if multiple also
 --- Design yarlik print template for Label Printer
 --- yarlik native print try

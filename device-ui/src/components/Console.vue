@@ -1,8 +1,7 @@
 <template lang="pug">
 b-row.flex-xl-nowrap2
-  .pl-md-5.pt-2.mt-4.bd-content.col-12
-
-    b-tabs.nav-justified.wizard(v-model="tabIndex")
+  .pl-md-3.pt-2.mt-4.bd-content.col-12
+    b-tabs.nav-justified.wizard(pills variant="danger" v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
         template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}] 
         b-card-group.polkas.pt-4(:class="{calibrating}" deck)

@@ -8,7 +8,7 @@ b-modal#msortplan(v-if="sortplan" ref="msortplan" header-bg-variant="primary" he
       b-btn( @click="$print") Печать
 
 
-    b-alert(show="config.size < sortplan.length" variant="danger")
+    b-alert(:show="config.size < sortplan.length" variant="danger")
       | ВНИМАНИЕ! В стелаже {{config.size}} ячеек, нехватает еще {{sortplan.length - config.size }} ячеек
 
     #printSection.mx-4.mb-4.text-center

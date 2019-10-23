@@ -29,7 +29,11 @@ export const $smartsort = {
     })
   },
   fetchDemoRPO(depcode){
-    return $http.get('getRPO',{params:{techindex:depcode}})
+    return $http.get('getRPO',{params:{techindex:depcode}}).then((resp)=>{
+      console.log("geRPO error",resp.data);
+      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      return resp;
+    })
   },
   putToBag(barcode,depcode,user){
     return $http.get('findBagIndex',{

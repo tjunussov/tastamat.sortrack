@@ -1,6 +1,9 @@
-#app, body, html
-  height 768px
+html
   width 1024px
+  
+
+// #app
+//   background-color #fff
 
 body
   padding-top 4rem
@@ -26,6 +29,10 @@ input.inline
 
 // .modal-header 
 //   display block !important
+
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link
+  background-color #0157a5
 
 .bd-navbar
   min-height 64px

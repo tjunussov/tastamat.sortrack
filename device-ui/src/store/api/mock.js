@@ -354,8 +354,14 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     else
         return [200,{"result": "error","resultInfo": "user by login not found"}];
 })
-.onGet('getRPO').reply(200,barcodes)
-.onAny('listBagIndexes').reply(200,plan)
+.onGet('getRPO').reply((cfg)=>{
+    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "techindex not found"}];
+    return [200,barcodes];
+})
+.onAny('listBagIndexes').reply((cfg)=>{
+    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "techindex not found"}];
+    return [200,plan];
+})
 .onAny('findBagIndex').reply(async (cfg)=>{
 
   var req = cfg.params;

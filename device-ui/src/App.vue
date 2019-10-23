@@ -6,69 +6,71 @@ doctype html
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 
-    b-nav-toggle(target="nav_collapse")
+    b-container
 
-    b-navbar-brand(to="/")
-      <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">S</tspan> <tspan x="307.5" y="446">T</tspan></text></svg>
-    b-navbar-brand 
-      img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
-      //- span(@click="toggleFullScreen()") Sortrack® 
-      b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
-      b-badge(variant="danger" v-if="offline") OFFLINE
-      b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
-      b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
+      b-nav-toggle(target="nav_collapse")
 
-    b-collapse(is-nav id="nav_collapse" v-if="depcode")
+      b-navbar-brand(to="/")
+        <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">S</tspan> <tspan x="307.5" y="446">T</tspan></text></svg>
+      b-navbar-brand 
+        img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
+        //- span(@click="toggleFullScreen()") Sortrack® 
+        b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
+        b-badge(variant="danger" v-if="offline") OFFLINE
+        b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
+        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
 
-      b-navbar-nav
-        b-nav-item-dropdown(right id="loginPopover")
-          template(slot="button-content")
-            i.fa.fa-map-marker.mr-2
-            | {{depcode}}
-          
-          b-dropdown-header Настройки
-          b-dropdown-item(v-b-modal.depcode) Сменить Индекс
-          b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
-          b-dropdown-item(@click="togleCalibrate" ) Начать Калибровку
-            //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
-          b-dropdown-divider
-          b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
-          b-dropdown-item(v-b-modal.badge="") Бейджики
-          b-dropdown-item(@click="togleDemo()" ) 
-            i.fa.mr-2(:class="{'fa-circle text-success':demo,'fa-circle-o':!demo}")/
-            | Демо
-          b-dropdown-item(@click="togleLed()" ) 
-            i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
-            | Лампочки 
-          
-          b-dropdown-divider
-          b-dropdown-item(v-b-modal.settings="") Настройки
+      b-collapse(is-nav id="nav_collapse" v-if="depcode")
 
-      b-navbar-nav.ml-auto
+        b-navbar-nav
+          b-nav-item-dropdown(right id="loginPopover")
+            template(slot="button-content")
+              i.fa.fa-map-marker.mr-2
+              | {{depcode}}
+            
+            b-dropdown-header Настройки
+            b-dropdown-item(v-b-modal.depcode) Сменить Индекс
+            b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
+            b-dropdown-item(@click="togleCalibrate" ) Начать Калибровку
+              //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+            b-dropdown-divider
+            b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
+            b-dropdown-item(v-b-modal.badge="") Бейджики
+            b-dropdown-item(@click="togleDemo()" ) 
+              i.fa.mr-2(:class="{'fa-circle text-success':demo,'fa-circle-o':!demo}")/
+              | Демо
+            b-dropdown-item(@click="togleLed()" ) 
+              i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
+              | Лампочки 
+            
+            b-dropdown-divider
+            b-dropdown-item(v-b-modal.settings="") Настройки
 
-        b-nav-form
-          b-form-input.mr-sm-2(
-            size="sm" 
-            v-on:focus.native="$event.target.value = '';"
-            v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
-            @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
-            :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
+        b-navbar-nav.ml-auto
 
-        b-nav-item(right v-b-modal.user v-if="!user") 
-          | Войти
-        b-nav-item-dropdown(right v-else @click="$logout()")
-          template(slot="button-content")
-            i.fa.fa-user.mr-2(:class="{'text-danger':user.login}")/
-            | {{user.name?user.name:user.login}} 
-            .username(v-if="user.name") {{user.login}}
-          b-dropdown-item(v-b-modal.user="") Сменить пользователя
-          b-dropdown-item( @click="$logout()") Выход
+          b-nav-form
+            b-form-input.mr-sm-2(
+              size="sm" 
+              v-on:focus.native="$event.target.value = '';"
+              v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
+              @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
+              :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
 
-    b-navbar-nav.ml-auto(v-else)
-      b-nav-item(right v-b-modal.depcode) Установить Индекс
+          b-nav-item(right v-b-modal.user v-if="!user") 
+            | Войти
+          b-nav-item-dropdown(right v-else @click="$logout()")
+            template(slot="button-content")
+              i.fa.fa-user.mr-2(:class="{'text-danger':user.login}")/
+              | {{user.name?user.name:user.login}} 
+              .username(v-if="user.name") {{user.login}}
+            b-dropdown-item(v-b-modal.user="") Сменить пользователя
+            b-dropdown-item( @click="$logout()") Выход
+
+      b-navbar-nav.ml-auto(v-else)
+        b-nav-item(right v-b-modal.depcode) Установить Индекс
 
 
-  b-container(fluid)
+  b-container
 
     
     //- router-view
@@ -77,7 +79,7 @@ doctype html
     
   
   .bd-footer.text-muted
-    .container 
+    b-container
       p.mb-2.pl-0 &copy; 2019 Copyright. Система "Умные Полки" для ПУС. 
         | Разработка by tastamat.com. Версия 
         b {{$root.version}} 
