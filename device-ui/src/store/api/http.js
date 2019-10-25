@@ -116,9 +116,9 @@ export const $sounds = {
   playPush(){
     if(this.pushCnt == 5) {
       this.pushCntTheme = this.pushCntTheme + 1
-      if(this.pushCntTheme > this.pushes().length) this.pushCntTheme = 0
+      if(this.pushCntTheme == this.pushes().length) this.pushCntTheme = 0
       this.pushCnt = 0
-      this.pushcool.play();
+      // this.pushcool.play();
     } else {
       this.pushCnt = this.pushCnt + 1
       this.pushes()[this.pushCntTheme].currentTime = 0;
@@ -157,7 +157,7 @@ export const $leds = {
     this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
   },
   deselectbag(led){
-    this.$ledon({color:'all',led,duration:100,repeat:1,autoOff:'all'});
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
   },
   printbag(data){
     // $device.post('/print',data);
@@ -167,7 +167,7 @@ export const $leds = {
     $device.get('/testprint');
   },
   bind(led){
-    this.$ledon({color:'all',led,duration:5000,repeat:0});
+    this.$ledon({color:'all',led,duration:5000,pause:100,repeat:0});
   },
   notplan(){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
@@ -179,16 +179,16 @@ export const $leds = {
     this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
   },
   login(user){
-     this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
+     this.$ledon({color:'r',led:'all',duration:100,brightness:100,repeat:3});
   },
   logout(user){
-     this.$ledon({color:'r',led:'all',duration:1000,brightness:100});
+     this.$ledon({color:'r',led:'all',duration:100,brightness:100,repeat:3});
   },
   registerpoint(msg){
-    this.$ledon({color:'all',led:'all',duration:1000,brightness:100});
+    this.$ledon({color:'all',led:'all',duration:1000,brightness:100,repeat:3});
   },
   deletepoint(led){
-    this.$ledon({color:'all',led,duration:100,effect:'right'});
+    this.$ledon({color:'all',led,duration:100,repeat:3});
   },
   $ledon(params){
     // if(this.thor && this.thor > 0){

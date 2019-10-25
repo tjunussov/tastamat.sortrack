@@ -1,5 +1,5 @@
 <template lang="pug">
-b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref="closeModalRef")
+b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide="clear" visible ref="closeModalRef")
 
 
     template(slot="modal-header") 
@@ -14,8 +14,8 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
             .scales.pr-4(v-if="count")
               i.fa.fa-tachometer.mr-2
               b-form-input.inline.text-right#weightscales(
-                v-model="weight" 
-                :autofocus="true"
+                :value="weight" 
+                readonly=""
                 @dblclick="weight = 25" 
                 style="width:90px;"
                 placeholder="Вес") 
@@ -44,11 +44,11 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
         //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
       b-card-body(v-if="response && response.packetListNo")
-        pre.text-primary#printSection.mb-0(:class="{'rotate':config.isRotate}")
+        pre.text-primary#printSection.mb-0( :class="{'rotate':config.isRotate}")
           template(v-if="config.isWindowsPrint")
             div
               b ВИД ЗАДЕЛКИ       
-              span Заказная корреспонденция
+              span {{response.type}}
             //- div
               b ШТРИХКОД 
               span {{response.packetListNo}}
@@ -56,7 +56,7 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
               b НОМЕР ЗАДЕЛКИ     
               span {{response.labelListNo}}  
               b ПЛОМБА 
-              span 718666
+              span {{response.plomba}}
             div
               b СПОСОБ ПЕРЕСЫЛКИ  
               span {{response.route}}
@@ -77,7 +77,7 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
               b       КОЛ-ВО 
               span {{response.count}} 
             div ———————————————————————————————————————————————————
-            .barcode.ml-3 {{response.labelListNo}}
+            .barcode.ml-3 {{encode(response.labelListNo)}}
             div ———————————————————————————————————————————————————
             div.small
               b СОЗДАЛ 
@@ -127,8 +127,8 @@ b-modal#mclosebag(size="" scrollable centered  no-fade @hide="clear" visible ref
 
       b-list-group(v-if="count && !response" style="min-height:300px;" flush)
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
-          .d-flex.w-100.justify-content-between(@click="removeWpi(k)") 
-            h5 {{k}}   &times;
+          .d-flex.w-100.justify-content-between
+            h5(@click="removeWpi(k)") {{k}}   &times;
             small  {{v.postIndexTitle}} ( {{v.postIndex}} )
 
         
@@ -177,7 +177,8 @@ import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import {$leds} from '@/store/api/http'
 import cyr from 'cyrillic-to-translit-js'
-
+import Encoder from 'code-128-encoder'
+var code128= new Encoder()
 
 
 
@@ -223,6 +224,9 @@ export default {
       '$selectBag',
       '$deselectBag',
     ]),
+    encode(val){
+      return code128.encode(val)
+    },
     closeBag(){
       this.$closeBag({
         ppi:this.selected,
@@ -230,7 +234,7 @@ export default {
         weight:this.weight,
         sendmeth:this.sendmeth}).then(()=>{
           this.tabIndex = 1
-           if(this.config.isAutoPrint) this.print();
+          if(this.config.isAutoPrint) this.print();
         });
     },
     weightEnter(val){
@@ -240,8 +244,11 @@ export default {
 
       //if(confirm("Удалить ШПИ "+k+" из мешка ?")){
         console.log('deleted',k,this.selectedBag.wpi[k]);
-        Vue.delete(this.selectedBag.wpi,k);
-        this.$forceUpdate(); // TODO SuperBug, Why we need this ?
+        
+        if(confirm('Вы уверены что хотите удалить ' + k)) {
+          Vue.delete(this.selectedBag.wpi,k);
+          this.$forceUpdate(); // TODO SuperBug, Why we need this ?
+        }
 
         // const wpi = { ...this.selectedBag.wpi };
         // delete wpi[k];
@@ -324,14 +331,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus">
 
-.wizard 
-  .nav-pills .nav-link, .nav-pills > .nav-link
-    border 1px solid transparent
-    
-  .nav-pills .nav-link.active, .nav-pills .show > .nav-link
-    background-color #fff !important
-    border-color #ddd
-    color #007bff
+
     
 .content * 
   display block

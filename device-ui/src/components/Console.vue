@@ -1,7 +1,7 @@
 <template lang="pug">
 b-row.flex-xl-nowrap2
   .pl-md-3.pt-2.mt-4.bd-content.col-12
-    b-tabs.nav-justified.wizard(pills variant="danger" v-model="tabIndex")
+    b-tabs.nav-justified.wizard(pills v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
         template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}] 
         b-card-group.polkas.pt-4(:class="{calibrating}" deck)
@@ -11,7 +11,9 @@ b-row.flex-xl-nowrap2
             :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,}"
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
-            @click="selectBag(b.ppi,i,p)" )
+            :disabled="calibrating && b.led != null "
+            @click="selectBag(b.ppi,i,p)"
+            @dblclick="calibrateSelectBag(b.ppi,i,p)" )
             b-card-header {{(b.ppi)}}
               small.text-muted.indx
                 //- {{(b.index)}} 
@@ -86,7 +88,7 @@ export default {
       else this.calibrateStop();
     },
     error(val){
-      if(val) this.timeout(5000);
+      // if(val) this.timeout(5000);
     },
     status(val){
       console.log('status',val);
@@ -178,16 +180,18 @@ export default {
         this.selectBag(barcode);
       }
     },
+    calibrateSelectBag(ppi,i,p){
+      console.log('calibrating selectBag',ppi);
+      this.calibrateMap((p*24)+i);
+    },
     selectBag(ppi,i,p){
       console.log('selectBag',ppi,i,p)
       window.clearTimeout(this.tmResponse);
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
       } else if(this.calibrating){
-        console.log('calibrating selectBag',ppi);
-        this.calibrateMap((p*24)+i);
+        
       } else {
-
         this.$clear();
         this.$selectBag({ppi}).then(()=>{
           this.isCloseModalOpen = true;  
@@ -203,7 +207,7 @@ export default {
       window.clearTimeout(this.tmResponse);
 
       this.$putToBag({barcode:barcode}).then((resp)=>{
-        this.timeout(30000);
+        // this.timeout(30000);
         console.log('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
         console.log('putToBag error',error);
@@ -237,6 +241,7 @@ export default {
   font-size 11px
   overflow hidden
   line-height 11px
+
 
 .polkas  
   // display: grid;

@@ -83,8 +83,13 @@ const actions = {
 
       console.log('initBags',getters.getConfig.size);
 
+      var ledTemplate = [
+      3,2,1,0,12,13,14,15,
+      7,6,5,4,16,17,18,19,
+      11,10,9,8,20,21,22,23];
+
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:null,ppn:null,wpi:{}}
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{}}
       });
   
     // TODO Rewrite to Promise Chain
@@ -141,7 +146,7 @@ const actions = {
       // console.log('$smartsort.putToBag',state.barcode,state.depcode,state.user);
 
       //$http.get(this.barcode).then((resp)=>{
-      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser.login)
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
       .then((resp)=>{
 
         // console.log('putToBag',resp);

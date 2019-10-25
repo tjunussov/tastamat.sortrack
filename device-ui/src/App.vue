@@ -1,14 +1,14 @@
 <template lang="pug">
 doctype html
 
-#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user,'isDemo':!demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':!demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
 
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 
       b-nav-toggle(target="nav_collapse")
 
-      b-navbar-brand(to="/")
+      //- b-navbar-brand(to="/")
         <svg width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false" fill="#fff" class="d-block"><path d="M510,8 C561.846401,8.16468012 603.83532,50.1535995 604,102 L604,510 C603.83532,561.846401 561.846401,603.83532 510,604 L102,604 C50.1535995,603.83532 8.16468012,561.846401 8,510 L8,102 C8.16468012,50.1535995 50.1535995,8.16468012 102,8 L510,8 L510,8 Z M510,0 L102,0 C45.9,6.21724894e-15 0,45.9 0,102 L0,510 C0,566.1 45.9,612 102,612 L510,612 C566.1,612 612,566.1 612,510 L612,102 C612,45.9 566.1,6.21724894e-15 510,0 Z" fill-rule="nonzero"></path> <text id="BV" font-family="Arial" font-size="350" font-weight="light" letter-spacing="2"><tspan x="72.0527344" y="446">S</tspan> <tspan x="307.5" y="446">T</tspan></text></svg>
       b-navbar-brand 
         img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
@@ -48,7 +48,8 @@ doctype html
 
           b-nav-form
             b-form-input.mr-sm-2(
-              size="sm" 
+              size="sm"
+              :disabled="!user" 
               v-on:focus.native="$event.target.value = '';"
               v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
               @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
@@ -190,6 +191,7 @@ export default {
         error: 'getError',
         user:'getUser',
         depcode:'getDepcode',
+        calibrating:'getCalibrating',
         demoBarcodes:'getDemoBarcodes'
     }),
     offline(){

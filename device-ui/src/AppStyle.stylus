@@ -26,13 +26,17 @@ input.inline
 .barcode
   font-family 'code128' !important
   font-size 44px  !important
+  
+
+.nav-pills .nav-link, .nav-pills > .nav-link
+  border 1px solid transparent
+  
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link
+  background-color #0157a5 !important
+  color #fff
 
 // .modal-header 
 //   display block !important
-
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link
-  background-color #0157a5
 
 .bd-navbar
   min-height 64px

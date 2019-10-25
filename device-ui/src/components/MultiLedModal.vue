@@ -7,16 +7,17 @@ b-modal#settings(title="Настройки LED" lazy hide-header centered @ok="s
         b-card-title Настройки
       b-tabs(card)
         b-tab(title="Стелаж" active)
+          //- b-form-group(label="Кол-во LED" horizontal)
+            //- b-form-input(v-model="settings.size")
+            //- b-input-group
+              
+              //- b-input-group-append
+              //-   b-btn(@click="$initBags") Инициализировать
           b-form-group(label="Кол-во LED" horizontal)
-            b-input-group
-              b-form-input(v-model="settings.size")
-              b-input-group-append
-                b-btn(@click="$initBags") Инициализировать
-          b-form-group(label="Кол-во LED" horizontal)
-            b-button-group
-              b-btn(@click="settings.size = 24") 24
-              b-btn(@click="settings.size = 48") 48
-              b-btn(@click="settings.size = 72") 72
+            b-button-group(block)
+              b-btn(@click="settings.size = 24; $initBags()" :variant="settings.size == 24 ? 'primary':''") 24
+              b-btn(@click="settings.size = 48; $initBags()" :variant="settings.size == 48 ? 'primary':''") 48
+              b-btn(@click="settings.size = 72; $initBags()" :variant="settings.size == 72 ? 'primary':''") 72
         b-tab(title="Мультитор")
           b-form-group(label="URL ПУС Сервиса" horizontal)
             b-form-input(v-model="settings.apiUrl")
@@ -26,7 +27,7 @@ b-modal#settings(title="Настройки LED" lazy hide-header centered @ok="s
             template(v-for="(n,i) in settings.leds")
               b-input-group.mb-2(:prepend="''+i")
                 b-form-input(v-model="settings.leds[i]")
-          b-form-group(label="MQTT Broker" horizontal)
+          b-form-group(label="WS Server" horizontal)
              b-input-group
               b-form-input(v-model="settings.broker")
               b-input-group-append
