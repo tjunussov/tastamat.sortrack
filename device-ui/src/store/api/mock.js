@@ -366,7 +366,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
   var req = cfg.params;
   
-  var p = 0;//barcodes.mails.findIndex((k)=> k == req.barcode )%plan.parentPostIndexes.length;
+  var p = Math.ceil(Math.random()*10) < 3 ? (barcodes.mails.findIndex((k)=> k == req.barcode )%plan.parentPostIndexes.length) : 0;
   if(p<0) p = Math.floor(plan.parentPostIndexes.length * Math.random())
 
   console.debug('findBagIndex',req, p);

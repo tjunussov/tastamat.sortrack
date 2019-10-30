@@ -47,7 +47,7 @@ export const $smartsort = {
     })
     // return $http.get('sm_home.putToBag')
   },
-  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user){
+  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba){
     return $http.post('formBag',{
       "login": user,
       "techindex": depcode,
@@ -57,7 +57,7 @@ export const $smartsort = {
       "bagType": "3",
       "taraType": "1",
       "sendMethod": sendmeth,
-      "plombaNum": "plomba",
+      "plombaNum": plomba,
       "comment": "Comment"
     }).then((resp)=>{
       if(resp.data.error) return Promise.reject(resp.data.resultInfo);

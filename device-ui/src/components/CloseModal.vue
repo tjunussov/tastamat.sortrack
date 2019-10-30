@@ -20,7 +20,16 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
                 style="width:90px;"
                 placeholder="Вес") 
               .label.text-muted гр
-              b-tooltip(target="weightscales") Взвесте пожалуйста
+              //- b-tooltip(target="weightscales") Взвесте пожалуйста
+            .scales.pr-4(v-if="count == 0 && response")
+              i.fa.fa-bookmark.mr-2
+              b-form-input.inline.text-right#plomba(
+                :value="plomba" 
+                readonly=""
+                @dblclick="plomba = 123456" 
+                style="width:130px;"
+                placeholder="Пломба") 
+              .label.text-muted гр
           b-card-sub-title.mb-2 Индекс 
             input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
             div(v-if="isEditing") Лампочка
@@ -56,7 +65,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b НОМЕР ЗАДЕЛКИ     
               span {{response.labelListNo}}  
               b ПЛОМБА 
-              span {{response.plomba}}
+              span {{plomba}}
             div
               b СПОСОБ ПЕРЕСЫЛКИ  
               span {{response.route}}
@@ -76,9 +85,9 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.totalWeight}}кг.
               b       КОЛ-ВО 
               span {{response.count}} 
-            div ———————————————————————————————————————————————————
+            div ——————————————————————————————————————————————————
             .barcode.ml-3 {{encode(response.labelListNo)}}
-            div ———————————————————————————————————————————————————
+            div ——————————————————————————————————————————————————
             div.small
               b СОЗДАЛ 
               span {{response.workerName}}
@@ -88,7 +97,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             div
               | 
               |
-              b      ©2020 Powered by SORTRACK®, KAZPOST INC"
+              b     ©2020 Powered by SORTRACK®, KAZPOST INC"
           template(v-else)
               | N
               | q720
@@ -213,6 +222,7 @@ export default {
       tempPpi:null,
       weight:null,
       sendmeth:1,
+      plomba:null
     }
   },
   methods:{
@@ -234,11 +244,14 @@ export default {
         weight:this.weight,
         sendmeth:this.sendmeth}).then(()=>{
           this.tabIndex = 1
+          this.weight = null
           if(this.config.isAutoPrint) this.print();
         });
     },
     weightEnter(val){
-      if(val.indexOf('.') > 0) this.weight = val
+      // console.log('COUNT',this.count)
+      if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val
+      if(this.response && this.count == 0) this.plomba = val
     },
     removeWpi(k){
 
@@ -302,6 +315,8 @@ export default {
     },
     clear(){
       this.$deselectBag();
+      this.plomba = null;
+      this.weight = null;
       this.$emit('close');
     },
     print(){
