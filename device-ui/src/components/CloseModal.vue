@@ -26,10 +26,10 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b-form-input.inline.text-right#plomba(
                 :value="plomba" 
                 readonly=""
-                @dblclick="plomba = 123456" 
-                style="width:130px;"
+                @dblclick="plomba = 1234567890123" 
+                style="width:130px; font-size:16px;"
                 placeholder="Пломба") 
-              .label.text-muted гр
+              .label.text-muted
           b-card-sub-title.mb-2 Индекс 
             input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
             div(v-if="isEditing") Лампочка
@@ -63,8 +63,9 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.packetListNo}}
             div
               b НОМЕР ЗАДЕЛКИ     
-              span {{response.labelListNo}}  
-              b ПЛОМБА 
+              span {{response.labelListNo}}
+            div
+              b ПЛОМБА            
               span {{plomba}}
             div
               b СПОСОБ ПЕРЕСЫЛКИ  
@@ -80,10 +81,10 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.toDepartment}}
             div
               b ВЕС МЕШКА 
-              span {{response.actualWeight}}кг.
-              b       ВЕС НЕТТО 
-              span {{response.totalWeight}}кг.
-              b       КОЛ-ВО 
+              span {{response.actualWeight}}
+              b     ВЕС НЕТТО 
+              span {{response.totalWeight}}
+              b     КОЛ-ВО 
               span {{response.count}} 
             div ——————————————————————————————————————————————————
             .barcode.ml-3 {{encode(response.labelListNo)}}
@@ -126,7 +127,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               | A20,510,0,1,1,1,N,"© 2018 Powered by SORTRACK®, KAZPOST INC"
               | P1
               | N              
-        code.text-danger(v-if="response && response.result == 'error'")  {{response}}
+      b-card-body(v-if="error" body-bg-variant="danger" body-text-variant="white")  {{error}}
 
 
 
@@ -138,7 +139,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
           .d-flex.w-100.justify-content-between
             h5(@click="removeWpi(k)") {{k}}   &times;
-            small  {{v.postIndexTitle}} ( {{v.postIndex}} )
+            small {{v.postIndex}}
 
         
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
@@ -207,6 +208,7 @@ export default {
         response: 'getCloseResponse',
         selected:'getSelected',
         config:'getConfig',
+        error: 'getError',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
         cursor: 'cursor',
@@ -222,7 +224,7 @@ export default {
       tempPpi:null,
       weight:null,
       sendmeth:1,
-      plomba:null
+      plomba:0
     }
   },
   methods:{
@@ -242,7 +244,9 @@ export default {
         ppi:this.selected,
         wpi:Object.keys(this.selectedBag.wpi),
         weight:this.weight,
-        sendmeth:this.sendmeth}).then(()=>{
+        sendmeth:this.sendmeth,
+        plomba:this.plomba
+      }).then(()=>{
           this.tabIndex = 1
           this.weight = null
           if(this.config.isAutoPrint) this.print();

@@ -202,6 +202,7 @@ export default {
       }
     },
     putToBag(barcode){
+      if(this.isCloseModalOpen) { console.debug('skipping putToBag due to isCloseModalOpen'); return; }
       barcode = barcode.toUpperCase().trim()
       console.log('started putToBag barcode',barcode);
       window.clearTimeout(this.tmResponse);

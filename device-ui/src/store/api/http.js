@@ -61,6 +61,7 @@ export const $smartsort = {
       "comment": "Comment"
     }).then((resp)=>{
       if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
       return resp;
     })
     // return $http.get(`sm_home.closeBag`)

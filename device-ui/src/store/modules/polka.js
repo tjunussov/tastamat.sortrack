@@ -238,7 +238,9 @@ const actions = {
       }).catch((error)=>{
         console.error('error',error);
         state.status = 'error';
-        state.closeResponse = error.response?error.response.data:{"error":"catch"}
+        state.error = error.response?error.response.data:error.message
+        return Promise.reject(state.error);
+        // state.closeResponse = error.response?error.response.data:{"error":"catch"}
       });
 
     
