@@ -13,10 +13,13 @@ doctype html
       b-navbar-brand 
         img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
         //- span(@click="toggleFullScreen()") Sortrack® 
-        b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
+        b-badge(variant="danger" v-if="!ledOn" @click="togleLed") &times; NO LED
         b-badge(variant="danger" v-if="offline") OFFLINE
-        b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
-        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
+        b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo") &times; DEMO
+        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate") &times; CALIBRATE
+        b-badge.ml-1(:variant="ws.isOpen?'sucess':'danger'" @click="toggleWsConnect") WS
+
+        
 
       b-collapse(is-nav id="nav_collapse" v-if="depcode")
 
@@ -141,7 +144,7 @@ import BadgeModal from '@/components/BadgeModal'
 import MultiLedModal from '@/components/MultiLedModal'
 
 
-
+var webSocket;
 
 export default {
   name: 'app',
@@ -152,7 +155,14 @@ export default {
       tmpDepcode:null,
       tmResponse:null,
       isSortplanModalOpen:false,
-      demoIndex:0
+      demoIndex:0,
+      ws:{
+        isOpen : false,
+        start: false,
+        error: null,
+        message:'Here will be data',
+        url:null
+      }
     }
   },
   mounted(){
@@ -314,6 +324,31 @@ export default {
       // if(this.ledOn) {
       //   mockDevice.restore();
       // }
+    },
+    toggleWsConnect(){
+      if(this.ws.isOpen){
+        webSocket.close();
+        this.ws.isOpen = false;
+        webSocket = null;
+      } else {
+        webSocket = new WebSocket('ws://'+this.settings.broker);
+        webSocket.addEventListener('open', (e) => {
+          this.ws.isOpen = true
+          webSocket.send('/');
+        });
+        webSocket.addEventListener('error', (e) => {
+          console.error('error',e)
+          this.ws.error = e
+          this.ws.isOpen = false
+        });
+        webSocket.addEventListener('close', (e) => {
+          this.ws.isOpen = false
+        });
+        webSocket.addEventListener('message', (m) => {
+          console.log('message',m)
+          this.ws.message = m;
+        });
+      }
     },
   },
   components: {

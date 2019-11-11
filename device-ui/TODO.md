@@ -48,6 +48,11 @@ TODO Kenmat
 --- multiled configure 48, or splitted
 --- multithor websocket support 8080
 
+
+- в ярлыке отображать вид заделки и техиндекс, ПУС эти поля передает
+- plomba required field, disallow print
+- calibrate ui issue: при калибровке вводит заблуждение красная рамка на ячейках которая перемещается, иногда она показывает не в тему. Предлагаю убрать. А откалиброванные ячейки отмечать зеленным.
+
 - test all templates
 - test whole process
 

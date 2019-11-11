@@ -1,6 +1,7 @@
 // import axios from 'axios'
 import {$http,$device} from '@/store/api/http'
 import MockAdapter from 'axios-mock-adapter'
+import { WebSocket, Server } from 'mock-socket';
 import Vue from 'vue'
 
 
@@ -439,5 +440,32 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 //   console.debug('led',cfg.params?cfg.params.led:cfg.params);
 //   return [200,null];
 // })
+
+
+/////////////////////////////
+
+
+export const $wsmock = {
+  socket:null,
+  enable(url){
+    var $mockServer = new Server(url);
+    window.WebSocket = WebSocket; // Here we stub out the window object
+
+    $mockServer.on('connection', socket => {
+      this.socket = socket
+      console.log("started mock socket demo",socket);
+      this.socket.on('close',() => {
+        console.log("stopping mock socket demo");
+        this.socket = null;
+      });
+      this.socket('data',(m)=>{
+        this.send('/',m);
+      })
+    });
+  },
+  demo(){
+    console.log('demo');
+  }
+}
 
 
