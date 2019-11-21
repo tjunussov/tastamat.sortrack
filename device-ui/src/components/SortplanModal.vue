@@ -57,7 +57,7 @@ export default {
     fillBags(sortplan){
       if(confirm("Сортплан будет изменен! Вы уверены ?")) { 
         this.$fillBags(sortplan);
-        this.$emit('close');
+        this.$emit('hide');
       }
     },
     fetch(depcode){
@@ -71,6 +71,7 @@ export default {
         this.status = r
       }).catch((e)=>{
         this.error = e
+        this.$emit('hide');
       });
     },
   }

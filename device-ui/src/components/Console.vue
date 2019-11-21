@@ -83,7 +83,7 @@ export default {
   },
   watch:{
     thor(val){
-      if(val) this.tabIndex = val;
+      if(val !== undefined) this.tabIndex = val;
     },
     calibrating(val){
       if(val) this.calibrateStart();

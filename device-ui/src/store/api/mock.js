@@ -399,7 +399,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     await sleep(sleepTime);
   }
 
-  if((Math.random()*100) < 95)
+  if((Math.random()*100) < 55)
     return [200,resp];
   else {
     return [200,{result:"error",resultInfo:"Отправление "+req.barcode+" не найдено!"}]

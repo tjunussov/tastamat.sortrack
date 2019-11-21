@@ -45,6 +45,7 @@ export const $device = {
     }
   },
   get(url,params,tab){
+    console.log('--->',url,params,tab);
     return this.axioses[tab](url,params);
   },
   post(url,params,tab){
@@ -221,6 +222,7 @@ export const $leds = {
   },
   error(user){
     this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
+    this.pushLastLed();
   },
   login(user){
      this.$ledon({color:'r',led:'all',duration:100,brightness:100,repeat:3});
@@ -242,7 +244,7 @@ export const $leds = {
     // }
   },
   $ledoff(){
-    $device.get(`/off`);
+    $device.get(`/off`,null,this.thor);
   },
   on(name,data,thor){
     
