@@ -12,9 +12,11 @@ b-row.flex-xl-nowrap2
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
             :disabled="(calibrating && b.led != null) || b.isErrorBag "
-            @click="selectBag(b.ppi,i,p)"
+            @click="selectBag(b.ppi,i,p,b.isErrorBag)"
             @dblclick="calibrateSelectBag(b.ppi,i,p)" )
-            b-card-header {{(b.ppi)}}
+            b-card-header 
+              template(v-if="b.isErrorBag") Корзина
+              template(v-else) {{(b.ppi)}}
               small.text-muted.indx
                 //- {{(b.index)}} 
                 span.led(:class="{'remapped':b.led!=null}") {{b.led!==null?b.led:i}}
@@ -81,7 +83,7 @@ export default {
   },
   watch:{
     thor(val){
-      this.tabIndex = val;
+      if(val) this.tabIndex = val;
     },
     calibrating(val){
       if(val) this.calibrateStart();
@@ -184,8 +186,9 @@ export default {
       console.log('calibrating selectBag',ppi);
       this.calibrateMap((p*24)+i);
     },
-    selectBag(ppi,i,p){
-      console.log('selectBag',ppi,i,p)
+    selectBag(ppi,i,p,isErrorBag){
+      console.debug('selectBag',ppi,i,p,isErrorBag)
+      if(isErrorBag) return;
       window.clearTimeout(this.tmResponse);
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
@@ -273,8 +276,8 @@ export default {
       opacity 0.2
       
     &.isErrorBag
-      background-color #fc0 !important
-      pointer-events none
+      background-color #f00 !important
+      // pointer-events none
       
 
     .card-body, .card-header

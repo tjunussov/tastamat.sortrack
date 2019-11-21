@@ -16,8 +16,8 @@ doctype html
         b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
         b-badge(variant="danger" v-if="offline") OFFLINE
         b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
-        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate") &times; CALIBRATE
-        b-badge.ml-1(variant="danger" v-if="ws.isOpen" @click="toggleWsConnect") WS
+        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
+        b-badge.ml-1(variant="danger" v-if="ws.isOpen" @click="toggleWsConnect()") WS
 
         
 
@@ -32,7 +32,7 @@ doctype html
             b-dropdown-header Настройки
             b-dropdown-item(v-b-modal.depcode) Сменить Индекс
             b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
-            b-dropdown-item(@click="togleCalibrate" ) Начать Калибровку
+            b-dropdown-item(@click="togleCalibrate()" ) Начать Калибровку
               //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
             b-dropdown-divider
             b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
@@ -308,9 +308,10 @@ export default {
       }  
     },
     togleCalibrate(state){
-      if(state !== null)
-        this.$store.state.polka.calibrating = state
-      else
+      console.log('togleCalibrate',this.$store.state.polka.calibrating);
+      // if(state !== null)
+      //   this.$store.state.polka.calibrating = state
+      // else
         this.$store.state.polka.calibrating = !this.$store.state.polka.calibrating;
     },
     togleDemo(val){
