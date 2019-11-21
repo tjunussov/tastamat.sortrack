@@ -23,7 +23,8 @@ export const bindMixin = {
     },
     calibrateNext(){
       this.bind.cursor++;
-      if(this.ledOn) $leds.on('bind',this.bind.cursor);
+      console.log('THOR',this.tabIndex);
+      if(this.ledOn) $leds.on('bind',this.bind.cursor,this.tabIndex);
     },
     /*wizardToggle(){
       console.log('wizardToggle');

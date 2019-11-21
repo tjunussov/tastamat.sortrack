@@ -20,10 +20,9 @@ export default {
       isAutoPrint:false,
       user:null,
       apiUrl:'https://pls-test.post.kz/api/smart-shelves/',
-      ledUrl:'http://192.168.10.10/',
       printer:'192.168.1.40',
       broker:'192.168.10.1',
-      leds:["192.168.10.1","192.168.10.2","192.168.10.3"],
+      leds:["192.168.10.10","192.168.10.10","192.168.10.10"],
       meta_:{ updated:new Date() },
       sortplan:{
         '90001':'L1',

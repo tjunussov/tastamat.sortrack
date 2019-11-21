@@ -367,7 +367,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
   var req = cfg.params;
   
-  var p = Math.ceil(Math.random()*10) < 3 ? (barcodes.mails.findIndex((k)=> k == req.barcode )%plan.parentPostIndexes.length) : 0;
+  var p = Math.ceil(Math.random()*10) < 5 ? (barcodes.mails.findIndex((k)=> k == req.barcode )%plan.parentPostIndexes.length) : 0;
   if(p<0) p = Math.floor(plan.parentPostIndexes.length * Math.random())
 
   console.debug('findBagIndex',req, p);
@@ -411,7 +411,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
   console.debug('formBag',req);
 
-  return [200,{
+  return [200,
+  {
     "result": "success",
     "packetListNo": "B20191007"+req.parentPostIndex,
     "labelListNo": "G201910072104795",
@@ -421,7 +422,14 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "toDepartment": "Алматы-9",
     "route": "Наземный",
     "date": new Date(),
-    "count": req.barcodeList.length
+    "count": req.barcodeList.length,
+
+    "totalWeight": "12000",
+    "fromTechindex": "055990",
+    "toTechindex": "050009",
+    "techindex": "055990",
+    "bagType": "3",
+    "plombaNum": req.plombaNum,
 }]}
 )
 .onAny().reply((cfg)=>{

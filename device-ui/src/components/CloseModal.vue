@@ -16,22 +16,27 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b-form-input.inline.text-right#weightscales(
                 :value="weight" 
                 readonly=""
+                :class="{'text-danger':weight >= 15000}"
                 @dblclick="weight = 25" 
                 style="width:90px;"
                 placeholder="Вес") 
               .label.text-muted гр
               //- b-tooltip(target="weightscales") Взвесте пожалуйста
-            .scales.pr-4(v-if="count == 0 && response")
-              i.fa.fa-bookmark.mr-2
-              b-form-input.inline.text-right#plomba(
-                :value="plomba" 
-                readonly=""
-                @dblclick="plomba = 1234567890123" 
-                style="width:130px; font-size:16px;"
-                placeholder="Пломба") 
+            //- .scales.pr-4(v-if="count == 0 && response")
+            //-   i.fa.fa-bookmark.mr-2
+            //-   b-form-input.inline.text-right#plomba(
+            //-     :value="plomba" 
+            //-     readonly=""
+            //-     @dblclick="plomba = 1234567890123" 
+            //-     style="width:130px; font-size:16px;"
+            //-     placeholder="Пломба") 
               .label.text-muted
           b-card-sub-title.mb-2 Индекс 
             input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
+            div 
+              i.fa.fa-bookmark.mr-2 
+              | Пломба
+              input.inline.ml-2(:value="plomba" style="width:130px" @dblclick="plomba = 1234567890123")
             div(v-if="isEditing") Лампочка
               i.fa.fa-lightbulb-o.mr-2.ml-4
               input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
@@ -57,7 +62,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           template(v-if="config.isWindowsPrint")
             div
               b ВИД ЗАДЕЛКИ       
-              span {{response.type}}
+              span {{response.bagType}}
             //- div
               b ШТРИХКОД 
               span {{response.packetListNo}}
@@ -66,7 +71,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.labelListNo}}
             div
               b ПЛОМБА            
-              span {{plomba}}
+              span {{response.plombaNum}}
             div
               b СПОСОБ ПЕРЕСЫЛКИ  
               span {{response.route}}
@@ -74,11 +79,11 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-   b ТИП 
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
-              b ОТКУДА   
-              span {{response.fromDepartment}}
+              b ОТКУДА 
+              span {{response.fromTechindex}} {{response.fromDepartment}}
             div
-              b КУДА     
-              span {{response.toDepartment}}
+              b КУДА   
+              span {{response.fromTechindex}} {{response.toDepartment}}
             div
               b ВЕС МЕШКА 
               span {{response.actualWeight}}
@@ -145,7 +150,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
     template(slot="modal-footer") 
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(:variant="weight>0?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
+        b-btn(:variant="weight>0 && weight <= 15000 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight >= 15000 || !plomba" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
@@ -254,8 +259,8 @@ export default {
     },
     weightEnter(val){
       // console.log('COUNT',this.count)
-      if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val
-      if(this.response && this.count == 0) this.plomba = val
+      if(val && val.length == 13) this.plomba = val
+      else if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val.substr(0,val.indexOf('.'));
     },
     removeWpi(k){
 

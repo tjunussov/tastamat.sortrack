@@ -8,10 +8,10 @@ b-row.flex-xl-nowrap2
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
-            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,}"
+            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,'isErrorBag':b.isErrorBag}"
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
-            :disabled="calibrating && b.led != null "
+            :disabled="(calibrating && b.led != null) || b.isErrorBag "
             @click="selectBag(b.ppi,i,p)"
             @dblclick="calibrateSelectBag(b.ppi,i,p)" )
             b-card-header {{(b.ppi)}}
@@ -271,6 +271,11 @@ export default {
 
     &.text-muted
       opacity 0.2
+      
+    &.isErrorBag
+      background-color #fc0 !important
+      pointer-events none
+      
 
     .card-body, .card-header
       padding 0.5rem

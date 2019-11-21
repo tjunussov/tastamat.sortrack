@@ -45,12 +45,17 @@ TODO Kenmat
 + bug:afterscantimeout close modal null error
 + close modal fix height if multiple also
 
---- multiled configure 48, or splitted
+
++ Ограничение веса 15 кг - Тима
++ Обязательное поле пломба - Тима
+- Не корректно указывается вес - Тима
++ в ярлыке отображать вид заделки и техиндекс, ПУС эти поля передает
++ LedOn on error network only ( not 404 )
+- Аварийная ячейка
+- multiled configure 48, or splitted
+
 --- multithor websocket support 8080
 
-
-- в ярлыке отображать вид заделки и техиндекс, ПУС эти поля передает
-- plomba required field, disallow print
 - calibrate ui issue: при калибровке вводит заблуждение красная рамка на ячейках которая перемещается, иногда она показывает не в тему. Предлагаю убрать. А откалиброванные ячейки отмечать зеленным.
 
 - test all templates

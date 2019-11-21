@@ -5,18 +5,52 @@ import Vue from 'vue'
 /*************************************/
 
 export var baseURL = "http://pls-test.post.kz/api/smart-shelves/"
-export var deviceURL = 'http://192.168.10.10/api/v1/leds';
+export var deviceURL = 'http://192.168.10.10/';
 
 export const $http = axios.create({
   baseURL: baseURL
 })
 
+// export const $device = axios.create({
+//   baseURL: deviceURL
+// })
 
-export const $device = axios.create({
-  baseURL: deviceURL
-})
+export const $device = {
+  axioses:[],
+  size:24,
+  init(ips,size,callback){
 
+    console.log('$devices',ips,size);
 
+    $leds.lastLed = size-1;
+    this.size = size;
+
+    for(var i in ips){
+      
+
+      if(ips[i] == "") continue;
+
+      console.log('==>',ips[i])
+
+      var a = axios.create({
+        baseURL: 'http://'+ips[i],
+        timeout:1000
+      });
+
+      a.interceptors.response.use(function (response) {
+        return response;
+      },callback);
+
+      this.axioses.push(a);
+    }
+  },
+  get(url,params,tab){
+    return this.axioses[tab](url,params);
+  },
+  post(url,params,tab){
+    return this.axioses[tab](url,params);
+  }
+};
 
 export const $smartsort = {
   auth(user,depcode){
@@ -130,6 +164,12 @@ export const $sounds = {
 
 export const $leds = {
   thor:null,
+  lastLed:'all',
+  pushLastLed(){
+    setTimeout(()=>{
+      this.push(this.lastLed);
+    },400)
+  },
   search(user){
     this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
@@ -144,6 +184,7 @@ export const $leds = {
   },
   notfound(user){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
   },
   bindstart(){
     this.$ledon({color:'all',led:'all',duration:1000,brightness:100});
@@ -172,9 +213,11 @@ export const $leds = {
   },
   notplan(){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
   },
   notbind(){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
   },
   error(user){
     this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
@@ -195,15 +238,16 @@ export const $leds = {
     // if(this.thor && this.thor > 0){
     //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
     // } else {
-      $device.get('/on',{params});
+      $device.get('/on',{params},this.thor);
     // }
   },
   $ledoff(){
     $device.get(`/off`);
   },
   on(name,data,thor){
-    console.debug('ON',name,thor);
-    this.thor = thor;
+    
+    this.thor = thor?thor:0;
+    console.debug('ON',name,this.thor);
     try { 
       this[name](data);
   } catch(e){
