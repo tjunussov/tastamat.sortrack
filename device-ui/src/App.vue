@@ -52,7 +52,7 @@ doctype html
 
         b-navbar-nav.ml-auto
 
-          b-nav-form
+          b-nav-form(@submit.stop.prevent)
             b-form-input.mr-sm-2(
               size="sm"
               :disabled="!user" 

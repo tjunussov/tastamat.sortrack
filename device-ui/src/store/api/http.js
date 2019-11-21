@@ -45,8 +45,11 @@ export const $device = {
     }
   },
   get(url,params,tab){
-    console.log('--->',url,params,tab);
-    return this.axioses[tab](url,params);
+    console.debug('--->',url,params,tab);
+    if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
+      for(var i in this.axioses) this.axioses[i](url,params);
+    } else 
+      return this.axioses[tab](url,params);
   },
   post(url,params,tab){
     return this.axioses[tab](url,params);

@@ -183,8 +183,10 @@ export default {
       }
     },
     calibrateSelectBag(ppi,i,p){
-      console.log('calibrating selectBag',ppi);
-      this.calibrateMap((p*24)+i);
+      if(this.calibrating){
+        console.log('calibrating selectBag',ppi);
+        this.calibrateMap((p*24)+i);
+      }
     },
     selectBag(ppi,i,p,isErrorBag){
       console.debug('selectBag',ppi,i,p,isErrorBag)
