@@ -385,6 +385,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
             "toStreet": "ПР ДОСТЫК 13 Г АЛМАТЫ ",
             "mailStatus": "Registered",
             "mailType2": "P101",
+            "weight":Math.ceil(Math.random()*1000),
             "storagePaymentPaid": false,
             "returnPaymentPaid": false,
             "selfPaymentPaid": false,
@@ -428,7 +429,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "fromTechindex": "055990",
     "toTechindex": "050009",
     "techindex": "055990",
-    "bagType": "3",
+    "bagType": req.bagType,
+    "taraType": req.taraType,
     "plombaNum": req.plombaNum,
 }]}
 )

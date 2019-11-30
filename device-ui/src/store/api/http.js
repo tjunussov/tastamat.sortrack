@@ -85,18 +85,18 @@ export const $smartsort = {
     })
     // return $http.get('sm_home.putToBag')
   },
-  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba){
+  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
     return $http.post('formBag',{
       "login": user,
       "techindex": depcode,
       "parentPostIndex": bag,
       "barcodeList": barcodesArray,
       "totalWeight": weight,
-      "bagType": "3",
-      "taraType": "1",
+      "bagType": bagType,
+      "taraType": taraType,
       "sendMethod": sendmeth,
       "plombaNum": plomba,
-      "comment": "Comment"
+      "comment": comment
     }).then((resp)=>{
       if(resp.data.error) return Promise.reject(resp.data.resultInfo);
       if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");

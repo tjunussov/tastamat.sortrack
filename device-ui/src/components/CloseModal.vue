@@ -37,6 +37,13 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               i.fa.fa-bookmark.mr-2 
               | Пломба
               input.inline.ml-2(:value="plomba" style="width:130px" @dblclick="plomba = 1234567890123")
+            div 
+              i.fa.fa-bookmark.mr-2 
+              | Вит тары
+              //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
+              b-form-radio-group.ml-2(v-model="taraType" :options="taraTypes")
+            div 
+              b-form-select.ml-2(v-model="bagType" :options="bagTypes")
             div(v-if="isEditing") Лампочка
               i.fa.fa-lightbulb-o.mr-2.ml-4
               input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
@@ -62,7 +69,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           template(v-if="config.isWindowsPrint")
             div
               b ВИД ЗАДЕЛКИ       
-              span {{response.bagType}}
+              span {{mapBagType(response.bagType)}}
             //- div
               b ШТРИХКОД 
               span {{response.packetListNo}}
@@ -80,15 +87,15 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
               b ОТКУДА 
-              span {{response.fromTechindex}} {{response.fromDepartment}}
+              span [{{response.fromTechindex}}] {{response.fromDepartment}}
             div
               b КУДА   
-              span {{response.fromTechindex}} {{response.toDepartment}}
+              span [{{response.toTechindex}}] {{response.toDepartment}}
             div
-              b ВЕС МЕШКА 
-              span {{response.actualWeight}}
+              b ВЕС ТАРЫ 
+              span {{response.actualWeight}} гр.
               b     ВЕС НЕТТО 
-              span {{response.totalWeight}}
+              span {{response.totalWeight}} гр.
               b     КОЛ-ВО 
               span {{response.count}} 
             div ——————————————————————————————————————————————————
@@ -98,8 +105,10 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b СОЗДАЛ 
               span {{response.workerName}}
             div.small
-              b ДАТА 
-              span {{response.date}}
+              b ДАТА  
+              span {{response.date}}     
+              b(v-if="response.taraType") ВИД ТАРЫ 
+              |       {{taraTypes[response.taraType]}}
             div
               | 
               |
@@ -229,7 +238,22 @@ export default {
       tempPpi:null,
       weight:null,
       sendmeth:1,
-      plomba:0
+      plomba:0,
+      bagTypes:{
+        "1":"Мешок Сактандыру",
+        "2":"Заказная корреспонденция",
+        "3":"Правительственная письменная коррeспонденция",
+        "4":"Письменная корреспонденция",
+        "5":"Порожняя тара",
+        "6":"Мешок с отправлениями EMS",
+        "7":"Мешок с международной письменной корреспонденцией",
+        "8":"Постпакет внутренний",
+        "9":"Группа РПО"
+      },
+      taraTypes:{"1":"Мешок","2":"Ящик"},
+      bagType:1,
+      taraType:1,
+      comment:null
     }
   },
   methods:{
@@ -250,12 +274,20 @@ export default {
         wpi:Object.keys(this.selectedBag.wpi),
         weight:this.weight,
         sendmeth:this.sendmeth,
-        plomba:this.plomba
+        plomba:this.plomba,
+        bagType:this.bagType,
+        taraType:this.taraType,
+        comment:this.comment
       }).then(()=>{
           this.tabIndex = 1
           this.weight = null
+          this.bagType = 1
+          this.taraType = 1
           if(this.config.isAutoPrint) this.print();
         });
+    },
+    mapBagType(val){
+      if(val) return this.bagTypes[val];
     },
     weightEnter(val){
       // console.log('COUNT',this.count)

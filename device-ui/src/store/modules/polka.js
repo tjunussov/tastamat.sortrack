@@ -225,14 +225,17 @@ const actions = {
 
         
   },
-  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba}) {
+  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
 
-    console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba);
+    console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
     weight = String(weight).replace(".","").replace(",","");
 
 
-    return $smartsort.closeBag(ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba)).then((resp)=>{
+    return $smartsort.closeBag(
+        ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
+        bagType,taraType,comment
+        ).then((resp)=>{
 
         state.closeResponse = resp.data
 
