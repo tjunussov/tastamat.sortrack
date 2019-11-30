@@ -65,6 +65,10 @@ TODO Kenmat
 - calibrate without login
 - bug:reinint clears led settings
 - led:search blink not working
+- ui: polish ui design of closeModal tabs or list
+- ui: animate weight and make sound
+- toogle DEMO refresh issue
+- silent print
 
 TODO 4.0
 - overcome https issue for LEDs

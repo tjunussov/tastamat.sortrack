@@ -34,7 +34,7 @@ export const $device = {
 
       var a = axios.create({
         baseURL: 'http://'+ips[i],
-        timeout:1000
+        // timeout:1000
       });
 
       a.interceptors.response.use(function (response) {
@@ -45,7 +45,6 @@ export const $device = {
     }
   },
   get(url,params,tab){
-    console.debug('--->',url,params,tab);
     if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
       for(var i in this.axioses) this.axioses[i](url,params);
     } else 
@@ -247,7 +246,7 @@ export const $leds = {
     // }
   },
   $ledoff(){
-    $device.get(`/off`,null,this.thor);
+    $device.get(`/off`,{led:'all'},this.thor);
   },
   on(name,data,thor){
     

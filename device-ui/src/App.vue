@@ -318,7 +318,7 @@ export default {
       console.log('togleDemo',val);
       this.$togleDemo({val}).then(()=>{
         if(val === undefined){
-           location.reload();
+           // location.reload();
         }
         if(!this.demo) {
           mock.restore();
