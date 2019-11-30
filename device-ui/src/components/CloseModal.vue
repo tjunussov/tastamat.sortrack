@@ -31,17 +31,19 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-     style="width:130px; font-size:16px;"
             //-     placeholder="Пломба") 
               .label.text-muted
-          b-card-sub-title.mb-2 Индекс 
-            input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
+          b-card-sub-title.mb-2 
+            template(v-if="isEditing || selectedBag.ppn") Индекс 
+              input.inline(v-model="selectedBag.ppn" size="20" :placeholder="selectedBag.ppi")
             div 
               i.fa.fa-bookmark.mr-2 
               | Пломба
               input.inline.ml-2(:value="plomba" style="width:130px" @dblclick="plomba = 1234567890123")
-            div 
-              i.fa.fa-bookmark.mr-2 
-              | Вит тары
-              //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
-              b-form-radio-group.ml-2(v-model="taraType" :options="taraTypes")
+            b-row
+              b-col(cols=5)
+                //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
+                b-form-radio-group.ml-2(v-model="taraType" :options="taraTypes")
+              b-col(cols=5)
+                b-form-radio-group.ml-2(v-model="sendmeth" :options="sendmethTypes")
             div 
               b-form-select.ml-2(v-model="bagType" :options="bagTypes")
             div(v-if="isEditing") Лампочка
@@ -237,6 +239,7 @@ export default {
       tabIndex:0,
       tempPpi:null,
       weight:null,
+      sendmethTypes:{"1":"Наземный","2":"Авия"},
       sendmeth:1,
       plomba:0,
       bagTypes:{
@@ -281,8 +284,8 @@ export default {
       }).then(()=>{
           this.tabIndex = 1
           this.weight = null
-          this.bagType = 1
-          this.taraType = 1
+          // this.bagType = 1
+          // this.taraType = 1
           if(this.config.isAutoPrint) this.print();
         });
     },
