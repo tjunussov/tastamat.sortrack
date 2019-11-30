@@ -67,6 +67,7 @@ TODO Kenmat
 - led:search blink not working
 - ui: polish ui design of closeModal tabs or list
 - ui: animate weight and make sound
+- last bag led if 2-3modules
 - toogle DEMO refresh issue
 - silent print
 

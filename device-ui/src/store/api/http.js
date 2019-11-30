@@ -33,8 +33,8 @@ export const $device = {
       console.log('==>',ips[i])
 
       var a = axios.create({
-        baseURL: 'http://'+ips[i],
-        // timeout:1000
+        baseURL:'http://'+ips[i],
+        timeout:1000
       });
 
       a.interceptors.response.use(function (response) {
@@ -242,6 +242,7 @@ export const $leds = {
     // if(this.thor && this.thor > 0){
     //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
     // } else {
+      $device.get(`/off`,{params:{led:'all'}},this.thor);
       $device.get('/on',{params},this.thor);
     // }
   },
