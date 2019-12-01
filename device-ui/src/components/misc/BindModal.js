@@ -10,6 +10,7 @@ export const bindMixin = {
     calibrateStop(){
       this.bind.cursor = null;
       this.bind.selectedBag = null;
+      $leds.lastLed = this.lastBag.led;
       this.clearAll();
       this.$save();
     },

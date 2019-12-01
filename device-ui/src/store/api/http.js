@@ -16,14 +16,14 @@ export const $http = axios.create({
 // })
 
 export const $device = {
-  axioses:[],
+  axioses:null,
   size:24,
-  init(ips,size,callback){
+  init(ips,size,lastLed,callback){
 
-    console.log('$devices',ips,size);
+    console.log('urls %o size:[%s] lastLed:[%s]',ips,size,lastLed);
 
-    $leds.lastLed = size-1;
     this.size = size;
+    this.axioses = [];
 
     for(var i in ips){
       
@@ -44,7 +44,10 @@ export const $device = {
       this.axioses.push(a);
     }
   },
-  get(url,params,tab){
+  get(url,params,tab,exceptParams){
+
+    // console.log("====================",this.axioses,params,tab,exceptParams);
+
     if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
       for(var i in this.axioses) this.axioses[i](url,params);
     } else 
@@ -167,22 +170,25 @@ export const $sounds = {
 
 export const $leds = {
   thor:null,
-  lastLed:'all',
+  lastLed:23,
   pushLastLed(){
     setTimeout(()=>{
+      console.debug('pushLastLed -->',this.lastLed);
       this.push(this.lastLed);
-    },400)
+    },1000)
   },
   search(user){
     this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
   push(led){
+    this.$ledoff();
     this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
   },
   test(led){
     this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
   },
   pull(led){
+    this.$ledoff();
     this.$ledon({color:'r',led,duration:100,repeat:3});
   },
   notfound(user){
@@ -242,12 +248,12 @@ export const $leds = {
     // if(this.thor && this.thor > 0){
     //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
     // } else {
-      $device.get(`/off`,{params:{led:'all'}},this.thor);
+      // $device.get(`/off`,{params:{led:'all'}},this.thor,{params});
       $device.get('/on',{params},this.thor);
     // }
   },
   $ledoff(){
-    $device.get(`/off`,{led:'all'},this.thor);
+    $device.get(`/off`,{params:{led:'all'}},null);
   },
   on(name,data,thor){
     

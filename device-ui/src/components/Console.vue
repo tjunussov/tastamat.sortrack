@@ -140,6 +140,7 @@ export default {
         status: 'getStatus',
         barcode: 'getBarcode',
         response: 'getResponse',
+        lastBag:'getLastBag',
         error: 'getError',
         cursor: 'cursor',
         selected: 'getSelected',
@@ -156,11 +157,6 @@ export default {
     }
   },
   mixins:[bindMixin],
-  created(){
-    if(!this.bags){
-      this.$initBags()
-    }
-  },
   methods:{
     ...mapActions([
       '$initBags',

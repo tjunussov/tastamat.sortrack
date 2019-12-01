@@ -35,6 +35,11 @@ const getters = {
   getLoginResponse : (state) => state.loginResponse,
   
   getSelected : (state) => state.selected,
+  getLastBag: (state,getters) => {
+    if(getters.config.bags)
+      return getters.config.bags[getters.config.bags.length - 1];
+    return null
+  },
   getSelectedBag: (state,getters) => {
     if(state.selected) return getters.getBags[getters.cursor]
   },
@@ -56,6 +61,7 @@ const getters = {
 const actions = {
   $onHydrated({ commit, dispatch, state, getters }){
     dispatch('settingsSelect',getters.getSettings[0]);
+    if(!getters.getBags) dispatch('$initBags');
     dispatch('$initSettings');
   },
   $initSettings({ commit, dispatch, state, getters }){
@@ -65,7 +71,7 @@ const actions = {
     // $device.defaults.baseURL = getters.config.ledUrl;
 
     // no led if timeout
-    $device.init(getters.config.leds,getters.config.size,(error)=>{
+    $device.init(getters.config.leds,getters.config.size,getters.getLastBag.led,(error)=>{
       // console.error('ErroZZZ',error ) 
       // if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
     });
@@ -101,7 +107,7 @@ const actions = {
         return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{}}
       });
 
-      getters.getConfig.bags[getters.getConfig.bags.length - 1].isErrorBag = true;
+      getters.getLastBag.isErrorBag = true;
 
 
   
