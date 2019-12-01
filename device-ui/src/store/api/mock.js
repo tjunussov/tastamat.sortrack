@@ -400,7 +400,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     await sleep(sleepTime);
   }
 
-  if((Math.random()*100) < 55)
+  if((Math.random()*100) < 70)
     return [200,resp];
   else {
     return [200,{result:"error",resultInfo:"Отправление "+req.barcode+" не найдено!"}]
@@ -433,6 +433,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "bagType": req.bagType,
     "taraType": req.taraType,
     "plombaNum": req.plombaNum,
+    "comment":req.comment
 }]}
 )
 .onAny().reply((cfg)=>{

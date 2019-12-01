@@ -11,7 +11,7 @@ b-row.flex-xl-nowrap2
             :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,'isErrorBag':b.isErrorBag}"
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
-            :disabled="(calibrating && b.led != null) || b.isErrorBag "
+            :disabled="calibrating && b.led != null"
             @click="selectBag(b.ppi,i,p,b.isErrorBag)"
             @dblclick="calibrateSelectBag(b.ppi,i,p)" )
             b-card-header 
@@ -53,6 +53,7 @@ b-row.flex-xl-nowrap2
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
+  CloseModalAvar(v-if="isCloseModalAvarOpen" @close="isCloseModalAvarOpen = false")
   b-modal#debug(hide-header size="lg" hide-footer scrollable  body-bg-variant="dark")
     pre {{bags}}
         
@@ -65,7 +66,7 @@ import {$leds,$sounds,deviceLEDMixin} from '@/store/api/http'
 
 import {bindMixin} from '@/components/misc/BindModal'
 import CloseModal from '@/components/CloseModal'
-
+import CloseModalAvar from '@/components/CloseModalAvar'
 
 
 export default {
@@ -122,6 +123,7 @@ export default {
       tabIndex:0,
       tmResponse:null,
       isCloseModalOpen:false,
+      isCloseModalAvarOpen:false,
       bind:{
         started:false,
         cursor:null,
@@ -186,7 +188,6 @@ export default {
     },
     selectBag(ppi,i,p,isErrorBag){
       console.debug('selectBag',ppi,i,p,isErrorBag)
-      if(isErrorBag) return;
       window.clearTimeout(this.tmResponse);
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
@@ -195,7 +196,8 @@ export default {
       } else {
         this.$clear();
         this.$selectBag({ppi}).then(()=>{
-          this.isCloseModalOpen = true;  
+          if(isErrorBag) this.isCloseModalAvarOpen = true;
+          else this.isCloseModalOpen = true;  
         }).catch((error)=>{
           console.log('selectBag error',error);
         });
@@ -222,7 +224,8 @@ export default {
     }
   },
   components:{
-    CloseModal
+    CloseModal,
+    CloseModalAvar
   }
 }
 

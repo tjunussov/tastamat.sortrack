@@ -8,6 +8,13 @@
         b {{u}}
       .barcode {{encode('u'+u)}}
 
+  h5.mt-3 Тестовые Ящики
+  b-card-group.crates(deck)
+    b-card(align="center" no-body v-for="b in crates" :key="b")
+      template(slot="header") 
+        b {{b}}
+      .barcode {{encode('c'+b)}}
+
   h5.mt-3 Технологические индекс
   b-card-group.techindexes(deck)
     b-card(align="center" no-body v-for="t in techIndexes" :key="t")
@@ -56,7 +63,8 @@ export default {
       depcodeManual:null,
       status: null,
       error:null,
-      techIndexes:['055990','220081']
+      techIndexes:['055990','220081'],
+      crates:['220081-001','220081-002']
     }
   },
   methods:{

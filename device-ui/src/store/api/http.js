@@ -98,7 +98,7 @@ export const $smartsort = {
       "techindex": depcode,
       "parentPostIndex": bag,
       "barcodeList": barcodesArray,
-      "totalWeight": Number(weight)*1000,
+      "totalWeight": weight,
       "bagType": bagType,
       "taraType": taraType,
       "sendMethod": sendmeth,
@@ -132,6 +132,7 @@ export const $sounds = {
   push3: new Audio(audioURL+"push3.mp3"),
   push4: new Audio(audioURL+"push4.mp3"),
   
+  forcepush: new Audio(audioURL+"pushcool.mp3"),
   pushcool: new Audio(audioURL+"pushcool.mp3"),
   pull: new Audio(audioURL+"pull.mp3"),
   notfound: new Audio(audioURL+"notfound.mp3"),
@@ -187,16 +188,19 @@ export const $leds = {
   search(user){
     // this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
+  forcepush(led){
+
+  },
   push(led){
     this.$ledoff();
-    this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
+    this.$ledon({color:'r',led,duration:1000,repeat:300,pause:500});
   },
   test(led){
     this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
   },
   pull(led){
-    this.$ledoff();
-    this.$ledon({color:'r',led,duration:100,repeat:3});
+    // this.$ledoff();
+    // this.$ledon({color:'r',led,duration:100,repeat:3});
   },
   notfound(user){
     this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});

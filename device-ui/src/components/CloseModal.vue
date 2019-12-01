@@ -16,8 +16,8 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b-form-input.inline.text-right#weightscales(
                 :value="weight" 
                 readonly=""
-                :class="{'text-danger':weight >= 15000}"
-                @dblclick="weight = 25" 
+                :class="{'text-danger':weight >= 15}"
+                @dblclick="weight = 5.05" 
                 style="width:90px;"
                 placeholder="Вес") 
               .label.text-muted КГ
@@ -41,7 +41,9 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             b-row
               b-col(cols=5)
                 //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
-                b-form-radio-group.ml-2(v-model="taraType" :options="taraTypes")
+                b-form-radio-group.ml-2(v-model="taraType" Zoptions="taraTypes")
+                  b-form-radio(value="1") Мешок
+                  b-form-radio(value="2") Ящик {{crateId}}
               b-col(cols=5)
                 b-form-radio-group.ml-2(v-model="sendmeth" :options="sendmethTypes")
             div 
@@ -95,10 +97,10 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span [{{response.toTechindex}}] {{response.toDepartment}}
             div
               b ВЕС ТАРЫ 
-              span {{response.actualWeight | kg }} кг
-              b     ВЕС НЕТТО 
-              span {{response.totalWeight | kg }} кг
-              b     КОЛ-ВО 
+              span {{response.actualWeight | kg }}кг
+              b   ВЕС НЕТТО 
+              span {{response.totalWeight | kg }}кг
+              b   КОЛ-ВО 
               span {{response.count}} 
             div ——————————————————————————————————————————————————
             .barcode.ml-3 {{encode(response.labelListNo)}}
@@ -111,6 +113,9 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.date}}     
               b(v-if="response.taraType") ВИД ТАРЫ 
               |  {{mapSpr(response.taraType,taraTypes)}}
+            div.small
+              b КОММЕНТАРИЙ 
+              span {{response.comment}}
             div
               | 
               |
@@ -152,16 +157,17 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
 
 
       b-list-group(v-if="count && !response" style="min-height:300px;" flush)
-        b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
+        b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k" :variant="v.forcepush?'warning':''")
           .d-flex.w-100.justify-content-between
             h5(@click="removeWpi(k)") {{k}}   &times;
             small {{v.postIndex}}
+              template(v-if="v.forcepush") Ручной ввод
 
         
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
     template(slot="modal-footer") 
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(:variant="weight>0 && weight < 15000 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15000 || !plomba" @click="closeBag")
+        b-btn(:variant="weight>0 && weight < 15 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
@@ -213,10 +219,12 @@ export default {
   props: ['isCloseModalOpen'],
   mounted(){
     this.$bus.$on('keyboard:keydown:enter:p',this.next);
+    this.$bus.$on('keyboard:keydown:enter:c',this.crateEnter);
     this.$bus.$on('keyboard:keydown:enter',this.weightEnter);
   },
   beforeDestroy(){
     this.$bus.$off('keyboard:keydown:enter:p',this.next);
+    this.$bus.$off('keyboard:keydown:enter:c',this.crateEnter);
     this.$bus.$off('keyboard:keydown:enter',this.weightEnter);
   },
   computed:{
@@ -229,6 +237,9 @@ export default {
         bags: 'getBags',
         cursor: 'cursor',
     }),
+    comment(){
+      return (this.crateId)?'Ящик номер ' + this.crateId:''
+    },
     count(){
       return Object.keys(this.selectedBag.wpi).length;
     }
@@ -236,7 +247,9 @@ export default {
   data () {
     return {
       isEditing:false,
+      wpi:null,
       tabIndex:0,
+      crateId:null,
       tempPpi:null,
       weight:null,
       sendmethTypes:{"1":"Наземный","2":"Авия"},
@@ -256,7 +269,7 @@ export default {
       taraTypes:{"1":"Мешок","2":"Ящик"},
       bagType:1,
       taraType:1,
-      comment:null
+      // comment:null
     }
   },
   methods:{
@@ -267,6 +280,8 @@ export default {
       '$save',
       '$selectBag',
       '$deselectBag',
+      '$forcePutToBag',
+      '$removeWpi'
     ]),
     encode(val){
       return code128.encode(val)
@@ -292,20 +307,20 @@ export default {
     mapSpr(val,spr){
       if(val) return spr[val];
     },
+    crateEnter(val){
+      this.crateId = val
+      this.taraType = 2;
+    },
     weightEnter(val){
       // console.log('COUNT',this.count)
-      if(val && val.length == 13) this.plomba = val
+      if(val && val.length == 13) 
+        if(isNaN(val)) this.$forcePutToBag({barcode:val});
+        else this.plomba = val
       else if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val;
     },
     removeWpi(k){
-
-      //if(confirm("Удалить ШПИ "+k+" из мешка ?")){
-        console.log('deleted',k,this.selectedBag.wpi[k]);
+      this.$removeWpi({barcode:k}); // TODO SuperBug, Why we need this ?
         
-        if(confirm('Вы уверены что хотите удалить ' + k)) {
-          Vue.delete(this.selectedBag.wpi,k);
-          this.$forceUpdate(); // TODO SuperBug, Why we need this ?
-        }
 
         // const wpi = { ...this.selectedBag.wpi };
         // delete wpi[k];
@@ -361,6 +376,8 @@ export default {
       this.$deselectBag();
       this.plomba = null;
       this.weight = null;
+      this.crateId = null;
+      this.taraType = 1;
       this.$emit('close');
     },
     print(){

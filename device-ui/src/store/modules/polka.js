@@ -154,6 +154,35 @@ const actions = {
       state.selected = null
     },50);
   },
+  $removeWpi({ commit, dispatch, state, getters },{barcode}){
+
+    console.log('removeWpi',barcode);
+    
+    if(confirm('Вы уверены что хотите удалить ' + barcode)) {
+      Vue.delete(getters.getSelectedBag.wpi,barcode);
+      state.status = 'pull';
+      dispatch('$save');
+    }
+  },
+  $forcePutToBag({ commit, dispatch, state, getters },{barcode}){
+
+    
+
+    if(barcode in getters.getSelectedBag.wpi){
+      state.status = 'pull';
+      Vue.delete(getters.getSelectedBag.wpi,barcode);
+      dispatch('$save');
+    } else {
+      state.status = 'forcepush';
+
+      var val = {}; val[barcode] = {"forcepush":true};
+      var currentVal = getters.getSelectedBag.wpi;
+          val = {...val,...currentVal};
+      Vue.set(getters.getSelectedBag,'wpi',val)
+      dispatch('$save');
+    }
+
+  },
   $putToBag ({ commit, dispatch, state, getters },{barcode}) {
 
       dispatch('$clear');
@@ -213,6 +242,12 @@ const actions = {
 
         // console.log('errorzzz',error);
 
+        var val = {}; val[barcode] = state.error;
+        var currentVal = getters.getLastBag.wpi;
+            val = {...val,...currentVal};
+        Vue.set(getters.getLastBag,'wpi',val)
+        dispatch('$save');
+
         throw error;
         // this.status = 'notfound';
         // this.status = 'notbind';
@@ -235,7 +270,8 @@ const actions = {
 
     console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
-    weight = String(weight).replace(".","").replace(",","");
+    // weight = String(weight).replace(".","").replace(",","");
+    weight = Number(weight)*1000;
 
 
     return $smartsort.closeBag(
