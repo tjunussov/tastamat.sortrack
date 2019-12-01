@@ -64,7 +64,7 @@ export default {
       status: null,
       error:null,
       techIndexes:['055990','220081'],
-      crates:['220081-001','220081-002']
+      crates:['220081.001','220081.002']
     }
   },
   methods:{

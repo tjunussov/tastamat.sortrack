@@ -88,7 +88,7 @@ doctype html
         b {{$root.version}} 
         b-link.ml-4(v-b-modal.about="") Credits 
         | | 
-        b-link(v-b-modal.help="") Manual
+        b-link(v-b-modal.help="") Manual 
         | | 
         b-link(v-b-modal.stats="") Stats
 

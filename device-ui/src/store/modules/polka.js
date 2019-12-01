@@ -271,7 +271,7 @@ const actions = {
     console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
     // weight = String(weight).replace(".","").replace(",","");
-    weight = Number(weight)*1000;
+    weight = String(Number(weight)*1000);
 
 
     return $smartsort.closeBag(

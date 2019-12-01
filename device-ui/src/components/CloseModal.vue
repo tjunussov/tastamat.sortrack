@@ -39,15 +39,15 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               | Пломба
               input.inline.ml-2(:value="plomba" style="width:130px" @dblclick="plomba = 1234567890123")
             b-row
-              b-col(cols=5)
+              b-col(cols=7)
                 //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
                 b-form-radio-group.ml-2(v-model="taraType" Zoptions="taraTypes")
                   b-form-radio(value="1") Мешок
                   b-form-radio(value="2") Ящик {{crateId}}
               b-col(cols=5)
                 b-form-radio-group.ml-2(v-model="sendmeth" :options="sendmethTypes")
-            div 
-              b-form-select.ml-2(v-model="bagType" :options="bagTypes")
+            //- div 
+            //-   b-form-select.ml-2(v-model="bagType" :options="bagTypes")
             div(v-if="isEditing") Лампочка
               i.fa.fa-lightbulb-o.mr-2.ml-4
               input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
@@ -167,9 +167,19 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
     template(slot="modal-footer") 
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(:variant="weight>0 && weight < 15 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" @click="closeBag")
-          i.fa.fa-lock.mr-2
-          | Закрыть мешок
+
+
+        b-dropdown.button-block.w-100(v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" split size="lg" split-variant="success" variant="outline-success" @click="closeBag")
+          template(slot="button-content") 
+            | Закрыть мешок
+          b-dropdown-item(@click="bagType = k" v-for="(v,k) in bagTypes" :key="k") 
+            i.fa.mr-2( :title="k" :class="{'fa-circle text-success':bagType==k,'fa-circle-o':bagType!=k}")/
+            | {{v}}
+
+
+        //- b-btn(:variant="weight>0 && weight < 15 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" @click="closeBag")
+        //-   i.fa.fa-lock.mr-2
+        //-   | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
           i.fa.fa-tachometer
 
@@ -249,11 +259,11 @@ export default {
       isEditing:false,
       wpi:null,
       tabIndex:0,
-      crateId:null,
+      crateId:"220081-001",
       tempPpi:null,
       weight:null,
-      sendmethTypes:{"1":"Наземный","2":"Авия"},
-      sendmeth:1,
+      sendmethTypes:{"1":"Наземный","2":"Авиа"},
+      sendmeth:2,
       plomba:0,
       bagTypes:{
         "1":"Мешок Сактандыру",
@@ -267,7 +277,7 @@ export default {
         "9":"Группа РПО"
       },
       taraTypes:{"1":"Мешок","2":"Ящик"},
-      bagType:1,
+      bagType:2,
       taraType:1,
       // comment:null
     }

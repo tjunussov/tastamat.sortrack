@@ -421,7 +421,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "workerName": req.login,
     "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
     "toDepartment": "Алматы-9",
-    "route": req.sendMethod == 1?"Наземный":"Авия", //delete in future
+    "route": req.sendMethod == 1?"Наземный":"Авиа", //delete in future
     "sendMethod": req.sendMethod,
     "date": new Date(),
     "count": req.barcodeList.length,
