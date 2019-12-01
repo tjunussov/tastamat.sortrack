@@ -60,15 +60,24 @@ const actions = {
   },
   $initSettings({ commit, dispatch, state, getters }){
     $http.defaults.baseURL = getters.config.apiUrl;
-    $device.defaults.baseURL = getters.config.ledUrl;
 
 
-    $device.defaults.timeout = 1000;
-    $device.interceptors.response.use(function (response) {
-      return response;
-    }, function (error) {
-      getters.config.isLedOn = false;
+    // $device.defaults.baseURL = getters.config.ledUrl;
+
+    // no led if timeout
+    $device.init(getters.config.leds,getters.config.size,(error)=>{
+      // console.error('ErroZZZ',error ) 
+      // if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
     });
+
+
+    // $device.defaults.timeout = 1000;
+    // $device.interceptors.response.use(function (response) {
+    //   return response;
+    // }, function (error) {
+    //   console.error('ErroZZZ',error ) 
+    //   if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
+    // });
   },
   $initBags ({ commit, dispatch, state, getters }) {
 
@@ -91,6 +100,10 @@ const actions = {
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
         return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{}}
       });
+
+      getters.getConfig.bags[getters.getConfig.bags.length - 1].isErrorBag = true;
+
+
   
     // TODO Rewrite to Promise Chain
     /*
@@ -212,14 +225,17 @@ const actions = {
 
         
   },
-  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba}) {
+  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
 
-    console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba);
+    console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
     weight = String(weight).replace(".","").replace(",","");
 
 
-    return $smartsort.closeBag(ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba)).then((resp)=>{
+    return $smartsort.closeBag(
+        ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
+        bagType,taraType,comment
+        ).then((resp)=>{
 
         state.closeResponse = resp.data
 
@@ -312,18 +328,22 @@ const actions = {
   },
   $togleDemo({ commit, dispatch, state, getters },{val}){
     // console.log('togleDemo',val)
+    // console.log('demo1',val,getters.getConfig.isDemo);
     if(val !== undefined)
       getters.getConfig.isDemo = val
     else
       getters.getConfig.isDemo = !getters.getConfig.isDemo;
-    dispatch('$save');
+    // console.log('demo2',val,getters.getConfig.isDemo);
+    return dispatch('$save');
+
   },
   $togleLed({ commit, dispatch, state, getters },{val}){
     if(val !== undefined)
       getters.getConfig.isLedOn = val
     else 
       getters.getConfig.isLedOn = !getters.getConfig.isLedOn;
-    dispatch('$save');
+
+    return dispatch('$save');
   }
   // $remapSelectedBag({ commit, dispatch, state, getters },{ppi,led}){
   //   // findBag(getters.getBags,ppi);// just for check

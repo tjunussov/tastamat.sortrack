@@ -16,22 +16,36 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b-form-input.inline.text-right#weightscales(
                 :value="weight" 
                 readonly=""
+                :class="{'text-danger':weight >= 15000}"
                 @dblclick="weight = 25" 
                 style="width:90px;"
                 placeholder="Вес") 
               .label.text-muted гр
               //- b-tooltip(target="weightscales") Взвесте пожалуйста
-            .scales.pr-4(v-if="count == 0 && response")
-              i.fa.fa-bookmark.mr-2
-              b-form-input.inline.text-right#plomba(
-                :value="plomba" 
-                readonly=""
-                @dblclick="plomba = 1234567890123" 
-                style="width:130px; font-size:16px;"
-                placeholder="Пломба") 
+            //- .scales.pr-4(v-if="count == 0 && response")
+            //-   i.fa.fa-bookmark.mr-2
+            //-   b-form-input.inline.text-right#plomba(
+            //-     :value="plomba" 
+            //-     readonly=""
+            //-     @dblclick="plomba = 1234567890123" 
+            //-     style="width:130px; font-size:16px;"
+            //-     placeholder="Пломба") 
               .label.text-muted
-          b-card-sub-title.mb-2 Индекс 
-            input.inline(v-model="selectedBag.ppn" :disabled="!isEditing" size="20" :placeholder="selectedBag.ppi")
+          b-card-sub-title.mb-2 
+            template(v-if="isEditing || selectedBag.ppn") Индекс 
+              input.inline(v-model="selectedBag.ppn" size="20" :placeholder="selectedBag.ppi")
+            div 
+              i.fa.fa-bookmark.mr-2 
+              | Пломба
+              input.inline.ml-2(:value="plomba" style="width:130px" @dblclick="plomba = 1234567890123")
+            b-row
+              b-col(cols=5)
+                //- input.inline.ml-2(:value="plomba" @dblclick="plomba = 1234567890123")
+                b-form-radio-group.ml-2(v-model="taraType" :options="taraTypes")
+              b-col(cols=5)
+                b-form-radio-group.ml-2(v-model="sendmeth" :options="sendmethTypes")
+            div 
+              b-form-select.ml-2(v-model="bagType" :options="bagTypes")
             div(v-if="isEditing") Лампочка
               i.fa.fa-lightbulb-o.mr-2.ml-4
               input.inline(v-model="selectedBag.led" style="width:50px" :placeholder="cursor")
@@ -57,7 +71,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           template(v-if="config.isWindowsPrint")
             div
               b ВИД ЗАДЕЛКИ       
-              span {{response.type}}
+              span {{mapBagType(response.bagType)}}
             //- div
               b ШТРИХКОД 
               span {{response.packetListNo}}
@@ -66,7 +80,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.labelListNo}}
             div
               b ПЛОМБА            
-              span {{plomba}}
+              span {{response.plombaNum}}
             div
               b СПОСОБ ПЕРЕСЫЛКИ  
               span {{response.route}}
@@ -74,16 +88,16 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-   b ТИП 
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
-              b ОТКУДА   
-              span {{response.fromDepartment}}
+              b ОТКУДА 
+              span [{{response.fromTechindex}}] {{response.fromDepartment}}
             div
-              b КУДА     
-              span {{response.toDepartment}}
+              b КУДА   
+              span [{{response.toTechindex}}] {{response.toDepartment}}
             div
-              b ВЕС МЕШКА 
-              span {{response.actualWeight}}
+              b ВЕС ТАРЫ 
+              span {{response.actualWeight}} гр.
               b     ВЕС НЕТТО 
-              span {{response.totalWeight}}
+              span {{response.totalWeight}} гр.
               b     КОЛ-ВО 
               span {{response.count}} 
             div ——————————————————————————————————————————————————
@@ -93,8 +107,10 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               b СОЗДАЛ 
               span {{response.workerName}}
             div.small
-              b ДАТА 
-              span {{response.date}}
+              b ДАТА  
+              span {{response.date}}     
+              b(v-if="response.taraType") ВИД ТАРЫ 
+              |       {{taraTypes[response.taraType]}}
             div
               | 
               |
@@ -145,7 +161,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
     template(slot="modal-footer") 
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
-        b-btn(:variant="weight>0?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight" @click="closeBag")
+        b-btn(:variant="weight>0 && weight < 15000 && plomba?'success':'outline-success'" block size="lg" v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15000 || !plomba" @click="closeBag")
           i.fa.fa-lock.mr-2
           | Закрыть мешок
         //- b-btn(@click="$bus.$emit('keyboard:keydown:enter:p',selected)" v-if="tabIndex == 0 && count" variant="success") Взвесить 
@@ -223,8 +239,24 @@ export default {
       tabIndex:0,
       tempPpi:null,
       weight:null,
+      sendmethTypes:{"1":"Наземный","2":"Авия"},
       sendmeth:1,
-      plomba:0
+      plomba:0,
+      bagTypes:{
+        "1":"Мешок Сактандыру",
+        "2":"Заказная корреспонденция",
+        "3":"Правительственная письменная коррeспонденция",
+        "4":"Письменная корреспонденция",
+        "5":"Порожняя тара",
+        "6":"Мешок с отправлениями EMS",
+        "7":"Мешок с международной письменной корреспонденцией",
+        "8":"Постпакет внутренний",
+        "9":"Группа РПО"
+      },
+      taraTypes:{"1":"Мешок","2":"Ящик"},
+      bagType:1,
+      taraType:1,
+      comment:null
     }
   },
   methods:{
@@ -245,17 +277,25 @@ export default {
         wpi:Object.keys(this.selectedBag.wpi),
         weight:this.weight,
         sendmeth:this.sendmeth,
-        plomba:this.plomba
+        plomba:this.plomba,
+        bagType:this.bagType,
+        taraType:this.taraType,
+        comment:this.comment
       }).then(()=>{
           this.tabIndex = 1
           this.weight = null
+          // this.bagType = 1
+          // this.taraType = 1
           if(this.config.isAutoPrint) this.print();
         });
     },
+    mapBagType(val){
+      if(val) return this.bagTypes[val];
+    },
     weightEnter(val){
       // console.log('COUNT',this.count)
-      if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val
-      if(this.response && this.count == 0) this.plomba = val
+      if(val && val.length == 13) this.plomba = val
+      else if(this.count > 0 && val.indexOf('.') > 0 ) this.weight = val.substr(0,val.indexOf('.'));
     },
     removeWpi(k){
 

@@ -8,13 +8,15 @@ b-row.flex-xl-nowrap2
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
-            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,}"
+            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,'isErrorBag':b.isErrorBag}"
             :bg-variant="selected == b.ppi?'danger':''"
             :text-variant="selected == b.ppi?'white':''" 
-            :disabled="calibrating && b.led != null "
-            @click="selectBag(b.ppi,i,p)"
+            :disabled="(calibrating && b.led != null) || b.isErrorBag "
+            @click="selectBag(b.ppi,i,p,b.isErrorBag)"
             @dblclick="calibrateSelectBag(b.ppi,i,p)" )
-            b-card-header {{(b.ppi)}}
+            b-card-header 
+              template(v-if="b.isErrorBag") Корзина
+              template(v-else) {{(b.ppi)}}
               small.text-muted.indx
                 //- {{(b.index)}} 
                 span.led(:class="{'remapped':b.led!=null}") {{b.led!==null?b.led:i}}
@@ -81,7 +83,7 @@ export default {
   },
   watch:{
     thor(val){
-      this.tabIndex = val;
+      if(val !== undefined) this.tabIndex = val;
     },
     calibrating(val){
       if(val) this.calibrateStart();
@@ -181,11 +183,14 @@ export default {
       }
     },
     calibrateSelectBag(ppi,i,p){
-      console.log('calibrating selectBag',ppi);
-      this.calibrateMap((p*24)+i);
+      if(this.calibrating){
+        console.log('calibrating selectBag',ppi);
+        this.calibrateMap((p*24)+i);
+      }
     },
-    selectBag(ppi,i,p){
-      console.log('selectBag',ppi,i,p)
+    selectBag(ppi,i,p,isErrorBag){
+      console.debug('selectBag',ppi,i,p,isErrorBag)
+      if(isErrorBag) return;
       window.clearTimeout(this.tmResponse);
       if(this.isCloseModalOpen){
         // this.$root.$emit('bv::hide::modal','mclosebag')
@@ -271,6 +276,11 @@ export default {
 
     &.text-muted
       opacity 0.2
+      
+    &.isErrorBag
+      background-color #f00 !important
+      // pointer-events none
+      
 
     .card-body, .card-header
       padding 0.5rem

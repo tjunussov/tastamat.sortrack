@@ -13,11 +13,11 @@ doctype html
       b-navbar-brand 
         img(src="static/logo2.svg" width="200" height="40" @click="toggleFullScreen()")/
         //- span(@click="toggleFullScreen()") Sortrack® 
-        b-badge(variant="danger" v-if="!ledOn" @click="togleLed") &times; NO LED
+        b-badge(variant="danger" v-if="!ledOn" @click="togleLed()") &times; NO LED
         b-badge(variant="danger" v-if="offline") OFFLINE
-        b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo") &times; DEMO
-        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate") &times; CALIBRATE
-        b-badge.ml-1(:variant="ws.isOpen?'sucess':'danger'" @click="toggleWsConnect") WS
+        b-badge.ml-1(variant="danger" v-if="demo" @click="togleDemo()") &times; DEMO
+        b-badge.ml-1(variant="danger" v-if="calibrating" @click="togleCalibrate()") &times; CALIBRATE
+        b-badge.ml-1(variant="danger" v-if="ws.isOpen" @click="toggleWsConnect()") WS
 
         
 
@@ -32,7 +32,7 @@ doctype html
             b-dropdown-header Настройки
             b-dropdown-item(v-b-modal.depcode) Сменить Индекс
             b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
-            b-dropdown-item(@click="togleCalibrate" ) Начать Калибровку
+            b-dropdown-item(@click="togleCalibrate()" ) Начать Калибровку
               //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
             b-dropdown-divider
             b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
@@ -42,14 +42,17 @@ doctype html
               | Демо
             b-dropdown-item(@click="togleLed()" ) 
               i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
-              | Лампочки 
+              | Лампочки
+            b-dropdown-item(v-if="settings.broker" @click="toggleWsConnect()" ) 
+              i.fa.mr-2(:class="{'fa-circle text-success':ws.isOpen,'fa-circle-o':!ws.isOpen}")/
+              | Мультитор 
             
             b-dropdown-divider
             b-dropdown-item(v-b-modal.settings="") Настройки
 
         b-navbar-nav.ml-auto
 
-          b-nav-form
+          b-nav-form(@submit.stop.prevent)
             b-form-input.mr-sm-2(
               size="sm"
               :disabled="!user" 
@@ -305,17 +308,23 @@ export default {
       }  
     },
     togleCalibrate(state){
-      if(state !== null)
-        this.$store.state.polka.calibrating = state
-      else
+      console.log('togleCalibrate',this.$store.state.polka.calibrating);
+      // if(state !== null)
+      //   this.$store.state.polka.calibrating = state
+      // else
         this.$store.state.polka.calibrating = !this.$store.state.polka.calibrating;
     },
     togleDemo(val){
       console.log('togleDemo',val);
-      this.$togleDemo({val});
-      if(!this.demo) {
-        mock.restore();
-      }
+      this.$togleDemo({val}).then(()=>{
+        if(val === undefined){
+           // location.reload();
+        }
+        if(!this.demo) {
+          mock.restore();
+        }
+      });
+
     },
     togleLed(val){
       this.$togleLed({val});
