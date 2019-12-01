@@ -89,6 +89,8 @@ doctype html
         b-link.ml-4(v-b-modal.about="") Credits 
         | | 
         b-link(v-b-modal.help="") Manual
+        | | 
+        b-link(v-b-modal.stats="") Stats
 
   Keyboard
 
@@ -118,6 +120,9 @@ doctype html
   b-modal#about(hide-header size="lg" lazy hide-footer scrollable  body-bg-variant="dark" body-text-variant="white")
     AboutModal
 
+  b-modal#stats(title="Статистика" lazy size="lg" :hide-footer="true")
+    StatsModal
+
   b-modal#badge(title="Беджики" lazy scrollable ok-title="Печать" ok-only @ok="$print")
     BadgeModal
 
@@ -144,6 +149,8 @@ import HelpModal from '@/components/HelpModal'
 import DemoPrintModal from '@/components/DemoPrintModal'
 import AboutModal from '@/components/AboutModal'
 import BadgeModal from '@/components/BadgeModal'
+import StatsModal from '@/components/StatsModal'
+
 import MultiLedModal from '@/components/MultiLedModal'
 
 
@@ -368,7 +375,8 @@ export default {
     DemoPrintModal,
     AboutModal,
     BadgeModal,
-    MultiLedModal
+    MultiLedModal,
+    StatsModal
   },
 }
 

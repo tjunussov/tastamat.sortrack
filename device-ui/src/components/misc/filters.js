@@ -5,9 +5,15 @@ Vue.filter('json2html', function (value, fmt) {
   return tjson(value, fmt)
 })
 
+Vue.filter('kg', function (value) {
+	if(value) value = Number(value) / 1000;
+	return value
+})
 
 Vue.directive('focus', {
     inserted: function (el) {
         el.focus()
     }
 })
+
+

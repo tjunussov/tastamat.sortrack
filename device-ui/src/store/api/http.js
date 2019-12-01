@@ -42,14 +42,19 @@ export const $device = {
       },callback);
 
       this.axioses.push(a);
+
+
+      // lastThor set
+      $leds.lastThor = this.axioses.length -1;
     }
   },
-  get(url,params,tab,exceptParams){
+  get(url,params,tab,offAll){
 
-    // console.log("====================",this.axioses,params,tab,exceptParams);
+    // console.log("====================",this.axioses,params,tab,offAll);
 
     if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
-      for(var i in this.axioses) this.axioses[i](url,params);
+      for(var i in this.axioses) 
+        if(!(tab == i && offAll)) this.axioses[i](url,params);
     } else 
       return this.axioses[tab](url,params);
   },
@@ -93,7 +98,7 @@ export const $smartsort = {
       "techindex": depcode,
       "parentPostIndex": bag,
       "barcodeList": barcodesArray,
-      "totalWeight": weight,
+      "totalWeight": Number(weight)*1000,
       "bagType": bagType,
       "taraType": taraType,
       "sendMethod": sendmeth,
@@ -170,15 +175,17 @@ export const $sounds = {
 
 export const $leds = {
   thor:null,
+  lastThor: null,
   lastLed:23,
   pushLastLed(){
     setTimeout(()=>{
-      console.debug('pushLastLed -->',this.lastLed);
+      console.debug('pushLastLed -->',this.lastLed, this.thor);
+      this.thor = this.lastThor;
       this.push(this.lastLed);
     },1000)
   },
   search(user){
-    this.$ledon({color:'r',led:'random',duration:10,repeat:0});
+    // this.$ledon({color:'r',led:'random',duration:10,repeat:0});
   },
   push(led){
     this.$ledoff();
@@ -253,7 +260,7 @@ export const $leds = {
     // }
   },
   $ledoff(){
-    $device.get(`/off`,{params:{led:'all'}},null);
+    $device.get(`/off`,{params:{led:'all'}},this.thor,true);
   },
   on(name,data,thor){
     

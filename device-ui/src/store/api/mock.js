@@ -421,11 +421,12 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "workerName": req.login,
     "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
     "toDepartment": "Алматы-9",
-    "route": "Наземный",
+    "route": req.sendMethod == 1?"Наземный":"Авия", //delete in future
+    "sendMethod": req.sendMethod,
     "date": new Date(),
     "count": req.barcodeList.length,
 
-    "totalWeight": "12000",
+    "totalWeight": req.totalWeight,
     "fromTechindex": "055990",
     "toTechindex": "050009",
     "techindex": "055990",
