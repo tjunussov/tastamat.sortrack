@@ -51,11 +51,10 @@ TODO Kenmat
 - Не корректно указывается вес - Тима
 + в ярлыке отображать вид заделки и техиндекс, ПУС эти поля передает
 + LedOn on error network only ( not 404 )
-- Аварийная ячейка
-- multiled configure 48, or splitted
+- Аварийная ячейка с кол-вом РПОшек в нем
+- settings multiled configure 48, or splitted, add thor button
 
 --- multithor websocket support 8080
-
 - calibrate ui issue: при калибровке вводит заблуждение красная рамка на ячейках которая перемещается, иногда она показывает не в тему. Предлагаю убрать. А откалиброванные ячейки отмечать зеленным.
 
 - test all templates
@@ -64,10 +63,10 @@ TODO Kenmat
 --- yarlik native print try
 - calibrate without login
 - bug:reinint clears led settings
-- led:search blink not working
++ led:search blink not working
 - ui: polish ui design of closeModal tabs or list
 - ui: animate weight and make sound
-- last bag led if 2-3modules
++ last bag led if 2-3modules
 - toogle DEMO refresh issue
 - silent print
 
