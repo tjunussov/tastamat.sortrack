@@ -31,7 +31,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-     style="width:130px; font-size:16px;"
             //-     placeholder="Пломба") 
               .label.text-muted
-          b-card-sub-title.mb-2 
+          b-card-sub-title
             template(v-if="isEditing || selectedBag.ppn") Индекс 
               input.inline(v-model="selectedBag.ppn" size="20" :placeholder="selectedBag.ppi")
             div 
@@ -169,9 +169,11 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
         b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Save
 
 
-        b-dropdown.button-block.w-100(v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" split size="lg" split-variant="success" variant="outline-success" @click="closeBag")
+        b-dropdown.button-block.w-100(v-if="!isEditing && tabIndex == 0 && !response" :disabled="!weight || weight > 15 || !plomba" split size="lg" 
+          :split-variant="weight>0 && weight < 15 && plomba?'success':'outline-success'" variant="outline-success" @click="closeBag")
           template(slot="button-content") 
-            | Закрыть мешок
+            | Закрыть мешок 
+            div.small {{mapSpr(bagType,bagTypes)}}
           b-dropdown-item(@click="bagType = k" v-for="(v,k) in bagTypes" :key="k") 
             i.fa.mr-2( :title="k" :class="{'fa-circle text-success':bagType==k,'fa-circle-o':bagType!=k}")/
             | {{v}}
@@ -259,12 +261,12 @@ export default {
       isEditing:false,
       wpi:null,
       tabIndex:0,
-      crateId:"220081-001",
+      crateId:null,
       tempPpi:null,
       weight:null,
       sendmethTypes:{"1":"Наземный","2":"Авиа"},
       sendmeth:2,
-      plomba:0,
+      plomba:null,
       bagTypes:{
         "1":"Мешок Сактандыру",
         "2":"Заказная корреспонденция",

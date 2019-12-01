@@ -276,7 +276,7 @@ const actions = {
 
     return $smartsort.closeBag(
         ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
-        bagType,taraType,comment
+        String(bagType),String(taraType),comment
         ).then((resp)=>{
 
         state.closeResponse = resp.data
