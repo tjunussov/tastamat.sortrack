@@ -74,8 +74,8 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             div
               b ВИД ЗАДЕЛКИ       
               span {{mapSpr(response.bagType,bagTypes)}}
-            //- div
-              b ШТРИХКОД 
+            div
+              b Б НАКЛАДНАЯ       
               span {{response.packetListNo}}
             div
               b НОМЕР ЗАДЕЛКИ     
@@ -104,6 +104,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.count}} 
             div ——————————————————————————————————————————————————
             .barcode.ml-3 {{encode(response.labelListNo)}}
+            small                       {{response.labelListNo}}
             div ——————————————————————————————————————————————————
             div.small
               b СОЗДАЛ 

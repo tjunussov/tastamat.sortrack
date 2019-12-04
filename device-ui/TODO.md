@@ -70,6 +70,16 @@ TODO Kenmat
 - toogle DEMO refresh issue
 - silent print
 
+
+POKAZ AYGERIM
++ closebag:barcode bellow value
+- closebag:sendMethod,taraType,comment,taraId
+- bekmurat:признак умных полок
+- мини статистика по мультиюзерам
+- Мультиюзер light
+- B-накладная много, G-накладная (одна) тест
+- barcode bug: 800218
+
 TODO 4.0
 - overcome https issue for LEDs
 - overcome https CORS for PUS Server
