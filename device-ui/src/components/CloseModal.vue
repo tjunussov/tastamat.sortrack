@@ -73,19 +73,19 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
           template(v-if="config.isWindowsPrint")
             //- div ══════════════════════════════════════════════
             div
-              b  ВИД ЗАДЕЛКИ       
+              b ВИД ЗАДЕЛКИ       
               span {{mapSpr(response.bagType,bagTypes)}}
-            //- div
-            //-   b Б НАКЛАДНАЯ       
-            //-   span {{response.packetListNo}}
+            div
+              b Б НАКЛАДНАЯ       
+              span {{response.packetListNo}}
             //- div
             //-   b НОМЕР ЗАДЕЛКИ     
             //-   span {{response.labelListNo}}
             div
-              b  ПЛОМБА            
+              b ПЛОМБА            
               span {{response.plombaNum}}
             div
-              b  СПОСОБ ПЕРЕСЫЛКИ  
+              b СПОСОБ ПЕРЕСЫЛКИ  
               span {{mapSpr(response.sendMethod,sendmethTypes)}}  
               b     ВИД ТАРЫ 
               span {{mapSpr(response.taraType,taraTypes)}}
@@ -93,13 +93,13 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
             //-   b ТИП 
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
-              b  ОТКУДА 
+              b ОТКУДА 
               span [{{response.fromTechindex}}] {{response.fromDepartment}}
             div
-              b  КУДА   
+              b КУДА   
               span [{{response.toTechindex}}] {{response.toDepartment}}
             div
-              b  ВЕС ТАРЫ 
+              b ВЕС ТАРЫ 
               span {{response.actualWeight | kg }}кг
               b   ВЕС НЕТТО 
               span {{response.totalWeight | kg }}кг
@@ -107,16 +107,16 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
               span {{response.count}} 
             div ═══════════════════════════════════════════════
             div
-              b  ДАТА 
+              b ДАТА 
               span {{response.date.substr(0,10)}}  
               b СОЗДАЛ 
               span {{response.workerName}}
             div(v-if="response.comment")
-              b  КОММЕНТАРИЙ 
+              b КОММЕНТАРИЙ 
               span {{response.comment}}
             div ═══════════════════════════════════════════════
             .barcode.ml-4 {{encode(response.labelListNo)}}
-            b                  {{response.labelListNo}}
+            h5          {{response.labelListNo}}
             //- div ════════════════════════════════════════════════
             
             //- div
