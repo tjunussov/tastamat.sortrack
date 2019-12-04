@@ -1,6 +1,6 @@
 {
   "name": "sortrack",
-  "version": "3.5.34",
+  "version": "3.5.35",
   "description": "Sorting Track",
   "author": "Timur <tjunussov@gmail.com>",
   "private": true,
@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "push": "rm -rf ./../docs && cp -r ./dist ./../docs && git add .",
     "build": "npm version patch && node build/build.js",
-    "stats": "webpack --profile --json > stats.json --config build/webpack.prod.conf.js"
+    "stats": "webpack --profile --json > stats.json --config build/webpack.prod.conf.js",
+    "pushprod": "./../git push prod master"
   },
   "dependencies": {
     "axios": "^0.18.0",

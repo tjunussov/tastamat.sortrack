@@ -5,6 +5,9 @@ html
 // #app
 //   background-color #fff
 
+pre
+  line-height 17px
+
 body
   padding-top 4rem
   margin 0
@@ -26,6 +29,7 @@ input.inline
 .barcode
   font-family 'code128' !important
   font-size 44px  !important
+  line-height 52px
   
 
 .nav-pills .nav-link, .nav-pills > .nav-link

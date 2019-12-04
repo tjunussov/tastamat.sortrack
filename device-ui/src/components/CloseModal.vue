@@ -71,56 +71,58 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
       b-card-body(v-if="response && response.packetListNo")
         pre.text-primary#printSection.mb-0( :class="{'rotate':config.isRotate}")
           template(v-if="config.isWindowsPrint")
+            //- div ══════════════════════════════════════════════
             div
-              b ВИД ЗАДЕЛКИ       
+              b  ВИД ЗАДЕЛКИ       
               span {{mapSpr(response.bagType,bagTypes)}}
+            //- div
+            //-   b Б НАКЛАДНАЯ       
+            //-   span {{response.packetListNo}}
+            //- div
+            //-   b НОМЕР ЗАДЕЛКИ     
+            //-   span {{response.labelListNo}}
             div
-              b Б НАКЛАДНАЯ       
-              span {{response.packetListNo}}
-            div
-              b НОМЕР ЗАДЕЛКИ     
-              span {{response.labelListNo}}
-            div
-              b ПЛОМБА            
+              b  ПЛОМБА            
               span {{response.plombaNum}}
             div
-              b СПОСОБ ПЕРЕСЫЛКИ  
-              span {{response.sendMethod?mapSpr(response.sendMethod,sendmethTypes):response.route}}
+              b  СПОСОБ ПЕРЕСЫЛКИ  
+              span {{mapSpr(response.sendMethod,sendmethTypes)}}  
+              b     ВИД ТАРЫ 
+              span {{mapSpr(response.taraType,taraTypes)}}
             //- div 
             //-   b ТИП 
             //-   span {{response.cli_info.BAGTYPE_NAME}}
             div
-              b ОТКУДА 
+              b  ОТКУДА 
               span [{{response.fromTechindex}}] {{response.fromDepartment}}
             div
-              b КУДА   
+              b  КУДА   
               span [{{response.toTechindex}}] {{response.toDepartment}}
             div
-              b ВЕС ТАРЫ 
+              b  ВЕС ТАРЫ 
               span {{response.actualWeight | kg }}кг
               b   ВЕС НЕТТО 
               span {{response.totalWeight | kg }}кг
               b   КОЛ-ВО 
               span {{response.count}} 
-            div ——————————————————————————————————————————————————
-            .barcode.ml-3 {{encode(response.labelListNo)}}
-            small                       {{response.labelListNo}}
-            div ——————————————————————————————————————————————————
-            div.small
+            div ═══════════════════════════════════════════════
+            div
+              b  ДАТА 
+              span {{response.date.substr(0,10)}}  
               b СОЗДАЛ 
               span {{response.workerName}}
-            div.small
-              b ДАТА  
-              span {{response.date}}     
-              b(v-if="response.taraType") ВИД ТАРЫ 
-              |  {{mapSpr(response.taraType,taraTypes)}}
-            div.small
-              b КОММЕНТАРИЙ 
+            div(v-if="response.comment")
+              b  КОММЕНТАРИЙ 
               span {{response.comment}}
-            div
-              | 
-              |
-              b     ©2019 Powered by SORTRACK®, KAZPOST INC"
+            div ═══════════════════════════════════════════════
+            .barcode.ml-4 {{encode(response.labelListNo)}}
+            b                  {{response.labelListNo}}
+            //- div ════════════════════════════════════════════════
+            
+            //- div
+            //-   | 
+            //-   |
+            //-   b     ©2019 Powered by SORTRACK®, KAZPOST INC"
           template(v-else)
               | N
               | q720
