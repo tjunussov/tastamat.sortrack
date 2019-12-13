@@ -51,8 +51,18 @@
     
 
     &.rotate
-      transform: rotate(90deg) translateX(-75%) translateY(0%)
-      transform-origin: left bottom
-      outline: 1px solid #000
-      min-width: 400px !important
-      padding: 1rem
+      transform: rotate(-90deg) translateX(0%) translateY(0%)
+      transform-origin left top
+      outline 1px solid #000
+      min-width 400px !important
+      padding 1rem
+      
+    &.yarlik
+      width: 430px;
+      min-width: auto !important;
+      margin-top: 430px !important;
+      
+
+
+
+

@@ -69,7 +69,7 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
         //-   b-btn(variant="primary" disabled @click="sendmeth = 1" v-else) Авия
 
       b-card-body(v-if="response && response.packetListNo")
-        pre.text-primary#printSection.mb-0( :class="{'rotate':config.isRotate}")
+        pre.text-primary#printSection.mb-0.yarlik( :class="{'rotate':config.isRotate}")
           template(v-if="config.isWindowsPrint")
             //- div ══════════════════════════════════════════════
             div
