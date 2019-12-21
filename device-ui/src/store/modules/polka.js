@@ -107,9 +107,10 @@ const actions = {
         return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{}}
       });
 
+      getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 
+        return '192.168.10.10'
+      });
       getters.getLastBag.isErrorBag = true;
-
-
   
     // TODO Rewrite to Promise Chain
     /*
