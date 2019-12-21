@@ -104,7 +104,7 @@ const actions = {
       11,10,9,8,20,21,22,23];
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{}}
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:{}}
       });
 
       getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 

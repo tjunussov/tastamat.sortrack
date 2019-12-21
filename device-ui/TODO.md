@@ -78,6 +78,8 @@ POKAZ AYGERIM
 - Мультиюзер light
 - B-накладная много, G-накладная (одна) тест
 - barcode bug: 800218
++ 96 leds
+- 
 
 TODO 4.0
 - overcome https issue for LEDs
