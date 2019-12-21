@@ -18,6 +18,7 @@ b-modal#settings(title="Настройки LED" lazy hide-header centered @ok="s
               b-btn(@click="settings.size = 24; $initBags()" :variant="settings.size == 24 ? 'primary':''") 24
               b-btn(@click="settings.size = 48; $initBags()" :variant="settings.size == 48 ? 'primary':''") 48
               b-btn(@click="settings.size = 72; $initBags()" :variant="settings.size == 72 ? 'primary':''") 72
+              b-btn(@click="settings.size = 96; $initBags()" :variant="settings.size == 96 ? 'primary':''") 96
         b-tab(title="Мультитор")
           b-form-group(label="URL ПУС Сервиса" horizontal)
             b-form-input(v-model="settings.apiUrl")
