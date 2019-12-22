@@ -349,18 +349,18 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     console.log('authorize',cfg.params);
 
     if(cfg.params.login == 'test.alm21.rpo1')
-        return [200,{"result": "success","name": "Мырзанова Гульмира"}];
+        return [200,{"result": "success","name": "demo:Мырзанова Гульмира"}];
     else if(cfg.params.login == 'test')
-        return [200,{"result": "success","name": "Азамат Алимбаев"}];
+        return [200,{"result": "success","name": "demo:Азамат Алимбаев"}];
     else
-        return [200,{"result": "error","resultInfo": "user by login not found"}];
+        return [200,{"result": "error","resultInfo": "demo:user by login not found"}];
 })
 .onGet('getRPO').reply((cfg)=>{
-    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "techindex not found"}];
+    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "demo:techindex not found"}];
     return [200,barcodes];
 })
 .onAny('listBagIndexes').reply((cfg)=>{
-    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "techindex not found"}];
+    if(cfg.params.techindex == '000000') return [200,{"result": "error","resultInfo": "demo:techindex not found"}];
     return [200,plan];
 })
 .onAny('findBagIndex').reply(async (cfg)=>{
@@ -377,12 +377,12 @@ export const mock = new MockAdapter($http,{delayResponse:50})
         "result": "success",
         "parentPostIndex": plan.parentPostIndexes[p].techindex,
         "postIndex": Math.ceil(Math.random()*10000),
-        "postIndexTitle": "Алматы-"+Math.ceil(Math.random()*10),
+        "postIndexTitle": "DEMO Алматы-"+Math.ceil(Math.random()*10),
         "mailInfo": {
             "mailCategory": "1",
             "mailId": req.barcode,
-            "toFullName": "КАЗ НПУ ИМ АБАЯ ",
-            "toStreet": "ПР ДОСТЫК 13 Г АЛМАТЫ ",
+            "toFullName": "DEMO КАЗ НПУ ИМ АБАЯ ",
+            "toStreet": "DEMO ПР ДОСТЫК 13 Г АЛМАТЫ ",
             "mailStatus": "Registered",
             "mailType2": "P101",
             "weight":Math.ceil(Math.random()*1000),
@@ -403,7 +403,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   if((Math.random()*100) < 70)
     return [200,resp];
   else {
-    return [200,{result:"error",resultInfo:"Отправление "+req.barcode+" не найдено!"}]
+    return [200,{result:"error",resultInfo:"DEMO:Отправление "+req.barcode+" не найдено!"}]
   }
 
 }).onAny('formBag').reply((cfg)=>{
@@ -433,7 +433,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "bagType": req.bagType,
     "taraType": req.taraType,
     "plombaNum": req.plombaNum,
-    "comment":req.comment
+    "comment":'DEMO:'+req.comment
 }]}
 )
 .onAny().reply((cfg)=>{
@@ -441,7 +441,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   var req = cfg.params;
   console.debug("Mock any",req);
 
-  return [500,{error:"Mock no rule found"}]
+  return [500,{error:"DEMO:Mock no rule found"}]
 
 })
 

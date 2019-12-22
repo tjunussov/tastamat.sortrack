@@ -1,7 +1,7 @@
 <template lang="pug">
 doctype html
 
-#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':!demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
 
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
@@ -53,13 +53,19 @@ doctype html
         b-navbar-nav.ml-auto
 
           b-nav-form(@submit.stop.prevent)
-            b-form-input.mr-sm-2(
-              size="sm"
-              :disabled="!user" 
-              v-on:focus.native="$event.target.value = '';"
-              v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
-              @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
-              :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
+            b-input-group
+              b-form-input(
+                :disabled="!user" 
+                v-on:focus.native="$event.target.value = '';"
+                v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
+                @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
+                :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
+              b-input-group-append
+                b-dropdown(variant="danger")
+                  b-dropdown-item Red
+                  b-dropdown-item Green
+                  b-dropdown-item Blue
+            
 
           b-nav-item(right v-b-modal.user v-if="!user") 
             | Войти
@@ -387,15 +393,10 @@ export default {
 <style lang="stylus" src="./AppStylePrint.stylus"/>
 <style lang="stylus">
 
-#app.disabled 
-  // background-color #000
-  
-  .bd-content
-  //   filter blur(1px)
-    pointer-events none
+
+#app
   
   &:before
-    content 'Авторизация! Просканируйте Ваш Бейдж'
     font-size 30pt
     padding-top 30%
     text-align center
@@ -407,6 +408,36 @@ export default {
     right 0
     background-color rgba(0,0,10,0.7)
     z-index 1000
+
+  &.isDemo
+    
+    &:before
+      content 'DEMO РЕЖИМ DEMO РЕЖИМ'
+      z-index 0
+      letter-spacing -5px
+      color #f002
+      padding-top 60px
+      font-size 50pt
+      background-color rgba(255,0,0,0.1)
+    
+    .bd-navbar, .nav-pills .nav-link.active, .nav-pills .show > .nav-link, .nav-link.active
+      background-color #500 !important
+
+#app.disabled 
+  // background-color #000
+    
+
+  &.isDemo:before
+    content '[Технологический Индекс не установлен]'
+    color #f008
+    background-color rgba(0,0,0,0.9)
+  
+  .bd-content
+  //   filter blur(1px)
+    pointer-events none
+  
+  &:before
+    content 'Авторизация! Просканируйте Ваш Бейдж'
     
   &.notechindex:before
     content '[Технологический Индекс не установлен]'
