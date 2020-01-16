@@ -101,8 +101,20 @@ TODO 5.0
 + Если в range невходит то в отстойник
 - multiled filter
 - print bag
-- weight, plomba, type, sendmeth show
++ weight, plomba, type, sendmeth show
 - led thor availability
+
+TODO 6.0
++ closebag:disable double click close bag button
+? search:disable parallel search wpi
++ calibrate:error bag, disable barcode set 
+- search:allow only wpi masked barcode, disallow other variations
++ search:upper case all chars
++ closebag: weight only numeric
++ console:more than 100 smaller font
+- closebag: selection between closebag/closepacket
+- closebag: form blist
+- calibrate: free style at any state
 
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager

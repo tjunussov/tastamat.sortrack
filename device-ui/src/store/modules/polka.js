@@ -167,7 +167,7 @@ const actions = {
   },
   $forcePutToBag({ commit, dispatch, state, getters },{barcode}){
 
-    
+    barcode = barcode.toUpperCase().trim()
 
     if(barcode in getters.getSelectedBag.wpi){
       state.status = 'pull';
@@ -187,6 +187,8 @@ const actions = {
   $putToBag ({ commit, dispatch, state, getters },{barcode}) {
 
       dispatch('$clear');
+
+      barcode = barcode.toUpperCase().trim();
 
       state.barcode = barcode
       state.status = 'search';
@@ -288,7 +290,6 @@ const actions = {
         Vue.set(getters.getSelectedBag,'wpi',{})
         Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
 
-        getters.getSelectedBag.batch.push(state.closeResponse.packetListNo)
         // Vue.set(getters.getSelectedBag,'batch',{})
         
         // state.selected = ppi
@@ -307,25 +308,27 @@ const actions = {
 
     
   },
-  $formBagByPacklist({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
+  $formBagByPacklist({ commit, dispatch, state, getters },{ppi,packList,weight,sendmeth,plomba,bagType,taraType,comment}) {
 
-    console.debug('formBagByPacklist',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
+    console.debug('formBagByPacklist',ppi,packList,weight,sendmeth,plomba,bagType,taraType,comment);
 
     // weight = String(weight).replace(".","").replace(",","");
     weight = String(Number(weight)*1000);
 
 
     return $smartsort.formBagByPacklist(
-        ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
+        ppi,packList,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
         String(bagType),String(taraType),comment
         ).then((resp)=>{
+
+        console.log(resp.data);
 
         state.closeResponse = resp.data
 
         // Печатаем на принтере
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
-        Vue.set(getters.getSelectedBag,'wpi',{})
+        Vue.set(getters.getSelectedBag,'batch',[])
         Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
 
         // Vue.set(getters.getSelectedBag,'batch',{})
@@ -346,15 +349,16 @@ const actions = {
 
     
   },
-  $formB({ commit, dispatch, state, getters },{ppi,wpi,count}) {
+  $formB({ commit, dispatch, state, getters },{ppi,wpi}) {
 
-    console.debug('formB',ppi,wpi,count);
+    console.debug('formB',ppi,wpi,wpi.length);
 
     return $smartsort.formB(
-        ppi,wpi,count,getters.getDepcode,getters.getUser.login
+        ppi,wpi,wpi.length,getters.getDepcode,getters.getUser.login
         ).then((resp)=>{
 
-          state.closeResponse = resp.data
+          getters.getSelectedBag.batch.push(resp.data.packetListNo);
+          Vue.set(getters.getSelectedBag,'wpi',{})
 
           state.status = 'formb';
           dispatch('$save');

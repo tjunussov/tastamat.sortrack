@@ -340,7 +340,7 @@ var barcodes = {
 
   
 //INFO! dont remove delay respnose, it doesnt workk if removed
-export const mock = new MockAdapter($http,{delayResponse:50}) 
+export const mock = new MockAdapter($http,{delayResponse:500}) 
 // export const mock = new MockAdapter($http)
 
 
@@ -415,7 +415,7 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   return [200,
   {
     "result": "success",
-    "packetListNo": "B20191007"+req.parentPostIndex,
+    "packetListNo": "B20191007"+Math.ceil(Math.random()*10000),
     "labelListNo": "G201910072104795",
     "actualWeight": req.totalWeight,
     "workerName": req.login,
@@ -445,12 +445,12 @@ export const mock = new MockAdapter($http,{delayResponse:50})
   return [200,
   {
     "result": "success",
-    "labelListNo": "G201910072104795",
+    "labelListNo": "G2020"+Math.ceil(Math.random()*100000),
     "actualWeight": req.totalWeight,
     "workerName": req.login,
     "date": new Date(),
-    "count": req.barcodeList.length,
-    "packetListCount":999,
+    "count": req.packetList.length,
+    "packetListCount":req.packetList.length,
     "toTechindex": "050009",
     "toDepartment": "Алматы-9",
     
@@ -475,13 +475,12 @@ export const mock = new MockAdapter($http,{delayResponse:50})
 
   return [200,
   {
-    "packetListNo": "B20191007"+req.parentPostIndex,
+    "packetListNo": "B20201007"+Math.ceil(Math.random()*10000),
     "workerName": req.login,
     "date": new Date(),
-    "barcodeList":"DEMO",
     "postIndexTitle":"DEMO",
     "postIndex":"DEMO",
-    "totalWeight": req.totalWeight,
+    "totalWeight": 10000,
 
 
 

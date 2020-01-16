@@ -211,7 +211,6 @@ export default {
     },
     putToBag(barcode){
       if(this.isCloseModalOpen) { console.debug('skipping putToBag due to isCloseModalOpen'); return; }
-      barcode = barcode.toUpperCase().trim()
       console.log('started putToBag barcode',barcode);
       window.clearTimeout(this.tmResponse);
 
@@ -282,7 +281,7 @@ export default {
       opacity 0.2
       
     &.isErrorBag
-      background-color #f00 !important
+      background linear-gradient(180deg, rgba(254,195,0,1) 0%, rgba(252,0,0,1) 100%) !important
       // pointer-events none
       
 

@@ -63,6 +63,8 @@ export const $device = {
   }
 };
 
+var wpiReg = new RegExp("([A-Z]{2}[0-9]{9}[A-Z]{2})");
+
 export const $smartsort = {
   auth(user,depcode){
     return $http.get('authorize',{
@@ -80,6 +82,11 @@ export const $smartsort = {
     })
   },
   putToBag(barcode,depcode,user){
+
+    if(!wpiReg.test(barcode)){
+      return Promise.reject(`Неверный формат ШПИ ${barcode} !`);
+    }
+
     return $http.get('findBagIndex',{
       params:{barcode:barcode,techindex:depcode,login:user }
     }).then((resp)=>{
@@ -88,7 +95,9 @@ export const $smartsort = {
     }).catch((error)=>{
       if(error.message == 'Network Error')
         return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
-      else throw new Error(error.data?error.data:error)
+      else 
+        return Promise.reject(error.data?error.data:error);
+        // throw new Error(error.data?error.data:error)
     })
     // return $http.get('sm_home.putToBag')
   },
