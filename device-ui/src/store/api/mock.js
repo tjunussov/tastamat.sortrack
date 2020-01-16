@@ -436,6 +436,60 @@ export const mock = new MockAdapter($http,{delayResponse:50})
     "comment":'DEMO:'+req.comment
 }]}
 )
+.onAny('formBagByPacklist').reply((cfg)=>{
+  
+  var req = JSON.parse(cfg.data);
+
+  console.debug('formBagByPacklist',req);
+
+  return [200,
+  {
+    "result": "success",
+    "labelListNo": "G201910072104795",
+    "actualWeight": req.totalWeight,
+    "workerName": req.login,
+    "date": new Date(),
+    "count": req.barcodeList.length,
+    "packetListCount":999,
+    "toTechindex": "050009",
+    "toDepartment": "Алматы-9",
+    
+
+    "totalWeight": req.totalWeight,
+    "fromTechindex": "055990",
+    "techindex": "055990",
+    "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
+    "route": req.sendMethod == 1?"Наземный":"Авиа", //delete in future
+    "sendMethod": req.sendMethod,
+    "bagType": req.bagType,
+    "taraType": req.taraType,
+    "plombaNum": req.plombaNum,
+    "comment":'DEMO:'+req.comment
+}]}
+)
+.onAny('formPacketList').reply((cfg)=>{
+  
+  var req = JSON.parse(cfg.data);
+
+  console.debug('formPacketList',req);
+
+  return [200,
+  {
+    "packetListNo": "B20191007"+req.parentPostIndex,
+    "workerName": req.login,
+    "date": new Date(),
+    "barcodeList":"DEMO",
+    "postIndexTitle":"DEMO",
+    "postIndex":"DEMO",
+    "totalWeight": req.totalWeight,
+
+
+
+    "result": "success",
+    "count": req.barcodeList.length,
+    "techindex": "055990"
+}]}
+)
 .onAny().reply((cfg)=>{
 
   var req = cfg.params;

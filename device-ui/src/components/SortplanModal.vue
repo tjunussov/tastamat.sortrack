@@ -3,12 +3,15 @@ b-modal#msortplan(v-if="sortplan" @hide="$emit('hide')" ref="msortplan" header-b
     template(slot="modal-title") Сортплан для Индекса {{depcode}} 
       span кол-во направлений {{sortplan.length}}
         
-    template(slot="modal-footer") 
-      b-btn(:variant="config.size < sortplan.length?'danger':'primary'" @click="fillBags({plan:sortplan})") Установить
-      b-btn( @click="$print") Печать
+    template(slot="modal-footer")
+      b-dropdown(split split-variant="primary" variant="outline-primary" @click="$print")
+        template(slot="button-content") 
+          i.fa.fa-print.mr-2
+          | Печать
+        b-dropdown-item(@click="fillBags({plan:sortplan})") 
+          | Загрузить сортплан
 
-
-    b-alert(:show="config.size < sortplan.length" variant="danger")
+    //- b-alert(:show="config.size < sortplan.length" variant="danger")
       | ВНИМАНИЕ! В стелаже {{config.size}} ячеек, нехватает еще {{sortplan.length - config.size }} ячеек
 
     #printSection.mx-4.mb-4.text-center

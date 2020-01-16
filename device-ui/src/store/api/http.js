@@ -92,7 +92,7 @@ export const $smartsort = {
     })
     // return $http.get('sm_home.putToBag')
   },
-  closeBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
+  formBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
     return $http.post('formBag',{
       "login": user,
       "techindex": depcode,
@@ -110,6 +110,39 @@ export const $smartsort = {
       return resp;
     })
     // return $http.get(`sm_home.closeBag`)
+  },
+  formBagByPacklist(bag,packListArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
+    return $http.post('formBagByPacklist',{
+      "login": user,
+      "techindex": depcode,
+      "parentPostIndex": bag,
+      "packetList": packListArray,
+      "totalWeight": weight,
+      "bagType": bagType,
+      "taraType": taraType,
+      "sendMethod": sendmeth,
+      "plombaNum": plomba,
+      "comment": comment
+    }).then((resp)=>{
+      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
+      return resp;
+    })
+    // return $http.get(`sm_home.closeBag`)
+  },
+  formB(bag,barcodeList,count,depcode,user){
+    return $http.post('formPacketList',{
+      "login": user,
+      "techindex": depcode,
+      "parentPostIndex": bag,
+      "barcodeList": barcodeList,
+      "count": count
+    }).then((resp)=>{
+      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
+      return resp;
+    })
+
   },
   sortplan(depcode){
     return $http.get('listBagIndexes',{
@@ -144,7 +177,9 @@ export const $sounds = {
   bind: new Audio(audioURL+"bind.mp3"),
   selectbag: new Audio(audioURL+"bind.mp3"),
   deselectbag: new Audio(audioURL+"deselect.mp3"),  
-  closebag: new Audio(audioURL+"closebag.mp3"),
+  formb: new Audio(audioURL+"closebag.mp3"),
+  formbagbypacklist: new Audio(audioURL+"closebag.mp3"),
+  formbag: new Audio(audioURL+"closebag.mp3"),
   registerpoint: new Audio(audioURL+"registerpoint.mp3"),
   login: new Audio(audioURL+"login.mp3"),
   logout: new Audio(audioURL+"logout.mp3"),
@@ -178,6 +213,7 @@ export const $leds = {
   thor:null,
   lastThor: null,
   lastLed:23,
+  color:'r',
   pushLastLed(){
     setTimeout(()=>{
       console.debug('pushLastLed -->',this.lastLed, this.thor);
@@ -215,7 +251,13 @@ export const $leds = {
   selectbag(led){
     this.$ledon({color:'all',led,duration:500,repeat:1000,autoOff:'all'});
   },
-  closebag(led){
+  formb(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
+  formbag(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
+  formbagbypacklist(led){
     this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
   },
   deselectbag(led){
@@ -260,8 +302,12 @@ export const $leds = {
     //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
     // } else {
       // $device.get(`/off`,{params:{led:'all'}},this.thor,{params});
+      params.color = this.color;
       $device.get('/on',{params},this.thor);
     // }
+  },
+  setColor(color){
+    this.color = color;
   },
   $ledoff(){
     $device.get(`/off`,{params:{led:'all'}},this.thor,true);

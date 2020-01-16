@@ -92,6 +92,17 @@ TODO 4.0
 - apply mock without refresh
 - move all to settings
 
+TODO 5.0
++ пункт - перекладка рпо запретить если в другом уже лежит,
++ когда ШПИкает, индекс отделения потянуть наименование из сортплана
+- Каиржан все на https 
++ ДЕМО - убрать
++ Кнопка Установка СОРТПЛАНА убрать , только распечатать
++ Если в range невходит то в отстойник
+- multiled filter
+- print bag
+- weight, plomba, type, sendmeth show
+- led thor availability
 
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager

@@ -28,24 +28,30 @@ doctype html
             template(slot="button-content")
               i.fa.fa-map-marker.mr-2
               | {{depcode}}
-            
-            b-dropdown-header Настройки
+
             b-dropdown-item(v-b-modal.depcode) Сменить Индекс
-            b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Загрузить Сортплан
-            b-dropdown-item(@click="togleCalibrate()" ) Начать Калибровку
-              //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
             b-dropdown-divider
-            b-dropdown-item(v-b-modal.demoprint="") Demo Шаблон
+            b-dropdown-header(@click="showDemo=!showDemo") Печать
             b-dropdown-item(v-b-modal.badge="") Бейджики
-            b-dropdown-item(@click="togleDemo()" ) 
-              i.fa.mr-2(:class="{'fa-circle text-success':demo,'fa-circle-o':!demo}")/
-              | Демо
-            b-dropdown-item(@click="togleLed()" ) 
-              i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
-              | Лампочки
-            b-dropdown-item(v-if="settings.broker" @click="toggleWsConnect()" ) 
-              i.fa.mr-2(:class="{'fa-circle text-success':ws.isOpen,'fa-circle-o':!ws.isOpen}")/
-              | Мультитор 
+            b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Сортплан
+            b-dropdown-item(v-if="showDemo" v-b-modal.demoprint="") Demo Шаблон
+            b-dropdown-divider
+            b-dropdown-item(@click="togleCalibrate()" ) Калибрововка
+              //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+            
+            
+            
+            template(v-if="showDemo")
+              b-dropdown-divider
+              b-dropdown-item(@click="togleDemo()" ) 
+                i.fa.mr-2(:class="{'fa-circle text-success':demo,'fa-circle-o':!demo}")/
+                | Демо
+              b-dropdown-item(@click="togleLed()" ) 
+                i.fa.mr-2(:class="{'fa-circle text-success':ledOn,'fa-circle-o':!ledOn}")/
+                | Лампочки
+              b-dropdown-item(v-if="settings.broker" @click="toggleWsConnect()" ) 
+                i.fa.mr-2(:class="{'fa-circle text-success':ws.isOpen,'fa-circle-o':!ws.isOpen}")/
+                | Мультитор 
             
             b-dropdown-divider
             b-dropdown-item(v-b-modal.settings="") Настройки
@@ -57,21 +63,24 @@ doctype html
               b-form-input(
                 :disabled="!user" 
                 v-on:focus.native="$event.target.value = '';"
-                v-on:dblclick.native="enterBarcodeRandom(); $event.target.value = ''; $event.target.blur();" 
-                @keyup.enter.native.stop="enterBarcodeManualy($event.target.value);$event.target.value = ''; $event.target.blur(); " 
-                :placeholder="barcode?barcode:'Поиск поссылок  ...'") 
+                v-on:dblclick.native="enterBarcodeRandom(); $event.target.blur();" 
+                @keyup.enter.native.stop="enterBarcodeManualy($event.target.value); $event.target.value = ''; $event.target.blur(); " 
+                placeholder="Поиск поссылок  ...") 
               b-input-group-append
                 b-dropdown(variant="danger")
-                  b-dropdown-item Red
-                  b-dropdown-item Green
-                  b-dropdown-item Blue
+                  b-dropdown-item
+                    .text-danger Red
+                  b-dropdown-item
+                    .text-success Green
+                  b-dropdown-item
+                    .text-primary Blue
             
 
           b-nav-item(right v-b-modal.user v-if="!user") 
             | Войти
           b-nav-item-dropdown(right v-else @click="$logout()")
             template(slot="button-content")
-              i.fa.fa-user.mr-2(:class="{'text-danger':user.login}")/
+              i.fa.fa-user.mr-2/
               | {{user.name?user.name:user.login}} 
               .username(v-if="user.name") {{user.login}}
             b-dropdown-item(v-b-modal.user="") Сменить пользователя
@@ -172,6 +181,7 @@ export default {
       tmResponse:null,
       isSortplanModalOpen:false,
       demoIndex:0,
+      showDemo:false,
       ws:{
         isOpen : false,
         start: false,
@@ -259,6 +269,7 @@ export default {
         if(this.demoIndex == this.demoBarcodes.length) this.demoIndex = 0;
         this.enterBarcodeManualy(this.demoBarcodes[this.demoIndex++]);
       }
+
     },
     // enterBarcode(val){
     //   // console.log('setting barcode',val)
@@ -409,34 +420,29 @@ export default {
     background-color rgba(0,0,10,0.7)
     z-index 1000
 
-  &.isDemo
+  // &.isDemo
     
-    &:before
-      content 'DEMO РЕЖИМ DEMO РЕЖИМ'
-      z-index 0
-      letter-spacing -5px
-      color #f002
-      padding-top 60px
-      font-size 50pt
-      background-color rgba(255,0,0,0.1)
+  //   &:before
+  //     content 'DEMO РЕЖИМ DEMO РЕЖИМ'
+  //     z-index 0
+  //     letter-spacing -5px
+  //     color #f002
+  //     padding-top 60px
+  //     font-size 50pt
+  //     background-color rgba(255,0,0,0.1)
     
-    .bd-navbar, .nav-pills .nav-link.active, .nav-pills .show > .nav-link, .nav-link.active
-      background-color #500 !important
+  //   .bd-navbar, .nav-pills .nav-link.active, .nav-pills .show > .nav-link, .nav-link.active
+  //     background-color #500 !important
 
 #app.disabled 
   // background-color #000
-    
-
-  &.isDemo:before
-    content '[Технологический Индекс не установлен]'
-    color #f008
-    background-color rgba(0,0,0,0.9)
   
   .bd-content
   //   filter blur(1px)
     pointer-events none
   
   &:before
+    z-index 1000
     content 'Авторизация! Просканируйте Ваш Бейдж'
     
   &.notechindex:before

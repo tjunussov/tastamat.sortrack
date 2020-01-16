@@ -4,6 +4,7 @@ b-row.flex-xl-nowrap2
     b-tabs.nav-justified.wizard(pills v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
         template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}] 
+          i.fa.fa-lightbulb-o.text-danger.pull-right(v-if="ledOffline[p]")
         b-card-group.polkas.pt-4(:class="{calibrating}" deck)
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
@@ -22,7 +23,7 @@ b-row.flex-xl-nowrap2
                 span.led(:class="{'remapped':b.led!=null}") {{b.led!==null?b.led:i}}
               b-btn.close(v-if="Object.keys(b.wpi).length") &times;
             b-card-body
-              h4.card-title
+              h4.card-title(:class="{'smaller':Object.keys(b.wpi).length>100}")
                 template(v-if="bind.cursor != null") {{bind.cursor}} 
                 template(v-else) {{Object.keys(b.wpi).length}}
 
@@ -121,6 +122,7 @@ export default {
   data () {
     return {
       tabIndex:0,
+      ledOffline:[true,false,false,false],
       tmResponse:null,
       isCloseModalOpen:false,
       isCloseModalAvarOpen:false,
@@ -149,6 +151,7 @@ export default {
         selectedBag:'getSelectedBag',
         calibrating:'getCalibrating',
         ledOn:'getLedOn',
+        sortplan: 'getSortplan',
         thor:'thor'
     }),
     filteredBags() {
@@ -165,6 +168,7 @@ export default {
       '$putToBag',
       '$selectBag',
       '$deselectBag',
+      '$fetchSortplan',
       // '$remapSelectedBag',
       '$clear',
       '$save'
@@ -175,13 +179,14 @@ export default {
     },
     selectBagBarcode(barcode){
       if(this.calibrating){
-        this.calibrateMapIndex(barcode);
+        this.calibrateMapBagBarcode(barcode);
       } else {
         this.selectBag(barcode);
       }
     },
     calibrateSelectBag(ppi,i,p){
       if(this.calibrating){
+        this.$selectBag({ppi});
         console.log('calibrating selectBag',ppi);
         this.calibrateMap((p*24)+i);
       }
@@ -297,6 +302,9 @@ export default {
       margin 0
       line-height 3rem
       letter-spacing -5px
+      
+      &.smaller
+        font-size 3rem
       
     .stat
       font-size 1.5rem

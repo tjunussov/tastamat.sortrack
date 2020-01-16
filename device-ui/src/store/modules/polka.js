@@ -104,7 +104,7 @@ const actions = {
       11,10,9,8,20,21,22,23];
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:{}}
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:[]}
       });
 
       getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 
@@ -205,7 +205,7 @@ const actions = {
         console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
 
         // checking if bag is found in plan
-        findBag(getters.getBags,resp.parentPostIndex);
+        findBag(getters.getBags,resp.parentPostIndex,state.barcode);
 
         state.response = resp
         state.status = 'push';
@@ -267,15 +267,15 @@ const actions = {
 
         
   },
-  $closeBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
+  $formBag ({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
 
-    console.debug('closeBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
+    console.debug('formBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
     // weight = String(weight).replace(".","").replace(",","");
     weight = String(Number(weight)*1000);
 
 
-    return $smartsort.closeBag(
+    return $smartsort.formBag(
         ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
         String(bagType),String(taraType),comment
         ).then((resp)=>{
@@ -287,9 +287,12 @@ const actions = {
 
         Vue.set(getters.getSelectedBag,'wpi',{})
         Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
+
+        getters.getSelectedBag.batch.push(state.closeResponse.packetListNo)
+        // Vue.set(getters.getSelectedBag,'batch',{})
         
         // state.selected = ppi
-        state.status = 'closebag';
+        state.status = 'formbag';
         dispatch('$save');
 
         return resp.data
@@ -303,6 +306,62 @@ const actions = {
       });
 
     
+  },
+  $formBagByPacklist({ commit, dispatch, state, getters },{ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment}) {
+
+    console.debug('formBagByPacklist',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
+
+    // weight = String(weight).replace(".","").replace(",","");
+    weight = String(Number(weight)*1000);
+
+
+    return $smartsort.formBagByPacklist(
+        ppi,wpi,weight,String(sendmeth),getters.getDepcode,getters.getUser.login,String(plomba),
+        String(bagType),String(taraType),comment
+        ).then((resp)=>{
+
+        state.closeResponse = resp.data
+
+        // Печатаем на принтере
+        // $leds.$printBag(document.getElementById('bagPrintData').innerText);
+
+        Vue.set(getters.getSelectedBag,'wpi',{})
+        Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
+
+        // Vue.set(getters.getSelectedBag,'batch',{})
+        
+        // state.selected = ppi
+        state.status = 'formbagbypacklist';
+        dispatch('$save');
+
+        return resp.data
+        
+      }).catch((error)=>{
+        console.error('error',error);
+        state.status = 'error';
+        state.error = error.response?error.response.data:error.message
+        return Promise.reject(state.error);
+        // state.closeResponse = error.response?error.response.data:{"error":"catch"}
+      });
+
+    
+  },
+  $formB({ commit, dispatch, state, getters },{ppi,wpi,count}) {
+
+    console.debug('formB',ppi,wpi,count);
+
+    return $smartsort.formB(
+        ppi,wpi,count,getters.getDepcode,getters.getUser.login
+        ).then((resp)=>{
+
+          state.closeResponse = resp.data
+
+          state.status = 'formb';
+          dispatch('$save');
+
+          return resp.data
+        });
+
   },
   $fillBags ({ commit, dispatch, state, getters },{plan}) {
       /*Object.entries(plan).forEach((k)=>{
@@ -328,6 +387,8 @@ const actions = {
     return $smartsort.sortplan(depcode).then((resp)=>{
       state.sortplan = resp.data.parentPostIndexes
       console.log("sortplan",state.sortplan)
+      Vue.set(getters.getConfig,'sortplan',state.sortplan);
+      dispatch('$save');
       return resp;
     }).catch((error)=>{
       state.sortplan = null
@@ -368,6 +429,8 @@ const actions = {
     console.log('$registerdepcode',depcode);
     state.status = 'registerpoint';
     dispatch('$save');
+    dispatch('$fetchSortplan',{depcode});
+    
   },
   $togleDemo({ commit, dispatch, state, getters },{val}){
     // console.log('togleDemo',val)
@@ -409,12 +472,20 @@ const mutations = {
   }
 }
 
-function findBag(bags,ppi){
-  var indx = bags.findIndex((key)=>{return ppi == key.ppi});
+function findBag(bags,ppi,barcode){
+  checkUniqueBarcode(bags,barcode);
+  var indx = bags.findIndex((key)=> ppi == key.ppi );
   if(indx < 0) indx = renameEmptyKey(bags,ppi) // Пытаюсь найти свободную ячейку
   if(indx < 0) throw `Индекс назначения ${ppi} не привязан ни к одной корзине!`;
   return indx
 }
+
+function checkUniqueBarcode(bags,barcode){
+  bags.every((key)=> {
+    if(key.wpi[barcode]) throw `Отправление ${barcode} уже лежит в ячейке ${key.ppi} !`;
+  });
+}
+
 
 function renameEmptyKey(obj,newKey){
   var indx = obj.findIndex((e)=>{return e.ppi.startsWith('#')})

@@ -14,8 +14,17 @@ export const bindMixin = {
       this.clearAll();
       this.$save();
     },
-    calibrateMapIndex(ppi){
-      if(this.bind.selectedBag !== null) Vue.set(this.bags[this.bind.selectedBag],'ppi',ppi);
+    calibrateMapBagBarcode(ppi){
+      if(this.bind.selectedBag !== null){
+        Vue.set(this.bags[this.bind.selectedBag],'ppi',ppi);
+
+        if(this.config.sortplan){
+          var ppn = this.config.sortplan.find((k)=>{
+            return k.techindex == ppi
+          })
+          Vue.set(this.bags[this.bind.selectedBag],'ppn',ppn.nameRu);
+        }
+      }
     },
     calibrateMap(i){
       this.bind.selectedBag = i;

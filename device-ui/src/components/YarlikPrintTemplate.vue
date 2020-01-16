@@ -98,12 +98,7 @@ export default {
   computed:{
     ...mapGetters({
         response: 'getCloseResponse',
-        selected:'getSelected',
         config:'getConfig',
-        error: 'getError',
-        selectedBag:'getSelectedBag',
-        bags: 'getBags',
-        cursor: 'cursor',
     }),
   },
   data () {
@@ -144,9 +139,6 @@ export default {
       } else {
         this.$print();
       }
-    },
-    testLed(led){
-      $leds.test(led);
     },
     printTest(){
       $leds.printbagTest();

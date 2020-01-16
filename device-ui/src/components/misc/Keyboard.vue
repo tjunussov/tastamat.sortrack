@@ -3,8 +3,9 @@
 </template>
 
 <script>
-
+import {$leds} from '@/store/api/http'
 var captureTM;
+
 
 export default {
   name: 'Keyboard',
@@ -29,10 +30,20 @@ export default {
       if (event.keyCode == 13) { // ENTER
         //if(!isNaN(this.keyText)) {
         if(this.keyText != "") {
+
+
+          var firstLetter = this.keyText.substr(0,1);
+
+          if( firstLetter == 'G' || firstLetter == 'B'){
+            $leds.setColor(firstLetter.toLowerCase());
+            this.keyText = this.keyText.slice(1);
+          } else {
+            $leds.setColor('r');
+          }
           
           
           this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText);
-          this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.substr(0,1),this.keyText.substr(1));
+          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.substr(1));
           this.$bus.$emit('keyboard:keydown:enter',this.keyText);
           this.keyText = ""
           event.preventDefault();
