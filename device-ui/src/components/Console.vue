@@ -281,7 +281,7 @@ export default {
       opacity 0.2
       
     &.isErrorBag
-      background linear-gradient(180deg, rgba(254,195,0,1) 0%, rgba(252,0,0,1) 100%) !important
+      background-image linear-gradient(180deg, rgba(254,195,0,1) 0%, rgba(252,0,0,1) 100%) !important
       // pointer-events none
       
 

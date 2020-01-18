@@ -478,11 +478,14 @@ export const mock = new MockAdapter($http,{delayResponse:500})
     "packetListNo": "B20201007"+Math.ceil(Math.random()*10000),
     "workerName": req.login,
     "date": new Date(),
-    "postIndexTitle":"DEMO",
-    "postIndex":"DEMO",
-    "totalWeight": 10000,
+    "totalWeight": "10000",
 
-
+    "actualWeight": 42,
+    "fromDepartment": "АФ АО «Казпочта» «Алматинский почтамт»",
+    "toDepartment": "Алматы-40",
+    "fromTechindex": "055990",
+    "toTechindex": "050040",
+    "comment": "",
 
     "result": "success",
     "count": req.barcodeList.length,

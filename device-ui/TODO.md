@@ -106,15 +106,19 @@ TODO 5.0
 
 TODO 6.0
 + closebag:disable double click close bag button
-? search:disable parallel search wpi
 + calibrate:error bag, disable barcode set 
-- search:allow only wpi masked barcode, disallow other variations
++ search:allow only wpi masked barcode, disallow other variations
 + search:upper case all chars
 + closebag: weight only numeric
 + console:more than 100 smaller font
-- closebag: selection between closebag/closepacket
-- closebag: form blist
++ closebag: selection between closebag/closepacket
++ closebag: form blist
 - calibrate: free style at any state
++ отстойник незакрашивается
++ демо отключить по умолчанию
++ Б с весами
+? search:disable parallel search wpi
+? ручной ввод ШПИ внутри принудительного внесения в мешок
 
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager

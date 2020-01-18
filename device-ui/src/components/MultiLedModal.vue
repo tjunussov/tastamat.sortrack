@@ -54,6 +54,13 @@ b-modal#settings(title="Настройки LED" size="md" lazy hide-header cente
               input(type="range" name="volume" min="0" max="100")
             b-form-group(label="Открыть мешок" horizontal)
               input(type="range" name="volume" min="0" max="100")
+        b-tab
+          template(slot="title")
+            i.fa.fa-bug.mr-2
+          b-form-group(label="NO LED" horizontal)
+            b-form-checkbox(:checked="!ledOn" @change="togleLed()")
+          b-form-group(label="Demo" horizontal)
+            b-form-checkbox(:checked="demo" @change="togleDemo()")
     
 </template>
 
@@ -72,14 +79,38 @@ export default {
   computed:{
     ...mapGetters({
         settings: 'getSettingsSelected',
+        ledOn: 'getLedOn',
+        demo: 'getDemo',
     })
   },
   methods:{
     ...mapActions([
       '$save',
       '$initBags',
-      '$initSettings'
+      '$initSettings',
+      '$togleDemo',
+      '$togleLed',
     ]),
+    togleDemo(val){
+      console.log('togleDemo',val);
+      this.$togleDemo({val}).then(()=>{
+        if(val === undefined){
+           // location.reload();
+        }
+        if(!this.demo) {
+          mock.restore();
+        }
+      });
+
+    },
+    togleLed(val){
+      this.$togleLed({val});
+      console.log('togleLed',this.ledOn);
+
+      // if(this.ledOn) {
+      //   mockDevice.restore();
+      // }
+    },
     close(){
       this.$root.$emit('bv::hide::modal', 'settings', '')
     },

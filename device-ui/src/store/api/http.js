@@ -139,13 +139,15 @@ export const $smartsort = {
     })
     // return $http.get(`sm_home.closeBag`)
   },
-  formB(bag,barcodeList,count,depcode,user){
+  formB(bag,barcodeList,count,totalWeight,depcode,user){
     return $http.post('formPacketList',{
       "login": user,
       "techindex": depcode,
       "parentPostIndex": bag,
       "barcodeList": barcodeList,
-      "count": count
+      "count": count,
+      "totalWeight": totalWeight,
+      "comment": ""
     }).then((resp)=>{
       if(resp.data.error) return Promise.reject(resp.data.resultInfo);
       if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");

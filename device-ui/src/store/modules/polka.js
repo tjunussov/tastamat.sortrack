@@ -104,7 +104,7 @@ const actions = {
       11,10,9,8,20,21,22,23];
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:[]}
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:null}
       });
 
       getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 
@@ -328,7 +328,7 @@ const actions = {
         // Печатаем на принтере
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
-        Vue.set(getters.getSelectedBag,'batch',[])
+        Vue.set(getters.getSelectedBag,'batch',null)
         Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
 
         // Vue.set(getters.getSelectedBag,'batch',{})
@@ -349,15 +349,20 @@ const actions = {
 
     
   },
-  $formB({ commit, dispatch, state, getters },{ppi,wpi}) {
+  $formB({ commit, dispatch, state, getters },{ppi,wpi,weight}) {
 
-    console.debug('formB',ppi,wpi,wpi.length);
+    console.debug('formB',ppi,wpi,wpi.length,weight);
 
     return $smartsort.formB(
-        ppi,wpi,wpi.length,getters.getDepcode,getters.getUser.login
+        ppi,wpi,wpi.length,weight,getters.getDepcode,getters.getUser.login
         ).then((resp)=>{
 
-          getters.getSelectedBag.batch.push(resp.data.packetListNo);
+
+          var val = {}; val[resp.data.packetListNo] = wpi;
+          var currentBatchVal = getters.getSelectedBag.batch;
+            val = {...val,...currentBatchVal};
+
+          Vue.set(getters.getSelectedBag,'batch',val)
           Vue.set(getters.getSelectedBag,'wpi',{})
 
           state.status = 'formb';
