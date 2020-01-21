@@ -165,6 +165,17 @@ const actions = {
       dispatch('$save');
     }
   },
+  $removeB({ commit, dispatch, state, getters },{b}){
+
+    console.log('removeB',b);
+    
+    if(confirm('Вы уверены что хотите удалить ' + b)) {
+      Vue.delete(getters.getSelectedBag.batch,b);
+      state.status = 'pull';
+      dispatch('$save');
+    }
+  },
+  
   $forcePutToBag({ commit, dispatch, state, getters },{barcode}){
 
     barcode = barcode.toUpperCase().trim()

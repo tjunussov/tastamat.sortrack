@@ -1,9 +1,14 @@
 <template lang="pug">
 div
   b-modal#mclosebagwpi(size="sm" centered hide-footer @hide="batch=null" no-fade ref="closeModalWpiRef")
-    template(v-if="batch" slot="modal-title") {{batch.no}}
+    template(v-if="batch" slot="modal-title")
+      b-btn.mr-1(@click="removeB" variant="danger")
+        i.fa.fa-trash
+      | {{batch.no}}
     b-list-group(v-if="batch")
       b-list-group-item(v-for="(v,k, n) in batch.items" :key="k") {{v}}
+    template(slot="modal-footer")
+
 
   b-modal#mclosebag(size="" scrollable centered Zhide-header no-close-on-backdrop no-fade @hide="clear" visible ref="closeModalRef" :header-bg-variant="isEditing?'danger':''"  :footer-bg-variant="isEditing?'danger':''")
 
@@ -248,7 +253,8 @@ export default {
       '$selectBag',
       '$deselectBag',
       '$forcePutToBag',
-      '$removeWpi'
+      '$removeWpi',
+      '$removeB'
     ]),
     encode(val){
       return code128.encode(val)
@@ -343,6 +349,10 @@ export default {
         else this.plomba = val
       else if(this.count > 0 && val.indexOf('.') > 0 ) 
         if(!isNaN(val)) this.weight = val;
+    },
+    removeB(b){
+      this.$removeB({b:this.batch.no}); // TODO SuperBug, Why we need this ?
+      this.$bvModal.hide('mclosebagwpi');
     },
     removeWpi(k){
       this.$removeWpi({barcode:k}); // TODO SuperBug, Why we need this ?
