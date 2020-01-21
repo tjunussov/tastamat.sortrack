@@ -6,6 +6,9 @@ pre.text-primary#printSection.mb-0.yarlik( :class="{'rotate':config.isRotate}")
       b ВИД ЗАДЕЛКИ       
       span {{mapSpr(response.bagType,bagTypes)}}
     div
+      b G НАКЛАДНАЯ       
+      span {{response.labelListNo}}
+    div(v-if="response.packetListNo")
       b Б НАКЛАДНАЯ       
       span {{response.packetListNo}}
     //- div

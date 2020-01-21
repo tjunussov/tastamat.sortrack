@@ -15,7 +15,7 @@ export const bindMixin = {
       this.$save();
     },
     calibrateMapBagBarcode(ppi){
-      if(this.bind.selectedBag !== null){
+      if(this.bind.selectedBag !== null && !this.bind.selectedBag.isErrorBag){
         Vue.set(this.bags[this.bind.selectedBag],'ppi',ppi);
 
         if(this.config.sortplan){

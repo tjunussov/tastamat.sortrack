@@ -277,7 +277,7 @@ export default {
     // },
     enterBarcodeManualy(barcode){
       console.log('enterBarcodeManualy',barcode);
-      this.$bus.$emit('keyboard:keydown:enter:13',barcode);
+      this.$bus.$emit('keyboard:keydown:enter:13',barcode);  
     },
     enterBagManualy(bagno){
       // console.log('enterBagManualy',bagno);
