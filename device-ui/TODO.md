@@ -78,7 +78,7 @@ POKAZ AYGERIM
 - Мультиюзер light
 - B-накладная много, G-накладная (одна) тест
 - barcode bug: 800218
-+ 96 leds
++ 96 leds    
 - 
 
 TODO 4.0
@@ -103,6 +103,7 @@ TODO 5.0
 - print bag
 - weight, plomba, type, sendmeth show
 - led thor availability
+- multiled emulate
 
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager
