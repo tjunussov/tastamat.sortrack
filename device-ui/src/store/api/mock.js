@@ -473,6 +473,8 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
   console.debug('formPacketList',req);
 
+  // {"result":"error","resultInfo":"Общий вес не введён!"}
+
   return [200,
   {
     "packetListNo": "B20201007"+Math.ceil(Math.random()*10000),

@@ -120,6 +120,10 @@ TODO 6.0
 + Б с весами
 ? search:disable parallel search wpi
 ? ручной ввод ШПИ внутри принудительного внесения в мешок
++ bug:formPackList error not handled
++ bug:formPackList weight not processed
+- показывать на экране что есть Бшки
+- выводить результат B накладной
 
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager

@@ -70,14 +70,14 @@ export const $smartsort = {
     return $http.get('authorize',{
       params:{login:user,techindex:depcode}
     }).then((resp)=>{
-      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
       return resp;
     })
   },
   fetchDemoRPO(depcode){
     return $http.get('getRPO',{params:{techindex:depcode}}).then((resp)=>{
       console.log("geRPO error",resp.data);
-      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
       return resp;
     })
   },
@@ -90,7 +90,7 @@ export const $smartsort = {
     return $http.get('findBagIndex',{
       params:{barcode:barcode,techindex:depcode,login:user }
     }).then((resp)=>{
-      if(resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
       return resp;
     }).catch((error)=>{
       if(error.message == 'Network Error')
@@ -114,7 +114,7 @@ export const $smartsort = {
       "plombaNum": plomba,
       "comment": comment
     }).then((resp)=>{
-      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == "error") return Promise.reject(resp.data.resultInfo);
       if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
       return resp;
     })
@@ -133,7 +133,7 @@ export const $smartsort = {
       "plombaNum": plomba,
       "comment": comment
     }).then((resp)=>{
-      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == "error") return Promise.reject(resp.data.resultInfo);
       if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
       return resp;
     })
@@ -149,7 +149,7 @@ export const $smartsort = {
       "totalWeight": totalWeight,
       "comment": ""
     }).then((resp)=>{
-      if(resp.data.error) return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == "error") return Promise.reject(resp.data.resultInfo);
       if(!resp.data) return Promise.reject("CORS Доступ к серверу заблокирован! Проверьте настройки!");
       return resp;
     })

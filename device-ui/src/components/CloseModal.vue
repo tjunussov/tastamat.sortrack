@@ -36,7 +36,7 @@ div
 
       b-card(no-body v-if="!isEditing" style="min-height:500px;")
         b-card-body
-          template(v-if="!count && !response && tabIndex == 2")
+          template(v-if="!response && tabIndex == 2")
             b-btn(block v-if="selectedBag.closeResponse" @click="$store.state.polka.closeResponse=selectedBag.closeResponse" variant="outline-secondary") Показать старый ярлык
           template(v-if="error")  {{error}}
           template(v-if="response && response.labelListNo && tabIndex == 2")

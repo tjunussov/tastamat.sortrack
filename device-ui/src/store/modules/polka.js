@@ -351,6 +351,8 @@ const actions = {
   },
   $formB({ commit, dispatch, state, getters },{ppi,wpi,weight}) {
 
+    weight = String(Number(weight)*1000);
+
     console.debug('formB',ppi,wpi,wpi.length,weight);
 
     return $smartsort.formB(
