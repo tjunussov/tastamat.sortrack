@@ -372,12 +372,15 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
   console.debug('findBagIndex',req, p);
 
+  // return [200,{"result":"error","resultInfo":"TEST TEST "}];
+
   var resp = 
     {
         "result": "success",
         "parentPostIndex": plan.parentPostIndexes[p].techindex,
         "postIndex": Math.ceil(Math.random()*10000),
         "postIndexTitle": "DEMO Алматы-"+Math.ceil(Math.random()*10),
+        "weight":Math.ceil(Math.random()*1000),
         "mailInfo": {
             "mailCategory": "1",
             "mailId": req.barcode,
@@ -385,11 +388,12 @@ export const mock = new MockAdapter($http,{delayResponse:500})
             "toStreet": "DEMO ПР ДОСТЫК 13 Г АЛМАТЫ ",
             "mailStatus": "Registered",
             "mailType2": "P101",
-            "weight":Math.ceil(Math.random()*1000),
             "storagePaymentPaid": false,
             "returnPaymentPaid": false,
             "selfPaymentPaid": false,
-            "notices": 0
+            "notices": 0,
+            "finMonBlock": false,
+            "isPartialRedemption": false
         }
     }
 
@@ -442,6 +446,8 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
   console.debug('formBagByPacklist',req);
 
+  // return [200,{"result":"error","resultInfo":"Общий вес не введён!"}];
+
   return [200,
   {
     "result": "success",
@@ -473,7 +479,7 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
   console.debug('formPacketList',req);
 
-  // {"result":"error","resultInfo":"Общий вес не введён!"}
+  // return [200,{"result":"error","resultInfo":"Общий вес не введён!"}];
 
   return [200,
   {

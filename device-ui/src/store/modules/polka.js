@@ -31,10 +31,16 @@ const getters = {
   getUser : (state,getters) => getters.config?getters.config.user:null,
   getError : (state) => state.error,
   getResponse : (state) => state.response,
+  
   getCloseResponse : (state) => state.closeResponse,
   getLoginResponse : (state) => state.loginResponse,
   
   getSelected : (state) => state.selected,
+  getWeight : (state,getters) => { 
+    if(getters.getSelectedBag)
+      return Object.values(getters.getSelectedBag.wpi).reduce((t,k)=> t + (k.weight?k.weight:0),0)
+    else return null
+  },  
   getLastBag: (state,getters) => {
     if(getters.config.bags)
       return getters.config.bags[getters.config.bags.length - 1];
@@ -126,12 +132,13 @@ const actions = {
     dispatch('settingsUpdate',getters.getSettingsSelected);
   },
   $clear ({ commit, dispatch, state, getters }) {
+    console.debug('clearing');
     state.response = null;
     state.closeResponse = null;
     state.barcode = null;
     state.status = null;
     state.error = null;
-    state.selected = null;
+    // state.selected = null;
   },
   $selectBag({ commit, dispatch, state, getters },{ppi}) {
     return new Promise((resolve,reject)=>{
@@ -178,7 +185,7 @@ const actions = {
   
   $forcePutToBag({ commit, dispatch, state, getters },{barcode}){
 
-    barcode = barcode.toUpperCase().trim()
+    barcode = barcode.toUpperCase().replace(/\s/g,"");
 
     if(barcode in getters.getSelectedBag.wpi){
       state.status = 'pull';
@@ -199,7 +206,7 @@ const actions = {
 
       dispatch('$clear');
 
-      barcode = barcode.toUpperCase().trim();
+      barcode = barcode.toUpperCase().replace(/\s/g,"");
 
       state.barcode = barcode
       state.status = 'search';
@@ -285,7 +292,7 @@ const actions = {
     console.debug('formBag',ppi,wpi,weight,sendmeth,plomba,bagType,taraType,comment);
 
     // weight = String(weight).replace(".","").replace(",","");
-    weight = String(Number(weight)*1000);
+    weight = (Number(weight)*1000).toFixed(0);
 
 
     return $smartsort.formBag(
@@ -312,7 +319,7 @@ const actions = {
       }).catch((error)=>{
         console.error('error',error);
         state.status = 'error';
-        state.error = error.response?error.response.data:error.message
+        state.error = error.response?error.response.data:error.message||error
         return Promise.reject(state.error);
         // state.closeResponse = error.response?error.response.data:{"error":"catch"}
       });
@@ -324,7 +331,7 @@ const actions = {
     console.debug('formBagByPacklist',ppi,packList,weight,sendmeth,plomba,bagType,taraType,comment);
 
     // weight = String(weight).replace(".","").replace(",","");
-    weight = String(Number(weight)*1000);
+    weight = (Number(weight)*1000).toFixed(0);
 
 
     return $smartsort.formBagByPacklist(
@@ -353,23 +360,22 @@ const actions = {
       }).catch((error)=>{
         console.error('error',error);
         state.status = 'error';
-        state.error = error.response?error.response.data:error.message
+        state.error = error.response||error.message||error
         return Promise.reject(state.error);
         // state.closeResponse = error.response?error.response.data:{"error":"catch"}
       });
 
     
   },
-  $formB({ commit, dispatch, state, getters },{ppi,wpi,weight}) {
+  $formB({ commit, dispatch, state, getters },{ppi,wpi}) {
 
-    weight = String(Number(weight)*1000);
+    // weight = String(Number(weight)*1000);
 
-    console.debug('formB',ppi,wpi,wpi.length,weight);
+    console.debug('formB',ppi,wpi,wpi.length);
 
     return $smartsort.formB(
-        ppi,wpi,wpi.length,weight,getters.getDepcode,getters.getUser.login
+        ppi,wpi,wpi.length,getters.getWeight,getters.getDepcode,getters.getUser.login
         ).then((resp)=>{
-
 
           var val = {}; val[resp.data.packetListNo] = wpi;
           var currentBatchVal = getters.getSelectedBag.batch;
@@ -378,11 +384,18 @@ const actions = {
           Vue.set(getters.getSelectedBag,'batch',val)
           Vue.set(getters.getSelectedBag,'wpi',{})
 
+          state.response = resp.data
           state.status = 'formb';
           dispatch('$save');
 
           return resp.data
-        });
+        }).catch((error)=>{
+          console.error('error',error);
+          state.status = 'error';
+          state.error = error.response||error.message||error
+          return Promise.reject(state.error);
+          // state.closeResponse = error.response?error.response.data:{"error":"catch"}
+      });
 
   },
   $fillBags ({ commit, dispatch, state, getters },{plan}) {

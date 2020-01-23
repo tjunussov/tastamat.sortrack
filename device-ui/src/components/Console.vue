@@ -40,7 +40,7 @@ b-row.flex-xl-nowrap2
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
         p(v-if="error") {{error}} 
-        template(v-if="response")
+        template(v-if="response && response.mailInfo")
           h4.card-title Мешок {{response.parentPostIndex}}
             span(v-if="selectedBag.ppn") ( {{selectedBag.ppn}} )
           | АДРЕС : 
@@ -48,7 +48,15 @@ b-row.flex-xl-nowrap2
           | ИНДЕКС : 
           b {{response.postIndex}}
           span.text-muted.ml-5 
-          | {{response.mailInfo.toFullName}} 
+          | {{response.mailInfo.toFullName}}
+        template(v-if="response && response.packetListNo")
+          h4.card-title B Накладная {{response.packetListNo}}
+          | ОБЩИЙ ВЕС : 
+          b {{response.totalWeight}} 
+          | АКТУАЛЬНЫЙ ВЕС : 
+          b {{response.actualWeight}} 
+          | КОЛ-ВО :  
+          b {{response.count}} 
           
           //- blockquote.blockquote-footer {{response}}
 
@@ -92,7 +100,7 @@ export default {
       else this.calibrateStop();
     },
     error(val){
-      // if(val) this.timeout(5000);
+      if(val) this.timeout(10000);
     },
     status(val){
       console.log('status',val);

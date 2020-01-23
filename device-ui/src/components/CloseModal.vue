@@ -41,9 +41,11 @@ div
 
       b-card(no-body v-if="!isEditing" style="min-height:500px;")
         b-card-body
+          b-alert(variant="danger" :show="error?true:false" dismissible) {{error}}
+          //- b-alert(variant="success" :show="bresponse" dismissible) {{bresponse.count}}
+          
           template(v-if="!response && tabIndex == 2")
             b-btn(block v-if="selectedBag.closeResponse" @click="$store.state.polka.closeResponse=selectedBag.closeResponse" variant="outline-secondary") Показать старый ярлык
-          template(v-if="error")  {{error}}
           template(v-if="response && response.labelListNo && tabIndex == 2")
             Yarlik
 
@@ -77,10 +79,9 @@ div
             b-card-footer
               i.fa.fa-tachometer.mr-2/
               input.inline.mr-2#weightscales(
-                :value="weight" 
+                :value="(weightTotal/1000).toFixed(3)" 
                 readonly=""
-                :class="{'text-danger':weight >= 15}"
-                @dblclick="weight = 5.05" 
+                :class="{'text-danger':weightTotal >= 15000}" 
                 style="width:335px; text-align:right"
                 placeholder="Вес")/ kg
           template(v-if="tabIndex == 1")
@@ -117,7 +118,7 @@ div
             b-dropdown.button-block.w-100(
               v-if="!isEditing && tabIndex == 0 && !response" split 
               size="lg" 
-              :disabled="buttonPending || count < 1 || !weight" 
+              :disabled="buttonPending || count < 1" 
               split-variant="primary" variant="outline-primary" @click="formB")
               template(slot="button-content") 
                 | Формировать B накладную
@@ -200,6 +201,7 @@ export default {
         error: 'getError',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
+        weightTotal: 'getWeight',
         cursor: 'cursor',
     }),
     comment(){
@@ -216,6 +218,7 @@ export default {
     return {
       isEditing:false,
       buttonPending:false,
+      bresponse:null,
       wpi:null,
       tabIndex:0,
       crateId:null,
@@ -269,12 +272,10 @@ export default {
 
       this.$formB({
           ppi:this.selected,
-          wpi:Object.keys(this.selectedBag.wpi),
-          weight:this.weight
-        }).then(()=>{
+          wpi:Object.keys(this.selectedBag.wpi)
+        }).then((data)=>{
+          this.bresponse = data
           this.tabIndex = 1
-          this.weight = null
-
         }).finally(()=>{
           this.buttonPending = false;
         });
