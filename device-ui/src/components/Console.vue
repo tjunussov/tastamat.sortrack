@@ -260,7 +260,8 @@ export default {
   line-height 11px
 
 
-.polkas  
+.polkas 
+  user-select none
   // display: grid;
   // grid-column-gap: 50px;
     

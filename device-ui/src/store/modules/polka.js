@@ -374,7 +374,7 @@ const actions = {
     console.debug('formB',ppi,wpi,wpi.length);
 
     return $smartsort.formB(
-        ppi,wpi,wpi.length,getters.getWeight,getters.getDepcode,getters.getUser.login
+        ppi,wpi,wpi.length,String(getters.getWeight),getters.getDepcode,getters.getUser.login
         ).then((resp)=>{
 
           var val = {}; val[resp.data.packetListNo] = wpi;

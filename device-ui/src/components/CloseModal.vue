@@ -19,7 +19,7 @@ div
             b-link.close(@click.stop="clear") &times;
             b-card-title 
               i.fa.fa-inbox.mr-2(:class="{'text-danger':isEditing}" @click="isEditing=!isEditing")
-              input.inline(:value="selectedBag.ppi" style="width:85px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
+              input.inline(:value="selectedBag.ppi" style="width:95px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
               input.inline.ml-1(v-model="selectedBag.ppn" size="18" placeholder="Полка" :disabled="!isEditing")
               div(v-if="isEditing")
                 i.fa.fa-lightbulb-o.mr-2
@@ -31,7 +31,7 @@ div
 
           b-card-header.pt-0(header-tag="nav")
             b-nav.nav-justified.wizard(card-header tabs)
-              b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0") ШПИ
+              b-nav-item(:active="tabIndex == 0" @click="tabIndex==0?isListViewType=!isListViewType:null; tabIndex = 0;") ШПИ
                 b-badge.ml-2(variant="primary" v-if="count") {{count}} шт
               b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1" :disabled="!count && !batchCount") Б'шки
                 b-badge.ml-2(variant="warning" v-if="batchCount") {{batchCount}}
@@ -49,8 +49,22 @@ div
           template(v-if="response && response.labelListNo && tabIndex == 2")
             Yarlik
 
+
+
+
           template(v-if="count && !response && tabIndex == 0")
-            h4 
+            b-list-group.noborder(v-if="isListViewType" style="min-height:200px;" flush)
+              b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k" :variant="v.forcepush?'warning':''")
+                .d-flex.justify-content-between.align-items-center(@click="removeWpi(k)")
+                  div
+                    | {{n+1}}
+                    i.fa.mx-2(:class="{'fa-envelope-open text-danger':v.forcepush,'fa-envelope':!v.forcepush}")/
+                    | {{k}}
+                  div
+                    b-badge.mr-1(v-if="v.forcepush" variant="danger") Ручной ввод
+                    b-badge(v-if="v.mailInfo") {{v.mailInfo.mailType2}}
+                    span.ml-2.text-muted &times;
+            h4(v-else)
               b-badge.mr-2(v-for="(v,k, n) in selectedBag.wpi" size="lg" :key="k" 
                 :variant="v.forcepush?'danger':'primary'" @click="removeWpi(k)") {{k}}   &times;
 
@@ -216,6 +230,7 @@ export default {
   },
   data () {
     return {
+      isListViewType:true,
       isEditing:false,
       buttonPending:false,
       bresponse:null,
@@ -481,6 +496,13 @@ export default {
       border-bottom-right-radius 0
       border-bottom-left-radius 0
       border-bottom none
+      
+
+  .modal-body .list-group.noborder
+      margin-left -20px
+      margin-right -20px
+      margin-top -20px
+      
   
   .modal-footer
     border-top none
