@@ -60,7 +60,7 @@ doctype html
 
           b-nav-form(@submit.stop.prevent)
             b-input-group
-              b-form-input(
+              b-form-input.nokeyboard(
                 :disabled="!user" 
                 v-on:focus.native="$event.target.value = '';"
                 v-on:dblclick.native="enterBarcodeRandom(); $event.target.blur();" 
@@ -269,7 +269,6 @@ export default {
         if(this.demoIndex == this.demoBarcodes.length) this.demoIndex = 0;
         this.enterBarcodeManualy(this.demoBarcodes[this.demoIndex++]);
       }
-
     },
     // enterBarcode(val){
     //   // console.log('setting barcode',val)

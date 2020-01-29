@@ -4,10 +4,13 @@ div
     template(v-if="batch" slot="modal-title")
       b-btn.mr-1(@click="removeB" variant="danger")
         i.fa.fa-trash
-      | {{batch.no}}
+      | {{batch.packetListNo}}
     b-list-group(v-if="batch")
-      b-list-group-item(v-for="(v,k, n) in batch.items" :key="k") {{v}}
-    template(slot="modal-footer")
+      //- b-list-group-item(v-for="(v,k) in batch" :key="k") {{v}}
+      b-list-group-item Кол-во {{batch.count}}
+      b-list-group-item От {{batch.fromTechindex}} {{batch.fromDepartment}}
+      b-list-group-item Куда {{batch.toTechindex}} {{batch.toDepartment}}
+      b-list-group-item Вес {{batch.actualWeight}}
 
 
   b-modal#mclosebag(size="" scrollable centered Zhide-header no-close-on-backdrop no-fade @hide="clear" visible ref="closeModalRef" :header-bg-variant="isEditing?'danger':''"  :footer-bg-variant="isEditing?'danger':''")
@@ -20,7 +23,7 @@ div
             b-card-title 
               i.fa.fa-inbox.mr-2(:class="{'text-danger':isEditing}" @click="isEditing=!isEditing")
               input.inline(:value="selectedBag.ppi" style="width:95px;" @input="tempPpi = $event.target.value" :disabled="!isEditing" size="8")
-              input.inline.ml-1(v-model="selectedBag.ppn" size="18" placeholder="Полка" :disabled="!isEditing")
+              input.inline.ml-1(v-model="selectedBag.ppn" size="17" placeholder="Полка" :disabled="!isEditing")
               div(v-if="isEditing")
                 i.fa.fa-lightbulb-o.mr-2
                 input.inline(v-model="selectedBag.led" style="width:33px" :placeholder="cursor")
@@ -31,7 +34,7 @@ div
 
           b-card-header.pt-0(header-tag="nav")
             b-nav.nav-justified.wizard(card-header tabs)
-              b-nav-item(:active="tabIndex == 0" @click="tabIndex==0?isListViewType=!isListViewType:null; tabIndex = 0;") ШПИ
+              b-nav-item(:active="tabIndex == 0" @click="tabIndex = 0;") ШПИ
                 b-badge.ml-2(variant="primary" v-if="count") {{count}} шт
               b-nav-item(:active="tabIndex == 1" @click="tabIndex = 1" :disabled="!count && !batchCount") Б'шки
                 b-badge.ml-2(variant="warning" v-if="batchCount") {{batchCount}}
@@ -52,28 +55,41 @@ div
 
 
 
-          template(v-if="count && !response && tabIndex == 0")
-            b-list-group.noborder(v-if="isListViewType" style="min-height:200px;" flush)
+          template(v-if="tabIndex == 0")
+            b-list-group.noborder(style="min-height:200px;" flush)
               b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k" :variant="v.forcepush?'warning':''")
                 .d-flex.justify-content-between.align-items-center(@click="removeWpi(k)")
                   div
                     | {{n+1}}
                     i.fa.mx-2(:class="{'fa-envelope-open text-danger':v.forcepush,'fa-envelope':!v.forcepush}")/
-                    | {{k}}
+                    b {{k}}
                   div
                     b-badge.mr-1(v-if="v.forcepush" variant="danger") Ручной ввод
-                    b-badge(v-if="v.mailInfo") {{v.mailInfo.mailType2}}
+                    b-badge(v-if="v.typeName") {{v.typeName}}
                     span.ml-2.text-muted &times;
-            h4(v-else)
+            //- h4(v-else)
               b-badge.mr-2(v-for="(v,k, n) in selectedBag.wpi" size="lg" :key="k" 
                 :variant="v.forcepush?'danger':'primary'" @click="removeWpi(k)") {{k}}   &times;
 
           template(v-if="tabIndex == 1")
-            h4
+            b-list-group.noborder(style="min-height:100px;" flush)
+              b-list-group-item.flex-column.align-items-start(v-for="(v,k) in selectedBag.batch" :key="k" :variant="v.forcepush?'warning':''")
+                .d-flex.justify-content-between.align-items-center(@click="showBatchContent(v,k)")
+                  div
+                    | {{k+1}}
+                    i.fa.fa-archive.mx-2.text-muted
+                    b {{v.packetListNo}}
+                    b-badge.ml-2(variant="warning") {{v.count}}шт 
+                  div
+                    b-badge(variant="warning") {{v.totalWeight}}кг
+                    span.ml-2.text-muted &times;
+            //- h4(v-else)
+              b-badge.mr-2(v-for="(v,k, n) in selectedBag.batch" size="lg" :key="n" variant="warning" @click="showBatchContent(k,v)") {{k}}
+            
               //- template(v-if="selectedBag.batch")
                 b-badge.mr-2(size="lg" variant="warning") B1234567890DEMO
                 b-badge.mr-2(size="lg" variant="warning") B1234567890DEMO
-              b-badge.mr-2(v-for="(v,k, n) in selectedBag.batch" size="lg" :key="n" variant="warning" @click="showBatchContent(k,v)") {{k}}
+              
 
           //- b-list-group(v-if="count && !response" flush)
           //-   b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k" :variant="v.forcepush?'warning':''")
@@ -90,6 +106,12 @@ div
       template(slot="modal-footer") 
         b-card.w-100(no-body)
           template(v-if="tabIndex == 0")
+            b-card-footer
+              i.fa.fa-barcode.mr-2/
+              input.inline.pl-2.nokeyboard(
+                style="width:400px; text-transform:uppercase;"
+                placeholder="Ручной ввод нечитаемых ШПИ"
+                @keyup.enter="manualWpi($event.target.value); $event.target.value = ''")
             b-card-footer
               i.fa.fa-tachometer.mr-2/
               input.inline.mr-2#weightscales(
@@ -129,21 +151,27 @@ div
           b-card-footer
             b-btn(v-if="isEditing" block @click="save"  size="lg" variant="danger") Сохранить
 
+            b-alert(variant="danger" :show="disabledB && tabIndex == 1 && !buttonPending" dismissible)
+              i.fa.fa-exclamation-triangle.mr-3/
+              | Для закрытия мешка необходимо 
+              .pl-4.ml-2 взвесить и просканировать пломбу!  
+
             b-dropdown.button-block.w-100(
-              v-if="!isEditing && tabIndex == 0 && !response" split 
+              v-if="!isEditing && tabIndex == 0" split 
               size="lg" 
-              :disabled="buttonPending || count < 1" 
-              split-variant="primary" variant="outline-primary" @click="formB")
+              :disabled="disabledP" 
+              :split-variant="disabledP?'outline-primary':'primary'" 
+              variant="outline-primary" @click="formB")
               template(slot="button-content") 
                 | Формировать B накладную
               b-dropdown-item(@click="tabIndex = 1") Сразу закрыть мешок
 
 
             b-dropdown.button-block.w-100(
-              v-if="!isEditing && tabIndex == 1 && !response" 
-              :disabled="!weight || weight > 15 || !plomba || buttonPending" split size="lg" 
-              :split-variant="weight>0 && weight < 15 && plomba? (selectedBag.batch ? 'warning':'primary'):(selectedBag.batch?'outline-warning':'outline-primary')" 
-              :variant="selectedBag.batch?'outline-warning':'outline-primary'" @click="closeBag")
+              v-if="!isEditing && tabIndex == 1" 
+              :disabled="disabledB" split size="lg" 
+              :split-variant="weight>0 && weight < 15 && plomba? (batchCount ? 'warning':'primary'):(selectedBag.batch?'outline-warning':'outline-primary')" 
+              :variant="batchCount?'outline-warning':'outline-primary'" @click="closeBag")
               template(slot="button-content") 
                 | Закрыть {{bagTypes[bagType].text}} {{taraTypes[taraType]}} {{crateId}}
                 //- div.small {{mapSpr(bagType,bagTypes)}}
@@ -221,16 +249,21 @@ export default {
     comment(){
       return (this.crateId)?'Ящик номер ' + this.crateId:''
     },
+    disabledB(){
+      return !this.weight || this.weight > 15 || !this.plomba || this.buttonPending
+    },
+    disabledP(){
+      return this.count < 1 || this.buttonPending
+    },
     count(){
       return Object.keys(this.selectedBag.wpi).length;
     },
     batchCount(){
-      return (this.selectedBag.batch) ? Object.keys(this.selectedBag.batch).length : 0;
+      return (this.selectedBag.batch) ? this.selectedBag.batch.length:0;
     }
   },
   data () {
     return {
-      isListViewType:true,
       isEditing:false,
       buttonPending:false,
       bresponse:null,
@@ -277,8 +310,9 @@ export default {
     encode(val){
       return code128.encode(val)
     },
-    showBatchContent(k,v){
-      this.batch = {items:v,no:k};
+    showBatchContent(b,k){
+      this.batch = b;
+      this.batch.i = k;
       this.$bvModal.show('mclosebagwpi');
     },
     formB(){
@@ -303,7 +337,7 @@ export default {
 
         this.$formBagByPacklist({
           ppi:this.selected,
-          packList:Object.keys(this.selectedBag.batch),
+          packList:this.selectedBag.batch.map((k)=>k.packetListNo),
           weight:this.weight,
           sendmeth:this.sendmeth,
           plomba:this.plomba,
@@ -358,6 +392,9 @@ export default {
       this.crateId = val
       this.taraType = 2;
     },
+    manualWpi(val){
+      this.$forcePutToBag({barcode:val})
+    },
     weightEnter(val){
       // console.log('COUNT',this.count)
       if(val && val.length == 13) 
@@ -366,8 +403,8 @@ export default {
       else if(this.count > 0 && val.indexOf('.') > 0 ) 
         if(!isNaN(val)) this.weight = val;
     },
-    removeB(b){
-      this.$removeB({b:this.batch.no}); // TODO SuperBug, Why we need this ?
+    removeB(){
+      this.$removeB({b:this.batch.i}); // TODO SuperBug, Why we need this ?
       this.$bvModal.hide('mclosebagwpi');
     },
     removeWpi(k){

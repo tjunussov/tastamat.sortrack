@@ -381,6 +381,7 @@ export const mock = new MockAdapter($http,{delayResponse:500})
         "postIndex": Math.ceil(Math.random()*10000),
         "postIndexTitle": "DEMO Алматы-"+Math.ceil(Math.random()*10),
         "weight":Math.ceil(Math.random()*1000),
+        "typeName": "Письмо РК",
         "mailInfo": {
             "mailCategory": "1",
             "mailId": req.barcode,

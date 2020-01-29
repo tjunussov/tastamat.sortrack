@@ -27,6 +27,8 @@ export default {
   methods:{
     documentKeydown(event){
 
+      if(event.target.className.indexOf('nokeyboard') >= 0) return;
+
       if (event.keyCode == 13) { // ENTER
         //if(!isNaN(this.keyText)) {
         if(this.keyText != "") {

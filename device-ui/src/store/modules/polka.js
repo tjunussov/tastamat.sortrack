@@ -110,7 +110,7 @@ const actions = {
       11,10,9,8,20,21,22,23];
 
       getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
-        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:null}
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:[]}
       });
 
       getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 
@@ -177,7 +177,8 @@ const actions = {
     console.log('removeB',b);
     
     if(confirm('Вы уверены что хотите удалить ' + b)) {
-      Vue.delete(getters.getSelectedBag.batch,b);
+      // Vue.delete(getters.getSelectedBag.batch,b);
+      getters.getSelectedBag.batch.splice(b, 1);
       state.status = 'pull';
       dispatch('$save');
     }
@@ -346,7 +347,7 @@ const actions = {
         // Печатаем на принтере
         // $leds.$printBag(document.getElementById('bagPrintData').innerText);
 
-        Vue.set(getters.getSelectedBag,'batch',null)
+        Vue.set(getters.getSelectedBag,'batch',[])
         Vue.set(getters.getSelectedBag,'closeResponse',state.closeResponse)
 
         // Vue.set(getters.getSelectedBag,'batch',{})
@@ -377,11 +378,15 @@ const actions = {
         ppi,wpi,wpi.length,String(getters.getWeight),getters.getDepcode,getters.getUser.login
         ).then((resp)=>{
 
-          var val = {}; val[resp.data.packetListNo] = wpi;
-          var currentBatchVal = getters.getSelectedBag.batch;
-            val = {...val,...currentBatchVal};
+          // var val = {}; val[resp.data.packetListNo] = resp.data;
+          // var currentBatchVal = getters.getSelectedBag.batch;
+          //   val = {...val,...currentBatchVal};
 
-          Vue.set(getters.getSelectedBag,'batch',val)
+          // Vue.set(getters.getSelectedBag,'batch',val)
+
+          if(getters.getSelectedBag.batch == null) getters.getSelectedBag.batch = [];
+
+          getters.getSelectedBag.batch.push(resp.data);
           Vue.set(getters.getSelectedBag,'wpi',{})
 
           state.response = resp.data
