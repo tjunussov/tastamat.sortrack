@@ -42,7 +42,7 @@ b-row.flex-xl-nowrap2
         p(v-if="error") {{error}} 
         template(v-if="response && response.mailInfo")
           h4.card-title Мешок {{response.parentPostIndex}}
-            span(v-if="selectedBag.ppn") ( {{selectedBag.ppn}} )
+            span(v-if="selectedBag && selectedBag.ppn") ( {{selectedBag.ppn}} )
           | АДРЕС : 
           b {{response.postIndexTitle}} 
           | ИНДЕКС : 

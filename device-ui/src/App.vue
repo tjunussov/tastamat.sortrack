@@ -113,11 +113,11 @@ doctype html
 
 
   b-modal#depcode(title="Технологический Индекс" centered size="sm"  ok-only @ok="registerDepcode(tmpDepcode);" @hide="tmpDepcode=''")
-    b-form-input(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '055990'")
+    b-form-input(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '220081'")
 
   b-modal#user(size="sm" title="Авторизация*" :modal-class="{'isLoginError':loginResponse}" @hide="tmpUser=''" centered="")
     b-form-group(:invalid-feedback="'Ошибка! [' + tmpUser + '] '+ loginResponse" :state="!loginResponse")
-      b-form-input(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.alm21.rpo1'" placeholder="Ваш логин в ПУС" autofocus)
+      b-form-input(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.ast17.sc1'" placeholder="Ваш логин в ПУС" autofocus)
     b-button-group
       b-btn(variant="danger"): i.fa.fa-user.mr-2
       b-btn(variant="outline-success"): i.fa.fa-user.mr-2

@@ -6,7 +6,7 @@ Vue.filter('json2html', function (value, fmt) {
 })
 
 Vue.filter('kg', function (value) {
-	if(value) value = Number(value) / 1000;
+	if(value) value = (Number(value) / 1000).toFixed(3);
 	return value
 })
 
@@ -15,7 +15,6 @@ Vue.directive('focus', {
         el.focus()
     }
 })
-
 
 const PAD_WIDTH_CHARS = 37;
 

@@ -101,6 +101,26 @@ export const $smartsort = {
     })
     // return $http.get('sm_home.putToBag')
   },
+  forcePutToBag(barcode,depcode,user){
+
+    if(!wpiReg.test(barcode)){
+      return Promise.reject(`Неверный формат ШПИ ${barcode} !`);
+    }
+
+    return $http.get('findBagInfo',{
+      params:{barcode:barcode,techindex:depcode,login:user }
+    }).then((resp)=>{
+      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      return resp;
+    }).catch((error)=>{
+      if(error.message == 'Network Error')
+        return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
+      else 
+        return Promise.reject(error.data?error.data:error);
+        // throw new Error(error.data?error.data:error)
+    })
+    // return $http.get('sm_home.putToBag')
+  },
   formBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
     return $http.post('formBag',{
       "login": user,

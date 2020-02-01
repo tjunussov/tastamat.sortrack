@@ -188,18 +188,46 @@ const actions = {
 
     barcode = barcode.toUpperCase().replace(/\s/g,"");
 
+    state.barcode = barcode
+    state.status = 'search';
+
     if(barcode in getters.getSelectedBag.wpi){
       state.status = 'pull';
       Vue.delete(getters.getSelectedBag.wpi,barcode);
       dispatch('$save');
     } else {
-      state.status = 'forcepush';
 
-      var val = {}; val[barcode] = {"forcepush":true};
-      var currentVal = getters.getSelectedBag.wpi;
+      
+      
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      .then((resp)=>{
+
+        checkUniqueBarcode(getters.getBags,state.barcode);
+
+        resp = resp.data
+
+        console.log('2 forcePutToBag barcode',state.barcode,resp.parentPostIndex);
+
+        state.response = resp
+        state.status = 'forcepush';
+
+
+        var val = {}; val[barcode] = resp; val[barcode].forcepush = true;
+        var currentVal = getters.getSelectedBag.wpi;
           val = {...val,...currentVal};
-      Vue.set(getters.getSelectedBag,'wpi',val)
-      dispatch('$save');
+        Vue.set(getters.getSelectedBag,'wpi',val)
+
+        dispatch('$save');
+
+
+        return resp;
+
+      }).catch((error)=>{
+        state.status = 'error';
+        state.error = error.message?error.message:error;
+      });
+
+      
     }
 
   },
@@ -226,6 +254,7 @@ const actions = {
         console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
 
         // checking if bag is found in plan
+        checkUniqueBarcode(getters.getBags,state.barcode);
         findBag(getters.getBags,resp.parentPostIndex,state.barcode);
 
         state.response = resp
@@ -513,7 +542,6 @@ const mutations = {
 }
 
 function findBag(bags,ppi,barcode){
-  checkUniqueBarcode(bags,barcode);
   var indx = bags.findIndex((key)=> ppi == key.ppi );
   if(indx < 0) indx = renameEmptyKey(bags,ppi) // Пытаюсь найти свободную ячейку
   if(indx < 0) throw `Индекс назначения ${ppi} не привязан ни к одной корзине!`;
@@ -521,8 +549,13 @@ function findBag(bags,ppi,barcode){
 }
 
 function checkUniqueBarcode(bags,barcode){
+  console.debug('checkUniqueBarcode',barcode);
   bags.every((key)=> {
-    if(key.wpi[barcode]) throw `Отправление ${barcode} уже лежит в ячейке ${key.ppi} !`;
+    if(key.wpi[barcode]) {
+      console.debug('found dublicate checkUniqueBarcode-->',key.wpi,barcode,key.wpi[barcode])
+      throw `Отправление ${barcode} уже лежит в ячейке ${key.ppi} !`;
+    }
+    return true;
   });
 }
 

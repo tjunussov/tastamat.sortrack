@@ -81,7 +81,7 @@ div
                     b {{v.packetListNo}}
                     b-badge.ml-2(variant="warning") {{v.count}}шт 
                   div
-                    b-badge(variant="warning") {{v.totalWeight}}кг
+                    b-badge(variant="warning") {{v.totalWeight | kg}}кг
                     span.ml-2.text-muted &times;
             //- h4(v-else)
               b-badge.mr-2(v-for="(v,k, n) in selectedBag.batch" size="lg" :key="n" variant="warning" @click="showBatchContent(k,v)") {{k}}
