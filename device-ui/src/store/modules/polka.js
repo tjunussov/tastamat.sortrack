@@ -197,34 +197,39 @@ const actions = {
       dispatch('$save');
     } else {
 
+
+      var response;
+
       
       
-      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      return $smartsort.forcePutToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
       .then((resp)=>{
 
         checkUniqueBarcode(getters.getBags,state.barcode);
-
-        resp = resp.data
-
-        console.log('2 forcePutToBag barcode',state.barcode,resp.parentPostIndex);
-
-        state.response = resp
+        response = resp.data
         state.status = 'forcepush';
+        console.log('2 forcePutToBag barcode',state.barcode,response.parentPostIndex);
 
+        return response;
 
-        var val = {}; val[barcode] = resp; val[barcode].forcepush = true;
+      }).catch((error)=>{
+        state.status = 'error';
+        response = error
+        state.error = error.message?error.message:error.resultInfo;
+      }).finally(()=>{
+
+        console.log('3 forcePutToBag barcode',barcode,response);
+        state.response = response
+
+        var val = {}; val[barcode] = response; val[barcode].forcepush = true;
         var currentVal = getters.getSelectedBag.wpi;
           val = {...val,...currentVal};
         Vue.set(getters.getSelectedBag,'wpi',val)
 
         dispatch('$save');
 
+        return response;
 
-        return resp;
-
-      }).catch((error)=>{
-        state.status = 'error';
-        state.error = error.message?error.message:error;
       });
 
       

@@ -408,7 +408,15 @@ export const mock = new MockAdapter($http,{delayResponse:500})
   if((Math.random()*100) < 70)
     return [200,resp];
   else {
-    return [200,{result:"error",resultInfo:"DEMO:Отправление "+req.barcode+" не найдено!"}]
+    if((Math.random()*100) < 50)
+        return [200,{
+            "result":"error",
+            "resultInfo":"DEMO:Отправление "+req.barcode+" не относится к сортплану!",
+            "weight":Math.ceil(Math.random()*1000),
+            "typeName": "Письмо РК",
+        }]
+    else
+        return [200,{result:"error",resultInfo:"DEMO:Отправление "+req.barcode+" не найдено!"}]
   }
 
 }).onAny('formBag').reply((cfg)=>{

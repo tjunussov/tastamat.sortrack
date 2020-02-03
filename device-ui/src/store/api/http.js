@@ -107,10 +107,10 @@ export const $smartsort = {
       return Promise.reject(`Неверный формат ШПИ ${barcode} !`);
     }
 
-    return $http.get('findBagInfo',{
+    return $http.get('findBagIndex',{
       params:{barcode:barcode,techindex:depcode,login:user }
     }).then((resp)=>{
-      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data);
       return resp;
     }).catch((error)=>{
       if(error.message == 'Network Error')

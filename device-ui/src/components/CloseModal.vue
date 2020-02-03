@@ -44,7 +44,7 @@ div
 
       b-card(no-body v-if="!isEditing" style="min-height:500px;")
         b-card-body
-          b-alert(variant="danger" :show="error?true:false" dismissible) {{error}}
+          b-alert.mb-5(variant="danger" :show="error?true:false" dismissible) {{error}}
           //- b-alert(variant="success" :show="bresponse" dismissible) {{bresponse.count}}
           
           template(v-if="!response && tabIndex == 2")
@@ -60,7 +60,7 @@ div
               b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k" :variant="v.forcepush?'warning':''")
                 .d-flex.justify-content-between.align-items-center(@click="removeWpi(k)")
                   div
-                    | {{n+1}}
+                    | {{count-n}}
                     i.fa.mx-2(:class="{'fa-envelope-open text-danger':v.forcepush,'fa-envelope':!v.forcepush}")/
                     b {{k}}
                   div
@@ -76,7 +76,7 @@ div
               b-list-group-item.flex-column.align-items-start(v-for="(v,k) in selectedBag.batch" :key="k" :variant="v.forcepush?'warning':''")
                 .d-flex.justify-content-between.align-items-center(@click="showBatchContent(v,k)")
                   div
-                    | {{k+1}}
+                    | {{batchCount-1}}
                     i.fa.fa-archive.mx-2.text-muted
                     b {{v.packetListNo}}
                     b-badge.ml-2(variant="warning") {{v.count}}шт 
