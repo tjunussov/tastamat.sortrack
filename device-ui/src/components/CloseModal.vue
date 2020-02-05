@@ -400,7 +400,7 @@ export default {
       if(val && val.length == 13) 
         if(isNaN(val)) this.$forcePutToBag({barcode:val});
         else this.plomba = val
-      else if(this.count > 0 && val.indexOf('.') > 0 ) 
+      else if(this.tabIndex == 1 && val.indexOf('.') >= 0 ) 
         if(!isNaN(val)) this.weight = val;
     },
     removeB(){
