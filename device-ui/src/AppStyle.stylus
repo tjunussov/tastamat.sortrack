@@ -308,6 +308,11 @@ input.inline
   50%
     visibility visible
     
+@-webkit-keyframes blinkoutline
+  from,to
+    border-color transparent
+  50%
+    border-color #f00
 
 .modal-open
   padding-left 0 !important

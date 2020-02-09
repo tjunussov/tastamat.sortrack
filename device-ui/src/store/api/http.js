@@ -4,7 +4,8 @@ import Vue from 'vue'
 
 /*************************************/
 
-export var baseURL = "http://pls-test.post.kz/api/smart-shelves/"
+// export var baseURL = "http://pls-test.post.kz/api/smart-shelves/"
+export var baseURL = "/api/polki/"
 export var deviceURL = 'http://192.168.10.10/';
 
 export const $http = axios.create({
@@ -90,7 +91,7 @@ export const $smartsort = {
     return $http.get('findBagIndex',{
       params:{barcode:barcode,techindex:depcode,login:user }
     }).then((resp)=>{
-      if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
+      if(resp.data.error || resp.data.result == 'error' || resp.data.result == 'warning') return Promise.reject(resp.data.resultInfo);
       return resp;
     }).catch((error)=>{
       if(error.message == 'Network Error')
@@ -104,7 +105,7 @@ export const $smartsort = {
   forcePutToBag(barcode,depcode,user){
 
     if(!wpiReg.test(barcode)){
-      return Promise.reject(`Неверный формат ШПИ ${barcode} !`);
+      return Promise.reject({resultInfo:`Неверный формат ШПИ ${barcode} !`,result:"error"});
     }
 
     return $http.get('findBagIndex',{
@@ -203,9 +204,10 @@ export const $sounds = {
   error: new Audio(audioURL+"error.mp3"),
   bindstart: new Audio(audioURL+"bindstart.mp3"),
   bindend: new Audio(audioURL+"bindend.mp3"),
+  bindinline: new Audio(audioURL+"bindinline.mp3"),
   notbound: new Audio(audioURL+"notbound.mp3"),
   notfoundplan: new Audio(audioURL+"notfoundplan.mp3"),
-  bind: new Audio(audioURL+"bind.mp3"),
+  bind: new Audio(audioURL+"binding.mp3"),
   selectbag: new Audio(audioURL+"bind.mp3"),
   deselectbag: new Audio(audioURL+"deselect.mp3"),  
   formb: new Audio(audioURL+"closebag.mp3"),

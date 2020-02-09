@@ -348,7 +348,7 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
     console.log('authorize',cfg.params);
 
-    if(cfg.params.login == 'test.alm21.rpo1')
+    if(cfg.params.login == 'test.ast17.sc1')
         return [200,{"result": "success","name": "demo:Мырзанова Гульмира"}];
     else if(cfg.params.login == 'test')
         return [200,{"result": "success","name": "demo:Азамат Алимбаев"}];

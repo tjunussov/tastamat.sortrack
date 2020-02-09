@@ -19,12 +19,7 @@ b-modal#settings(title="Настройки LED" size="md" lazy hide-header cente
                 b-form-input(v-model="settings.leds[i]")
         b-tab(title="Сервер")
           b-form-group(label="URL ПУС Сервиса" horizontal)
-            b-input-group
-              b-form-input(v-model="settings.apiUrl")
-              b-input-group-append
-                b-dropdown
-                  b-dropdown-item(@click="settings.apiUrl = 'https://pls-test.post.kz/api/smart-shelves/'") Тестовый https://pls-test.post.kz/api/smart-shelves/
-                  b-dropdown-item(@click="settings.apiUrl = 'https://polki.kazpost.kz/api/smart-shelves/'") Боевой https://polki.kazpost.kz/api/smart-shelves/
+            b-form-input(readonly v-model="settings.apiUrl")
           b-form-group(label="WS Server" horizontal)
              b-input-group
               b-form-input(v-model="settings.broker")

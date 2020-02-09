@@ -177,8 +177,9 @@ export default {
       '$selectBag',
       '$deselectBag',
       '$fetchSortplan',
-      // '$remapSelectedBag',
+      '$remapPpi',
       '$clear',
+      '$clearSelected',
       '$save'
     ]),
     timeout(tm){
@@ -258,6 +259,8 @@ export default {
   font-size 11px
   overflow hidden
   line-height 11px
+  
+
 
 
 .polkas 
@@ -266,7 +269,7 @@ export default {
   // grid-column-gap: 50px;
     
   &.calibrating .card.outlined
-    border-color #f00 !important
+    -webkit-animation: 1s blinkoutline step-end infinite;
     
   
   .card

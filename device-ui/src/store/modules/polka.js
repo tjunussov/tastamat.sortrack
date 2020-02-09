@@ -138,7 +138,10 @@ const actions = {
     state.barcode = null;
     state.status = null;
     state.error = null;
-    // state.selected = null;
+    // state.selected = null; // если очищать selected то если модалка открыта, и если произошла ошибка то он тоже очищается,
+  },
+  $clearSelected({ commit, dispatch, state, getters }){
+    state.selected = null;
   },
   $selectBag({ commit, dispatch, state, getters },{ppi}) {
     return new Promise((resolve,reject)=>{
@@ -210,14 +213,6 @@ const actions = {
         state.status = 'forcepush';
         console.log('2 forcePutToBag barcode',state.barcode,response.parentPostIndex);
 
-        return response;
-
-      }).catch((error)=>{
-        state.status = 'error';
-        response = error
-        state.error = error.message?error.message:error.resultInfo;
-      }).finally(()=>{
-
         console.log('3 forcePutToBag barcode',barcode,response);
         state.response = response
 
@@ -230,6 +225,10 @@ const actions = {
 
         return response;
 
+      }).catch((error)=>{
+        state.status = 'error';
+        response = {error};
+        state.error = error.message?error.message:error.resultInfo;
       });
 
       
@@ -256,7 +255,7 @@ const actions = {
 
         resp = resp.data 
 
-        console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
+        // console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
 
         // checking if bag is found in plan
         checkUniqueBarcode(getters.getBags,state.barcode);
@@ -268,7 +267,7 @@ const actions = {
         // ложим посылку в корзину
 
 
-        console.log('2 ZputToBag barcode',state.barcode,state.selected);
+        // console.log('2 ZputToBag barcode',state.barcode,state.selected);
 
         //////////////// ARRAY MANAGMENT
 
@@ -524,6 +523,25 @@ const actions = {
       getters.getConfig.isLedOn = !getters.getConfig.isLedOn;
 
     return dispatch('$save');
+  },
+  $remapPpi({ commit, dispatch, state, getters },{i,ppi}){
+
+    console.debug('calibrateMapBagBarcode',ppi,i);
+
+    Vue.set(getters.getConfig.bags[i],'ppi',ppi);
+
+    state.status = 'bindinline';
+
+    if(getters.getConfig.sortplan){
+      var ppn = getters.getConfig.sortplan.find((k)=>{
+        return k.techindex == ppi
+      })
+      if(ppn)
+        Vue.set(getters.getConfig.bags[i],'ppn',ppn.nameRu);
+      else
+        console.debug('calibrateMapBagBarcode not found ppi in sortplan',ppi);
+    }
+
   }
   // $remapSelectedBag({ commit, dispatch, state, getters },{ppi,led}){
   //   // findBag(getters.getBags,ppi);// just for check

@@ -1,29 +1,28 @@
 import Vue from 'vue'
-import {$leds} from '@/store/api/http'
+import {$leds,$sounds} from '@/store/api/http'
 
 export const bindMixin = {
   methods:{
     calibrateStart(){
       this.bind.cursor = -1;
+      $sounds.play('bindstart');
       this.calibrateNext();
     },
     calibrateStop(){
       this.bind.cursor = null;
       this.bind.selectedBag = null;
+      $sounds.play('bindend');
       $leds.lastLed = this.lastBag.led;
       this.clearAll();
+      this.$clearSelected();
       this.$save();
     },
     calibrateMapBagBarcode(ppi){
       if(this.bind.selectedBag !== null && !this.bind.selectedBag.isErrorBag){
-        Vue.set(this.bags[this.bind.selectedBag],'ppi',ppi);
+        console.debug('calibrateMapBagBarcode',ppi,this.bind.selectedBag);
 
-        if(this.config.sortplan){
-          var ppn = this.config.sortplan.find((k)=>{
-            return k.techindex == ppi
-          })
-          Vue.set(this.bags[this.bind.selectedBag],'ppn',ppn.nameRu);
-        }
+        var i = this.bind.selectedBag;
+        this.$remapPpi({i,ppi})
       }
     },
     calibrateMap(i){
