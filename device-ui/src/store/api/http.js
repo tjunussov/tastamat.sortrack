@@ -77,9 +77,15 @@ export const $smartsort = {
   },
   fetchDemoRPO(depcode){
     return $http.get('getRPO',{params:{techindex:depcode}}).then((resp)=>{
-      console.log("geRPO error",resp.data);
+      console.log("fetchDemoRPO",resp.data);
       if(resp.data.error || resp.data.result == 'error') return Promise.reject(resp.data.resultInfo);
       return resp;
+    }).catch((error)=>{
+      if(error.message == 'Network Error')
+        return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
+      else 
+        return Promise.reject(error.data?error.data:(error.response?error.response.data:error));
+        // throw new Error(error.data?error.data:error)
     })
   },
   putToBag(barcode,depcode,user){
@@ -97,7 +103,7 @@ export const $smartsort = {
       if(error.message == 'Network Error')
         return Promise.reject('Проблема с сетью, '+baseURL+' сервис недоступен');
       else 
-        return Promise.reject(error.data?error.data:error);
+        return Promise.reject(error.response?error.response.data:(error.data?error.data:error));
         // throw new Error(error.data?error.data:error)
     })
     // return $http.get('sm_home.putToBag')

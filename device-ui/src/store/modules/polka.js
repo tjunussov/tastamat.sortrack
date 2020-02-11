@@ -71,7 +71,9 @@ const actions = {
     dispatch('$initSettings');
   },
   $initSettings({ commit, dispatch, state, getters }){
-    $http.defaults.baseURL = getters.config.apiUrl;
+
+    
+    // $http.defaults.baseURL = getters.config.apiUrl;
 
 
     // $device.defaults.baseURL = getters.config.ledUrl;

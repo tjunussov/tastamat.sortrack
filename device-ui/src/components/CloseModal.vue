@@ -76,7 +76,7 @@ div
               b-list-group-item.flex-column.align-items-start(v-for="(v,k) in selectedBag.batch" :key="k" :variant="v.forcepush?'warning':''")
                 .d-flex.justify-content-between.align-items-center(@click="showBatchContent(v,k)")
                   div
-                    | {{batchCount-1}}
+                    | {{batchCount-k}}
                     i.fa.fa-archive.mx-2.text-muted
                     b {{v.packetListNo}}
                     b-badge.ml-2(variant="warning") {{v.count}}шт 

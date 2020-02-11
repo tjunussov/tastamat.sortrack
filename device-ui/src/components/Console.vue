@@ -39,7 +39,7 @@ b-row.flex-xl-nowrap2
           //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
         b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
       b-card-body
-        p(v-if="error") {{error}} 
+        p(v-if="error" v-html="error")
         template(v-if="response && response.mailInfo")
           h4.card-title Мешок {{response.parentPostIndex}}
             span(v-if="selectedBag && selectedBag.ppn") ( {{selectedBag.ppn}} )
@@ -225,9 +225,9 @@ export default {
 
       this.$putToBag({barcode:barcode}).then((resp)=>{
         // this.timeout(30000);
-        console.log('ended Положили в корзину',resp.parentPostIndex);
+        console.debug('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
-        console.log('putToBag error',error);
+        console.error('putToBag error',error);
       });
 
     },
