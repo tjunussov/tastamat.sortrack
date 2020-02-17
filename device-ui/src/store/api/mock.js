@@ -410,7 +410,7 @@ export const mock = new MockAdapter($http,{delayResponse:500})
   else {
     if((Math.random()*100) < 50)
         return [200,{
-            "result":"error",
+            "result":Math.ceil(Math.random()*10)>5?"error":"warning",
             "resultInfo":"DEMO:Отправление "+req.barcode+" не относится к сортплану!",
             "weight":Math.ceil(Math.random()*1000),
             "typeName": "Письмо РК",

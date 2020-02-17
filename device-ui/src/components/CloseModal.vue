@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   b-modal#mclosebagwpi(size="sm" centered hide-footer @hide="batch=null" no-fade ref="closeModalWpiRef")
-    template(v-if="batch" slot="modal-title")
+    template(v-if="batch" slot="modal-title") 
       b-btn.mr-1(@click="removeB" variant="danger")
         i.fa.fa-trash
       | {{batch.packetListNo}}
@@ -10,10 +10,12 @@ div
       b-list-group-item Кол-во {{batch.count}}
       b-list-group-item От {{batch.fromTechindex}} {{batch.fromDepartment}}
       b-list-group-item Куда {{batch.toTechindex}} {{batch.toDepartment}}
-      b-list-group-item Вес {{batch.actualWeight}}
+      b-list-group-item Вес {{batch.actualWeight | kg}} кг.
 
 
-  b-modal#mclosebag(size="" scrollable centered Zhide-header no-close-on-backdrop no-fade @hide="clear" visible ref="closeModalRef" :header-bg-variant="isEditing?'danger':''"  :footer-bg-variant="isEditing?'danger':''")
+  b-modal#mclosebag(size="" scrollable centered Zhide-header no-close-on-backdrop no-fade @hide="clear" visible ref="closeModalRef" :header-bg-variant="isEditing?'danger':''"  :footer-bg-variant="isEditing?'danger':''"
+  :modal-class="{'rotate':config.isRotate}"
+  )
 
 
       template(slot="modal-header") 
@@ -305,7 +307,8 @@ export default {
       '$deselectBag',
       '$forcePutToBag',
       '$removeWpi',
-      '$removeB'
+      '$removeB',
+      '$clearCloseResponse'
     ]),
     encode(val){
       return code128.encode(val)
@@ -467,6 +470,7 @@ export default {
       this.weight = null;
       this.crateId = null;
       this.taraType = 1;
+      this.$clearCloseResponse();
       this.$emit('close');
     },
     print(){

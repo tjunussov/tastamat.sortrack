@@ -3,6 +3,7 @@ doctype html
 
 #app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
 
+ 
 
   b-navbar.bd-navbar(toggleable="md" fixed="top" type="dark")
 

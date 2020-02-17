@@ -103,10 +103,10 @@ export default {
       if(val) this.timeout(10000);
     },
     status(val){
-      console.log('status',val);
+      console.debug('status',val);
       
       if(val){
-        // this.timeout(10000);
+        this.timeout(10000);
 
         // if(this.selectedBag && this.selectedBag.led){  // if led specified
         //   console.log('watched status[selectedbag]',this.selectedBag.led);
@@ -260,8 +260,6 @@ export default {
   overflow hidden
   line-height 11px
   
-
-
 
 .polkas 
   user-select none

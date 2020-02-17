@@ -1,5 +1,5 @@
 <template lang="pug">
-pre.text-primary#printSection.mb-0.yarlik( :class="{'rotate':config.isRotate}")
+pre.text-primary#printSection.mb-0.yarlik(v-if="response")
   template(v-if="config.isWindowsPrint")
     //- div ══════════════════════════════════════════════
     div
@@ -32,10 +32,10 @@ pre.text-primary#printSection.mb-0.yarlik( :class="{'rotate':config.isRotate}")
       b КУДА   
       span [{{response.toTechindex}}] {{response.toDepartment}}
     div
-      b ВЕС ТАРЫ 
-      span {{response.actualWeight | kg }}кг
-      b   ВЕС НЕТТО 
+      b ВЕС МЕШКА 
       span {{response.totalWeight | kg }}кг
+      b   ВЕС НЕТТО 
+      span {{response.actualWeight | kg }}кг
       b   КОЛ-ВО 
       span {{response.count}} 
     div ═══════════════════════════════════════════════

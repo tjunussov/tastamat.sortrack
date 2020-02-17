@@ -136,7 +136,7 @@ const actions = {
   $clear ({ commit, dispatch, state, getters }) {
     console.debug('clearing');
     state.response = null;
-    state.closeResponse = null;
+    // state.closeResponse = null; #после закрытия мешка, через 10 сек, удалался ярлык
     state.barcode = null;
     state.status = null;
     state.error = null;
@@ -144,6 +144,9 @@ const actions = {
   },
   $clearSelected({ commit, dispatch, state, getters }){
     state.selected = null;
+  },
+  $clearCloseResponse({ commit, dispatch, state, getters }){
+    state.closeResponse = null;
   },
   $selectBag({ commit, dispatch, state, getters },{ppi}) {
     return new Promise((resolve,reject)=>{

@@ -128,13 +128,13 @@ export const $smartsort = {
     })
     // return $http.get('sm_home.putToBag')
   },
-  formBag(bag,barcodesArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
+  formBag(bag,barcodesArray,totalWeight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
     return $http.post('formBag',{
       "login": user,
       "techindex": depcode,
       "parentPostIndex": bag,
       "barcodeList": barcodesArray,
-      "totalWeight": weight,
+      "totalWeight": totalWeight,
       "bagType": bagType,
       "taraType": taraType,
       "sendMethod": sendmeth,
@@ -147,13 +147,13 @@ export const $smartsort = {
     })
     // return $http.get(`sm_home.closeBag`)
   },
-  formBagByPacklist(bag,packListArray,weight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
+  formBagByPacklist(bag,packListArray,totalWeight,sendmeth,depcode,user,plomba,bagType,taraType,comment){
     return $http.post('formBagByPacklist',{
       "login": user,
       "techindex": depcode,
       "parentPostIndex": bag,
       "packetList": packListArray,
-      "totalWeight": weight,
+      "totalWeight": totalWeight,
       "bagType": bagType,
       "taraType": taraType,
       "sendMethod": sendmeth,

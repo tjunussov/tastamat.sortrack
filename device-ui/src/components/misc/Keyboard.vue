@@ -3,7 +3,10 @@
 </template>
 
 <script>
-import {$leds} from '@/store/api/http'
+import {$leds,$sounds} from '@/store/api/http'
+
+      
+
 var captureTM;
 
 
@@ -42,8 +45,7 @@ export default {
           } else {
             $leds.setColor('r');
           }
-          
-          
+
           this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText);
           this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.substr(1));
           this.$bus.$emit('keyboard:keydown:enter',this.keyText);
@@ -73,6 +75,7 @@ export default {
       window.clearTimeout(captureTM)
       captureTM = window.setTimeout(()=>{
         this.keyText = ""
+        $sounds.play('notfoundplan');
       },1000)
     },
   }

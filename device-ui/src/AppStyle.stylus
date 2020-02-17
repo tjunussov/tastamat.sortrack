@@ -7,6 +7,9 @@ html
 
 pre
   line-height 17px
+  
+.text-white pre
+  color white !important
 
 body
   padding-top 4rem
@@ -329,7 +332,8 @@ input.inline
 .blink
   -webkit-animation: 1s blink step-end infinite;
 
-  
+
+
     
 @-webkit-keyframes shake
   8%, 41%
