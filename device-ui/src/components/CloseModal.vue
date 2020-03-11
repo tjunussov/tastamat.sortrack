@@ -131,7 +131,7 @@ div
                     :value="weight" 
                     readonly=""
                     :class="{'text-danger':weight >= 15}"
-                    @dblclick="weight = 5.05" 
+                    @dblclick="demo ? weight = 5.05 : null" 
                     style="width:135px; text-align:right"
                     placeholder="Вес")/ kg
                 b-col
@@ -141,7 +141,7 @@ div
                     readonly="" 
                     placeholder="Пломба" 
                     style="width:165px; text-align:right" 
-                    @dblclick="plomba = 1234567890123")
+                    @dblclick="demo ? plomba = 1234567890123 : null")
             b-card-footer
               b-row
                 b-col
@@ -158,15 +158,15 @@ div
               | Для закрытия мешка необходимо 
               .pl-4.ml-2 взвесить и просканировать пломбу!  
 
-            b-dropdown.button-block.w-100(
+            b-btn.button-block.w-100(
               v-if="!isEditing && tabIndex == 0" split 
               size="lg" 
               :disabled="disabledP" 
               :split-variant="disabledP?'outline-primary':'primary'" 
-              variant="outline-primary" @click="formB")
-              template(slot="button-content") 
-                | Формировать B накладную
-              b-dropdown-item(@click="tabIndex = 1") Сразу закрыть мешок
+              :variant="disabledP?'outline-primary':'primary'" @click="formB")
+              //- template(slot="button-content") 
+              | Формировать B накладную
+              //- b-dropdown-item(@click="tabIndex = 1") Сразу закрыть мешок
 
 
             b-dropdown.button-block.w-100(
@@ -242,6 +242,7 @@ export default {
         response: 'getCloseResponse',
         selected:'getSelected',
         config:'getConfig',
+        demo: 'getDemo',
         error: 'getError',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
