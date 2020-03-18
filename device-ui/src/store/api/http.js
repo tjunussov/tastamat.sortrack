@@ -249,7 +249,7 @@ export const $sounds = {
 }
 
 export const $leds = {
-  thor:null,
+  thor:0,
   lastThor: null,
   lastLed:23,
   color:'r',

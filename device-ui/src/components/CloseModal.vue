@@ -52,7 +52,7 @@ div
           template(v-if="!response && tabIndex == 2")
             b-btn(block v-if="selectedBag.closeResponse" @click="$store.state.polka.closeResponse=selectedBag.closeResponse" variant="outline-secondary") Показать старый ярлык
           template(v-if="response && response.labelListNo && tabIndex == 2")
-            Yarlik
+            Yarlik(:response="response")
 
 
 
@@ -116,7 +116,7 @@ div
                 @keyup.enter="manualWpi($event.target.value); $event.target.value = ''")
             b-card-footer
               i.fa.fa-tachometer.mr-2/
-              input.inline.mr-2#weightscales(
+              input.inline.mr-2.nokeyboard#weightscales(
                 :value="(weightTotal/1000).toFixed(3)" 
                 readonly=""
                 :class="{'text-danger':weightTotal >= 15000}" 
@@ -127,18 +127,16 @@ div
               b-row
                 b-col
                   i.fa.fa-tachometer.mr-2/
-                  input.inline.mr-2#weightscales(
-                    :value="weight" 
-                    readonly=""
+                  input.inline.mr-2.nokeyboard#weightscales(
+                    v-model="weight" 
                     :class="{'text-danger':weight >= 15}"
                     @dblclick="demo ? weight = 5.05 : null" 
                     style="width:135px; text-align:right"
                     placeholder="Вес")/ kg
                 b-col
                   i.fa.fa-bookmark.mr-2/ 
-                  input.inline(
-                    :value="plomba" 
-                    readonly="" 
+                  input.inline.nokeyboard(
+                    v-model="plomba" 
                     placeholder="Пломба" 
                     style="width:165px; text-align:right" 
                     @dblclick="demo ? plomba = 1234567890123 : null")

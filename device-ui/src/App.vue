@@ -37,6 +37,7 @@ doctype html
             b-dropdown-item(@click="isSortplanModalOpen = true" v-b-modal="'msortplan'") Сортплан
             b-dropdown-item(v-if="showDemo" v-b-modal.demoprint="") Demo Шаблон
             b-dropdown-divider
+            b-dropdown-item(v-b-modal.diagnostic="") Диагностика
             b-dropdown-item(@click="togleCalibrate()" ) Калибрововка
               //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
             
@@ -114,11 +115,11 @@ doctype html
 
 
   b-modal#depcode(title="Технологический Индекс" centered size="sm"  ok-only @ok="registerDepcode(tmpDepcode);" @hide="tmpDepcode=''")
-    b-form-input(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '220081'")
+    b-form-input.nokeyboard(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '220081'")
 
   b-modal#user(size="sm" title="Авторизация*" :modal-class="{'isLoginError':loginResponse}" @hide="tmpUser=''" centered="")
     b-form-group(:invalid-feedback="'Ошибка! [' + tmpUser + '] '+ loginResponse" :state="!loginResponse")
-      b-form-input(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.ast17.sc1'" placeholder="Ваш логин в ПУС" autofocus)
+      b-form-input.nokeyboard(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.ast17.sc1'" placeholder="Ваш логин в ПУС" autofocus)
     b-button-group
       b-btn(variant="danger"): i.fa.fa-user.mr-2
       b-btn(variant="outline-success"): i.fa.fa-user.mr-2
@@ -145,6 +146,9 @@ doctype html
   b-modal#demoprint(title="Шаблон" scrollable lazy size="lg" ok-only ok-title="Печать" @ok="$print")
     DemoPrintModal
 
+  b-modal#diagnostic(title="Диагностика" lazy hide-footer)
+    DiagnosticModal
+
   
   MultiLedModal
 
@@ -166,6 +170,7 @@ import DemoPrintModal from '@/components/DemoPrintModal'
 import AboutModal from '@/components/AboutModal'
 import BadgeModal from '@/components/BadgeModal'
 import StatsModal from '@/components/StatsModal'
+import DiagnosticModal from '@/components/DiagnosticModal'
 
 import MultiLedModal from '@/components/MultiLedModal'
 
@@ -393,7 +398,8 @@ export default {
     AboutModal,
     BadgeModal,
     MultiLedModal,
-    StatsModal
+    StatsModal,
+    DiagnosticModal
   },
 }
 

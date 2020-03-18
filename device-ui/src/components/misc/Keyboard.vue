@@ -32,8 +32,30 @@ export default {
 
       if(event.target.className.indexOf('nokeyboard') >= 0) return;
 
-      if (event.keyCode == 13) { // ENTER
+      if( event.keyCode >= 96 && event.keyCode <=105 ){ // only numpad and top numbers
+        this.keyText += String.fromCharCode(event.keyCode-48);
+      } else if( event.keyCode >= 65 && event.keyCode <=90 ){ // only alphanumerics
+        this.keyText += String.fromCharCode(event.keyCode+(event.shiftKey?0:32));
+      } else if( event.keyCode >= 48 && event.keyCode <=57 ) { // numbers
+        this.keyText += String.fromCharCode(event.keyCode);
+      } else if( event.keyCode == 110 || event.keyCode == 190 ) { // "."
+        this.keyText += ".";
+      }
+
+      if(event.keyCode == 8 ){ // ????
+        this.keyText = this.keyText.slice(0,-1)
+      }
+
+
+      console.log('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
+
+
+      if (event.keyCode == 13 || this.keyText.length == 13) { // ENTER or BARCODE Length
         //if(!isNaN(this.keyText)) {
+
+
+        if(this.keyText.length == 13 && event.keyCode == 13 ) return;// IF keyText length 13 and after pressed ENTER, skip it
+
         if(this.keyText != "") {
 
 
@@ -51,24 +73,6 @@ export default {
           this.$bus.$emit('keyboard:keydown:enter',this.keyText);
           this.keyText = ""
           event.preventDefault();
-        }
-      } else {
-
-
-        // console.log(event.keyCode, String.fromCharCode(event.keyCode));
-
-        if( event.keyCode >= 96 && event.keyCode <=105 ){ // only numpad and top numbers
-          this.keyText += String.fromCharCode(event.keyCode-48);
-        } else if( event.keyCode >= 65 && event.keyCode <=90 ){ // only alphanumerics
-          this.keyText += String.fromCharCode(event.keyCode+(event.shiftKey?0:32));
-        } else if( event.keyCode >= 48 && event.keyCode <=57 ) { // numbers
-          this.keyText += String.fromCharCode(event.keyCode);
-        } else if( event.keyCode == 110 || event.keyCode == 190 ) { // "."
-          this.keyText += ".";
-        }
-
-        if(event.keyCode == 8 ){ // ????
-          this.keyText = this.keyText.slice(0,-1)
         }
       }
 

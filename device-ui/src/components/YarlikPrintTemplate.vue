@@ -97,10 +97,10 @@ var code128= new Encoder()
 
 export default {
   name: 'YarlikPrintTemplate',
-  props: ['isCloseModalOpen'],
+  props: ['isCloseModalOpen','response'],
   computed:{
     ...mapGetters({
-        response: 'getCloseResponse',
+        // response: 'getCloseResponse',
         config:'getConfig',
     }),
   },
