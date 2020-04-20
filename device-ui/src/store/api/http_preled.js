@@ -16,6 +16,53 @@ export const $http = axios.create({
 //   baseURL: deviceURL
 // })
 
+export const $device = {
+  axioses:null,
+  size:24,
+  init(ips,size,lastLed,callback){
+
+    console.log('urls %o size:[%s] lastLed:[%s]',ips,size,lastLed);
+
+    this.size = size;
+    this.axioses = [];
+
+    for(var i in ips){
+      
+
+      if(ips[i] == "") continue;
+
+      console.log('==>',ips[i])
+
+      var a = axios.create({
+        baseURL:'http://'+ips[i],
+        timeout:1000
+      });
+
+      a.interceptors.response.use(function (response) {
+        return response;
+      },callback);
+
+      this.axioses.push(a);
+
+
+      // lastThor set
+      $leds.lastThor = this.axioses.length -1;
+    }
+  },
+  get(url,params,tab,offAll){
+
+    // console.log("====================",this.axioses,params,tab,offAll);
+
+    if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
+      for(var i in this.axioses) 
+        if(!(tab == i && offAll)) this.axioses[i](url,params);
+    } else 
+      return this.axioses[tab](url,params);
+  },
+  post(url,params,tab){
+    return this.axioses[tab](url,params);
+  }
+};
 
 var wpiReg = new RegExp("([A-Z]{2}[0-9]{9}[A-Z]{2})");
 
@@ -148,49 +195,114 @@ export const $smartsort = {
 
 var audioURL = 'static/audio/supermariobros/';
 
-export const $sound = {
-  snd:{},
-  init(){
-    Object.entries($leds.templates).forEach((item)=>{
-      this.snd[item[0]] = new Audio(`${audioURL}${item[1].sound?item[1].sound:item[0]}.mp3`);
-    });
-    // pushes
-    this.snd.pushes = [...new Array(5)];
-    this.snd.pushes.forEach((k,i)=>{
-      this.snd.pushes[i] = new Audio(`${audioURL}/push${i}.mp3`);
-    });
-  },
+export const $sounds = {
+  search: new Audio(audioURL+"search.mp3"), // assign the audio file to its src
+  search1: new Audio(audioURL+"search1.mp3"), // assign the audio file to its src
+  push0: new Audio(audioURL+"push0.mp3"),
+  push1: new Audio(audioURL+"push1.mp3"),
+  push2: new Audio(audioURL+"push2.mp3"),
+  push3: new Audio(audioURL+"push3.mp3"),
+  push4: new Audio(audioURL+"push4.mp3"),
+  
+  forcepush: new Audio(audioURL+"pushcool.mp3"),
+  pushcool: new Audio(audioURL+"pushcool.mp3"),
+  pull: new Audio(audioURL+"pull.mp3"),
+  notfound: new Audio(audioURL+"notfound.mp3"),
+  error: new Audio(audioURL+"error.mp3"),
+  bindstart: new Audio(audioURL+"bindstart.mp3"),
+  bindend: new Audio(audioURL+"bindend.mp3"),
+  bindinline: new Audio(audioURL+"bindinline.mp3"),
+  notbound: new Audio(audioURL+"notbound.mp3"),
+  notfoundplan: new Audio(audioURL+"notfoundplan.mp3"),
+  bind: new Audio(audioURL+"binding.mp3"),
+  selectbag: new Audio(audioURL+"bind.mp3"),
+  deselectbag: new Audio(audioURL+"deselect.mp3"),  
+  formb: new Audio(audioURL+"closebag.mp3"),
+  formbagbypacklist: new Audio(audioURL+"closebag.mp3"),
+  formbag: new Audio(audioURL+"closebag.mp3"),
+  registerpoint: new Audio(audioURL+"registerpoint.mp3"),
+  login: new Audio(audioURL+"login.mp3"),
+  logout: new Audio(audioURL+"logout.mp3"),
+
   play(snd){
     if(snd == 'push')
       this.playPush()
     else {
-      console.log(snd,this.snd[snd]);
-      this.snd[snd].currentTime = 0
-      this.snd[snd].play();
+      this[snd].currentTime = 0
+      this[snd].play();
     }
   },
+  pushes(){ return [this.push0,this.push1,this.push2,this.push3,this.push4]},
   pushCnt:0,
   pushCntTheme:0,
   playPush(){
     if(this.pushCnt == 5) {
       this.pushCntTheme = this.pushCntTheme + 1
-      if(this.pushCntTheme == this.snd.pushes.length) this.pushCntTheme = 0
+      if(this.pushCntTheme == this.pushes().length) this.pushCntTheme = 0
       this.pushCnt = 0
-      this.snd.pushcool.play();
+      // this.pushcool.play();
     } else {
       this.pushCnt = this.pushCnt + 1
-      this.snd.pushes[this.pushCntTheme].currentTime = 0;
-      this.snd.pushes[this.pushCntTheme].play();
+      this.pushes()[this.pushCntTheme].currentTime = 0;
+      this.pushes()[this.pushCntTheme].play();
     }
   }
 }
-
 
 export const $leds = {
   thor:0,
   lastThor: null,
   lastLed:23,
   color:'r',
+  pushLastLed(){
+    setTimeout(()=>{
+      console.debug('pushLastLed -->',this.lastLed, this.thor);
+      this.thor = this.lastThor;
+      this.push(this.lastLed);
+    },1000)
+  },
+  search(user){
+    // this.$ledon({color:'r',led:'random',duration:10,repeat:0});
+  },
+  forcepush(led){
+
+  },
+  push(led){
+    this.$ledoff();
+    this.$ledon({color:'r',led,duration:1000,repeat:300,pause:500});
+  },
+  test(led){
+    this.$ledon({color:'r',led,duration:1000,repeat:50,pause:500});
+  },
+  pull(led){
+    // this.$ledoff();
+    // this.$ledon({color:'r',led,duration:100,repeat:3});
+  },
+  notfound(user){
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
+  },
+  bindstart(){
+    this.$ledon({color:'all',led:'all',duration:1000,brightness:100});
+  },
+  bindend(){
+    this.$ledon({color:'all',led:'all',duration:100,repeat:3,brightness:100});
+  },
+  selectbag(led){
+    this.$ledon({color:'all',led,duration:500,repeat:1000,autoOff:'all'});
+  },
+  formb(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
+  formbag(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
+  formbagbypacklist(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
+  deselectbag(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3,autoOff:'all'});
+  },
   printbag(data){
     // $device.post('/print',data);
     $device.post('/proxy',data);
@@ -198,111 +310,71 @@ export const $leds = {
   printbagTest(){
     $device.get('/testprint');
   },
-  templates:{
-    // test:             {color:'r',duration:1000,repeat:50,pause:500},
-    push:             {color:'r',duration:1000,repeat:300,pause:500,sound:'push0'},
-    forcepush:        {color:'r',duration:1000,repeat:300,pause:500},
-    pull:             {color:'r',duration:100,repeat:3},
-
-    error_notfound:   {color:'r',led:'all',duration:50,repeat:3,brightness:100},
-    error_notplan:    {color:'r',led:'all',duration:50,repeat:3,brightness:100},
-    error_notbind:    {color:'r',led:'all',duration:50,repeat:3,brightness:100},
-    error:            {color:'r',led:'all',duration:100,repeat:3,brightness:100},
-
-    selectbag:        {color:'all',duration:500,repeat:1000,autoOff:'all'},
-    deselectbag:      {color:'all',duration:100,repeat:3,autoOff:'all'},
-
-    formb:            {color:'all',duration:100,repeat:3,autoOff:'all',sound:'closebag'},
-    formbag:          {color:'all',duration:100,repeat:3,autoOff:'all',sound:'closebag'},
-    formbagbypacklist:{color:'all',duration:100,repeat:3,autoOff:'all',sound:'closebag'},
+  bind(led){
+    this.$ledon({color:'all',led,duration:5000,pause:100,repeat:0});
+  },
+  notplan(){
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
+  },
+  notbind(){
+    this.$ledon({color:'r',led:'all',duration:50,repeat:3,brightness:100});
+    this.pushLastLed();
+  },
+  error(user){
+    this.$ledon({color:'r',led:'all',duration:100,repeat:3,brightness:100});
+    this.pushLastLed();
+  },
+  login(user){
+     this.$ledon({color:'r',led:'all',duration:100,brightness:100,repeat:3});
+  },
+  logout(user){
+     this.$ledon({color:'r',led:'all',duration:100,brightness:100,repeat:3});
+  },
+  registerpoint(msg){
+    this.$ledon({color:'all',led:'all',duration:1000,brightness:100,repeat:3});
+  },
+  deletepoint(led){
+    this.$ledon({color:'all',led,duration:100,repeat:3});
+  },
+  $ledon(params){
+    // if(this.thor && this.thor > 0){
+    //   // axios.get(`http://192.168.10.1${this.thor}/api/v1/leds`,{params})
+    // } else {
+      // $device.get(`/off`,{params:{led:'all'}},this.thor,{params});
+      params.color = this.color;
+      $device.get('/on',{params},this.thor);
+    // }
+  },
+  setColor(color){
+    this.color = color;
+  },
+  $ledoff(){
+    $device.get(`/off`,{params:{led:'all'}},this.thor,true);
+  },
+  on(name,data,thor,color){
     
-    bind:             {color:'all',duration:5000,pause:100,repeat:0},
-    bindstart:        {color:'all',led:'all',duration:1000,brightness:100},
-    bindend:          {color:'all',led:'all',duration:100,repeat:3,brightness:100},
-    
-    login:            {color:'r',led:'all',duration:100,brightness:100,repeat:3},
-    logout:           {color:'r',led:'all',duration:100,brightness:100,repeat:3},
-    
-    registerpoint:    {color:'all',led:'all',duration:1000,brightness:100,repeat:3},
-    deletepoint:      {color:'all',duration:100,repeat:3,sound:'registerpoint'}
+    if(thor) this.thor = thor?thor:0;
+    if(color) this.color = color;
+    console.debug('ON',name,this.thor,color);
+    try { 
+      this[name](data);
+  } catch(e){
+      console.error("Name of led "+name,e);
+  }
   },
   xon({status,color,led,thor}){ //'push',bag.color,bag.led,getters.thor
-
-    console.debug('ON',status,color,led,thor);
-    var params = this.templates[status];
-    params.led = led;
-    params.color = color.toLowerCase();
-
-    $device.get('/on',{params},thor);
-    // $sound.play(status);
+    
+    if(thor) this.thor = thor?thor:0;
+    if(color) this.color = color;
+    console.debug('ON',name,this.thor,color);
+    try { 
+      this[name](data);
+    } catch(e){
+        console.error("Name of led "+name,e);
+    }
   },
-  xoff(color){
-    color = color?color.toLowerCase():'all';
+  xoff({color}){
     $device.get(`/off`,{params:{led:'all',color}});
   },
 }
-
-export const $device = {
-  axioses:[],
-  size:24,
-  lastThorColors:{},
-  init(ips,size,lastLed,callback){
-
-    console.log('urls %o size:[%s] lastLed:[%s]',ips,size,lastLed);
-
-    this.size = size;
-    this.axioses = [];
-
-    for(var i in ips){
-      
-      if(ips[i] == "") continue;
-
-      console.log('==>',ips[i])
-
-      var a = axios.create({
-        baseURL:'http://'+ips[i],
-        timeout:1000
-      });
-
-      a.interceptors.response.use(function (response) {
-        return response;
-      },callback);
-
-      this.axioses.push(a);
-
-      // lastThor set
-      $leds.lastThor = this.axioses.length -1;
-    }
-
-    $sound.init();
-
-    // this.onInit(this.axioses);
-
-  },
-  onInit(a){
-    console.debug('not overloaded onInit',a)
-  },
-  get(url,params,thor){
-
-    // console.log("====================",this.axioses,params,tab,offAll);
-
-    if(params.params && ( params.params.led == "all" || params.params.led == "random" )){
-      for(var i in this.axioses) 
-        this.axioses[i](url,params);
-    } else {
-      this.resetColors(params.params,thor);
-      return this.axioses[thor](url,params);
-    }
-  },
-  post(url,params,thor){
-    return this.axioses[thor](url,params);
-  },
-  resetColors(params,thor){
-    var last = this.lastThorColors[params.color];
-
-    if(last != null && last.thor != thor){
-      this.axioses[last.thor]('/off',{params:{color:params.color,led:last.led}});
-    }
-    this.lastThorColors[params.color] = {thor,led:params.led};
-  }
-};

@@ -57,7 +57,7 @@ Vue.mixin({
     },
     $print(){    
       window.print();
-    },
+    }
   }
 });
 
@@ -107,3 +107,6 @@ new Vue({
   },
   render: h => h(App)
 })
+
+
+

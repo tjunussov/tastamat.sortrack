@@ -39,3 +39,5 @@ Vue.filter('padcenter', function (value,width=PAD_WIDTH_CHARS) {
 
   return String(value).padStart(len).padEnd(width).substring(0,width)
 })
+
+

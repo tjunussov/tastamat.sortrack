@@ -340,9 +340,8 @@ var barcodes = {
 
   
 //INFO! dont remove delay respnose, it doesnt workk if removed
-export const mock = new MockAdapter($http,{delayResponse:500}) 
+export const mock = new MockAdapter($http,{delayResponse:50}) 
 // export const mock = new MockAdapter($http)
-
 
 .onGet('authorize').reply((cfg)=>{
 
@@ -399,16 +398,16 @@ export const mock = new MockAdapter($http,{delayResponse:500})
     }
 
 
-  if(Vue.prototype.$store.getters.config.mockdelay){
-    var sleepTime = (Math.random()*1000);
-    console.debug('DelayingResponse',sleepTime);
-    await sleep(sleepTime);
-  }
+  // if(Vue.prototype.$store.getters.config.mockdelay){
+  //   var sleepTime = (Math.random()*1000);
+  //   console.debug('DelayingResponse',sleepTime);
+  //   await sleep(sleepTime);
+  // }
 
   if((Math.random()*100) < 70)
     return [200,resp];
   else {
-    if((Math.random()*100) < 50)
+    if((Math.random()*100) < 70)
         return [200,{
             "result":Math.ceil(Math.random()*10)>5?"error":"warning",
             "resultInfo":"DEMO:Отправление "+req.barcode+" не относится к сортплану!",
@@ -521,10 +520,18 @@ export const mock = new MockAdapter($http,{delayResponse:500})
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// export const mockDevice = new MockAdapter($device).onAny().reply((cfg)=>{
-//   console.debug('led',cfg.params?cfg.params.led:cfg.params);
-//   return [200,null];
-// })
+export const mockDevices = [];
+
+$device.onInit = (axioses)=>{
+  axioses.forEach((v,i)=>{
+    mockDevices[i] = new MockAdapter(v).onAny().reply((cfg)=>{
+      console.debug('led mock received ' + i,cfg.url,cfg.params);
+      Vue.$bus.$emit('mock:led',cfg.params,i);
+      return [200,null];
+    })
+  });
+};
+
 
 
 /////////////////////////////

@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import {$leds,$sounds} from '@/store/api/http'
-
+import {$leds,$sound} from '@/store/api/http'
+import { mapGetters, mapActions } from 'vuex'
       
 
 var captureTM;
@@ -28,6 +28,9 @@ export default {
     if(this.value) this.encode()
   },
   methods:{
+    ...mapActions([
+      '$setColor'
+    ]), 
     documentKeydown(event){
 
       if(event.target.className.indexOf('nokeyboard') >= 0) return;
@@ -60,17 +63,20 @@ export default {
 
 
           var firstLetter = this.keyText.substr(0,1);
+          var color = firstLetter;
 
-          if( firstLetter == 'G' || firstLetter == 'B'){
-            $leds.setColor(firstLetter.toLowerCase());
+          if( color.indexOf('gbBG') > -1){
+            color = color.toUpperCase();
+            $leds.setColor(color);
             this.keyText = this.keyText.slice(1);
           } else {
             $leds.setColor('r');
+            color = 'R';
           }
 
-          this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText);
-          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.substr(1));
-          this.$bus.$emit('keyboard:keydown:enter',this.keyText);
+          this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText,color);
+          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.substr(1),color);
+          this.$bus.$emit('keyboard:keydown:enter',this.keyText,color);
           this.keyText = ""
           event.preventDefault();
         }
@@ -79,7 +85,7 @@ export default {
       window.clearTimeout(captureTM)
       captureTM = window.setTimeout(()=>{
         this.keyText = ""
-        $sounds.play('notfoundplan');
+        $sound.play('error_notplan');
       },1000)
     },
   }

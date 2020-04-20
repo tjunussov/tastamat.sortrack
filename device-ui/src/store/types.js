@@ -1,3 +1,9 @@
+export const CONSOLE_SET = 'CONSOLE_SET'
+export const CONSOLE_CLEAR = 'CONSOLE_CLEAR'
+export const STATUS_SET = 'STATUS_SET'
+
+
+
 export const ADD_TO_CART = 'ADD_TO_CART'
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
 

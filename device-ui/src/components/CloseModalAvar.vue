@@ -15,9 +15,9 @@ b-modal#mclosebag(size="" scrollable centered no-close-on-backdrop no-fade @hide
 
       b-list-group(v-if="count && !response" style="min-height:300px;" flush)
         b-list-group-item.flex-column.align-items-start(v-for="(v,k, n) in selectedBag.wpi" :key="k")
-          .d-flex.w-100.justify-content-between
-            h5(@click="removeWpi(k)") {{k}}   &times;
-            small {{v.postIndex}}
+          h5.mb-0(@click="removeWpi(k)") {{k}}   &times;
+          small(v-if="v && v.postIndex") {{v.postIndex}}
+          small.text-muted(v-else) {{v}}
 
           //- p.text-muted.mb-1(:title="JSON.stringify(v)") {{v.mailInfo.toFullName}}
     template(slot="modal-footer") 
@@ -48,7 +48,7 @@ export default {
         response: 'getCloseResponse',
         selected:'getSelected',
         config:'getConfig',
-        error: 'getError',
+        error: 'getCloseError',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
         cursor: 'cursor',

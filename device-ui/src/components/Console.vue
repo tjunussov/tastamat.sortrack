@@ -1,6 +1,6 @@
 <template lang="pug">
 b-row.flex-xl-nowrap2
-  .pl-md-3.pt-2.mt-4.bd-content.col-12
+  .pt-2.mt-4.bd-content.col-12
     b-tabs.nav-justified.wizard(pills v-model="tabIndex")
       b-tab(v-for="(pp,p) in bagsPages" :key="p")
         template(slot="title") Thor {{p+1}} [{{p*24}}-{{(p+1)*24}}] 
@@ -9,73 +9,84 @@ b-row.flex-xl-nowrap2
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
-            :class="{'text-muted':!Object.keys(b)[0],'outlined':bind.cursor == b.led || b.led == null,'isErrorBag':b.isErrorBag}"
-            :bg-variant="selected == b.ppi?'danger':''"
-            :text-variant="selected == b.ppi?'white':''" 
+            :class="{'text-muted':!Object.keys(b.wpi)[0],'outlined':bind.cursor == b.led || b.led == null || cursor == i,'isErrorBag':b.isErrorBag,'inserted':b.color && Object.keys(b.color).length}"
             :disabled="calibrating && b.led != null"
+            :bg-variant="b.color? Object.values(b.color)[0]:''" 
             @click="selectBag(b.ppi,i,p,b.isErrorBag)"
             @dblclick="calibrateSelectBag(b.ppi,i,p)" )
-            b-card-header 
+            
+            b-card-header
               template(v-if="b.isErrorBag") Корзина
               template(v-else) {{(b.ppi)}}
               small.text-muted.indx
                 //- {{(b.index)}} 
                 span.led(:class="{'remapped':b.led!=null}") {{b.led!==null?b.led:i}}
-              b-btn.close(v-if="Object.keys(b.wpi).length") &times;
+              //- b-btn.close(v-if="Object.keys(b.wpi).length") &times;
             b-card-body
               h4.card-title(:class="{'smaller':Object.keys(b.wpi).length>100}")
                 template(v-if="bind.cursor != null") {{bind.cursor}} 
                 template(v-else) {{Object.keys(b.wpi).length}}
+            b-card-footer.pt-0.pb-2(v-for="(b,c) in b.color" :footer-bg-variant="b" :key="c")
 
 
-  .m-4.p-2.pb-3.fixed-bottom
-    b-card(no-body :bg-variant="error?'danger':''" :text-variant="error?'white':''")
-      b-card-header ШПИ 
-        b {{barcode}} 
-        b-btn.close(@click.stop="clearAll")  &times;
-        .debug.float-right.mr-3
-          b-link.text-danger(v-b-modal.debug="")
-            i.fa.fa-bug.mr-2
-          //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
-        b-progress(v-if="status=='search'" :value="100" :max="100" striped animated)
-      b-card-body
-        p(v-if="error" v-html="error")
-        template(v-if="response && response.mailInfo")
-          h4.card-title Мешок {{response.parentPostIndex}}
-            span(v-if="selectedBag && selectedBag.ppn") ( {{selectedBag.ppn}} )
-          | АДРЕС : 
-          b {{response.postIndexTitle}} 
-          | ИНДЕКС : 
-          b {{response.postIndex}}
-          span.text-muted.ml-5 
-          | {{response.mailInfo.toFullName}}
-        template(v-if="response && response.packetListNo")
-          h4.card-title B Накладная {{response.packetListNo}}
-          | ОБЩИЙ ВЕС : 
-          b {{response.totalWeight}} 
-          | АКТУАЛЬНЫЙ ВЕС : 
-          b {{response.actualWeight}} 
-          | КОЛ-ВО :  
-          b {{response.count}} 
-          
-          //- blockquote.blockquote-footer {{response}}
+  .p-4.pb-5.consoles.fixed-bottom
+    b-card-group(deck)
+      b-card.mr-1(no-body v-for="(c,k,i) in consoles" :key="k" :class="{shake:c.req && c.req.error}")
+        b-card-header.pt-1.pb-0(:header-bg-variant="c.bgColor")
+        b-card-header(:header-bg-variant="c.req?c.bgColor:''" header-text-variant="white") ШПИ 
+          template(v-if="c.req")
+            b {{c.req.barcode}} 
+            b-btn.close(@click.stop="clearAll")  &times;
+              //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+        b-card-body.p-3(:body-bg-variant="c.req && c.req.error?'danger':'' " :body-text-variant="c.req && c.req.error?'white':''")
+          template(v-if="c.req")
+            b-progress(v-if="c.req.status=='search'" :variant="c.bgColor" :value="100" :max="100" striped animated)
+            template(v-if="c.req.error")
+              p(v-html="c.req.error")
+            template(v-if="c.req.response && c.req.response.mailInfo")
+              div(:set="(r = c.req.response)")
+              h4.card-title Корзина {{r.parentPostIndex}}
+                span(v-if="selectedBag && selectedBag.ppn") ( {{selectedBag.ppn}} )
+              | АДРЕС : 
+              b {{c.req.response.postIndexTitle}} 
+              | ИНДЕКС : 
+              b {{c.req.response.postIndex}}
+              span.text-muted.ml-5 
+              | {{c.req.response.mailInfo.toFullName}}
+
+            //- template(v-if="c.req.response && c.req.response.packetListNo")
+            //-   h4.card-title B Накладная {{c.req.response.packetListNo}}
+            //-   | ОБЩИЙ ВЕС : 
+            //-   b {{c.req.response.totalWeight}} 
+            //-   | АКТУАЛЬНЫЙ ВЕС : 
+            //-   b {{c.req.response.actualWeight}} 
+            //-   | КОЛ-ВО :  
+            //-   b {{c.req.response.count}} 
+                  
+                //- blockquote.blockquote-footer {{response}}
 
   
   CloseModal(v-if="isCloseModalOpen" @close="isCloseModalOpen = false")
   CloseModalAvar(v-if="isCloseModalAvarOpen" @close="isCloseModalAvarOpen = false")
-  b-modal#debug(hide-header size="lg" hide-footer scrollable  body-bg-variant="dark")
-    pre {{bags}}
+  
         
 </template>
 
 <script>
 import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
-import {$leds,$sounds,deviceLEDMixin} from '@/store/api/http'
-
+import {$leds} from '@/store/api/http'
+import {kolor} from '@/store/modules/polka'
 import {bindMixin} from '@/components/misc/BindModal'
 import CloseModal from '@/components/CloseModal'
 import CloseModalAvar from '@/components/CloseModalAvar'
+
+
+const Var = {
+  render() {
+    return this.$scopedSlots.default(this.$attrs)
+  }
+}
 
 
 export default {
@@ -89,7 +100,7 @@ export default {
     this.$bus.$off('keyboard:keydown:enter:p',this.selectBagBarcode);
   },
   created(){
-    if(this.ledOn) $leds.$ledoff();
+    if(this.ledOn) $leds.xoff();
   },
   watch:{
     thor(val){
@@ -99,33 +110,33 @@ export default {
       if(val) this.calibrateStart();
       else this.calibrateStop();
     },
-    error(val){
-      if(val) this.timeout(10000);
-    },
-    status(val){
-      console.debug('status',val);
+    // error(val){
+    //   if(val) this.timeout(10000);
+    // },
+    // status(val){
+    //   console.debug('status',val);
       
-      if(val){
-        this.timeout(10000);
+    //   if(val){
+    //     this.timeout(10000);
 
-        // if(this.selectedBag && this.selectedBag.led){  // if led specified
-        //   console.log('watched status[selectedbag]',this.selectedBag.led);
-        //   $leds.on(val,this.selectedBag.led,this.thor);
-        // } else {
-        //   console.debug('watched status [cursor]',this.cursor)
-        //   if(this.cursor != null) $leds.on(val,this.cursor);
-        //   else $leds.on(val);
-        // }
+    //     // if(this.selectedBag && this.selectedBag.led){  // if led specified
+    //     //   console.log('watched status[selectedbag]',this.selectedBag.led);
+    //     //   $leds.on(val,this.selectedBag.led,this.thor);
+    //     // } else {
+    //     //   console.debug('watched status [cursor]',this.cursor)
+    //     //   if(this.cursor != null) $leds.on(val,this.cursor);
+    //     //   else $leds.on(val);
+    //     // }
         
-        var led = this.selectedBag && this.selectedBag.led !== null ? this.selectedBag.led : this.cursor;
-            // led = led%24;
-        console.debug('watched status',val,led,this.thor);
-        if(this.ledOn) $leds.on(val,led,this.thor);
-        $sounds.play(val);
-      } /*else {
-        $leds.$ledoff();
-      }*/
-    }
+    //     var led = this.selectedBag && this.selectedBag.led !== null ? this.selectedBag.led : this.cursor;
+    //         // led = led%24;
+    //     console.debug('watched status',val,led,this.thor);
+    //     if(this.ledOn) $leds.on(val,led,this.thor);
+    //     $sounds.play(val);
+    //   } /*else {
+    //     $leds.$ledoff();
+    //   }*/
+    // }
   },
   data () {
     return {
@@ -146,21 +157,13 @@ export default {
   },
   computed:{
      ...mapGetters({
-        settings: 'getSettingsSelected',
         bags: 'getBags',
-        config: 'getConfig',
-        status: 'getStatus',
-        barcode: 'getBarcode',
-        response: 'getResponse',
-        lastBag:'getLastBag',
-        error: 'getError',
-        cursor: 'cursor',
-        selected: 'getSelected',
         selectedBag:'getSelectedBag',
         calibrating:'getCalibrating',
         ledOn:'getLedOn',
-        sortplan: 'getSortplan',
-        thor:'thor'
+        thor:'thor',
+        cursor: 'cursor',
+        consoles:'getConsoles'
     }),
     filteredBags() {
       return (page)=>{ return this.bags.slice(page*24, (page+1)*24); }
@@ -182,6 +185,7 @@ export default {
       '$clearSelected',
       '$save'
     ]),
+    kolor,
     timeout(tm){
       window.clearTimeout(this.tmResponse);
       this.tmResponse = window.setTimeout(this.$clear,tm);
@@ -218,12 +222,12 @@ export default {
         
       }
     },
-    putToBag(barcode){
+    putToBag(barcode,color){
       if(this.isCloseModalOpen) { console.debug('skipping putToBag due to isCloseModalOpen'); return; }
       console.log('started putToBag barcode',barcode);
       window.clearTimeout(this.tmResponse);
 
-      this.$putToBag({barcode:barcode}).then((resp)=>{
+      this.$putToBag({barcode,color}).then((resp)=>{
         // this.timeout(30000);
         console.debug('ended Положили в корзину',resp.parentPostIndex);
       }).catch((error)=>{
@@ -233,12 +237,13 @@ export default {
     },
     clearAll(){
       this.$clear(); 
-      if(this.ledOn) $leds.$ledoff();
+      if(this.ledOn) $leds.xoff();
     }
   },
   components:{
     CloseModal,
-    CloseModalAvar
+    CloseModalAvar,
+    Var
   }
 }
 
@@ -254,14 +259,9 @@ export default {
   background-color #f00
   color #fff
 
-#debug pre 
-  color #4f4 !important
-  font-size 11px
-  overflow hidden
-  line-height 11px
   
 
-.polkas 
+.polkas
   user-select none
   // display: grid;
   // grid-column-gap: 50px;
@@ -281,11 +281,22 @@ export default {
     .text-muted
       opacity 0.5
     
-    // &.outlined
-    //   outline 2px solid #f00
+    &.outlined
+      outline 2px solid #fff
     
     &.closed
       -webkit-animation 0.5s blink step-end infinite
+      
+    &.inserted
+      // background-color: #fff !important
+      box-shadow 0px 10px 10px rgba(0,0,0,0.3) !important
+      z-index 1000 !important
+      
+      .card-header
+        color: #ccc
+      
+      .card-footer
+        -webkit-animation 0.1s blink step-end 10
 
     &.text-muted
       opacity 0.2

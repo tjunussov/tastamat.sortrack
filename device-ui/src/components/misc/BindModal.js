@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import {$leds,$sounds} from '@/store/api/http'
+import {$leds} from '@/store/api/http'
 
 export const bindMixin = {
   methods:{

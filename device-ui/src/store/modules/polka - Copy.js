@@ -1,52 +1,62 @@
 import Vue from 'vue'
-import {$leds,$smartsort,$http,$device} from '@/store/api/http'
-import * as types from '@/store/types'
+import {$smartsort,$http,$device} from '@/store/api/http'
 
 const state = {
+  sortplan:null,
   barcode:null,
-  
+  color:null,
   response:null,
   closeResponse:null,
+  loginResponse:null,
   error:null,
+  calibrating:false,
   selected:null,
-  inserted:null,
   status:null,
-  index:null, 
-
-  consoles:{
-    'R':{ req:null, color:'R', bgColor:'danger' },
-    // 'G':{ req:null, color:'G', bgColor:'success'},
-    // 'B':{ req:null, color:'B', bgColor:'primary' }
-  }
+  index:null,
+  demoBarcodes:null
 }
 
 // getters
 const getters = {
-  getConsoles : (state,getters) => state.consoles,
+  getColor : (state,getters) => state.color,
+  getSessionBColor: (state,getters) => kase(state.color,{'G':'success','B':'primary','random':'dark'},'danger'),
+  config : (state,getters) => getters.getSettingsSelected,  
   getBags : (state,getters) => getters.getSettingsSelected?getters.getSettingsSelected.bags:null,
-  // getBarcode : (state) => state.barcode,
-  // getStatus : (state) => state.status,
-  // getError : (state) => state.error,
+  getConfig : (state,getters) => getters.config,
+  getSortplan : (state) => state.sortplan,
+  getBarcode : (state) => state.barcode,
+  getDepcode : (state,getters) => getters.config?getters.config.depcode:null,
+  getLedOn : (state,getters) => getters.config?getters.config.isLedOn:null,
+  getDemo : (state,getters) => getters.config?getters.config.isDemo:null,
+  getDemoBarcodes: (state) => state.demoBarcodes,
+  getCalibrating : (state) => state.calibrating,
+  getStatus : (state) => state.status,
+  getUser : (state,getters) => getters.config?getters.config.user:null,
+  getError : (state) => state.error,
   getResponse : (state) => state.response,
+  
   getCloseResponse : (state) => state.closeResponse,
+  getLoginResponse : (state) => state.loginResponse,
+  
   getSelected : (state) => state.selected,
   getWeight : (state,getters) => { 
     if(getters.getSelectedBag)
       return Object.values(getters.getSelectedBag.wpi).reduce((t,k)=> t + (k.weight?k.weight:0),0)
     else return null
   },  
-  
+  getLastBag: (state,getters) => {
+    if(getters.config.bags)
+      return getters.config.bags[getters.config.bags.length - 1];
+    return null
+  },
   getSelectedBag: (state,getters) => {
     if(state.selected) return getters.getBags[getters.cursor]
-  },
-  getInserted : (state,getters) => {
-    if(state.inserted||state.selected) return getters.getBags.findIndex((key)=>{return (state.selected?state.selected:state.inserted) == key.ppi}) 
   },
   cursor : (state,getters) => {
     if(state.selected) return getters.getBags.findIndex((key)=>{return state.selected == key.ppi})
   },
   thor : (state,getters) => {
-    return  (typeof getters.getInserted !== 'undefined')?Math.floor(getters.getInserted/24):0
+      if(typeof getters.cursor !== 'undefined') return  Math.floor(getters.cursor/24)
   },
   bagMetaData : (state,getters) => {
     if(getters.getSelectedBag){
@@ -58,6 +68,74 @@ const getters = {
 
 // actions
 const actions = {
+  $onHydrated({ commit, dispatch, state, getters }){
+    dispatch('settingsSelect',getters.getSettings[0]);
+    if(!getters.getBags) dispatch('$initBags');
+    dispatch('$initSettings');
+  },
+  $initSettings({ commit, dispatch, state, getters }){
+
+    
+    // $http.defaults.baseURL = getters.config.apiUrl;
+
+
+    // $device.defaults.baseURL = getters.config.ledUrl;
+
+    // no led if timeout
+    $device.init(getters.config.leds,getters.config.size,getters.getLastBag.led,(error)=>{
+      // console.error('ErroZZZ',error ) 
+      // if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
+    });
+
+
+    // $device.defaults.timeout = 1000;
+    // $device.interceptors.response.use(function (response) {
+    //   return response;
+    // }, function (error) {
+    //   console.error('ErroZZZ',error ) 
+    //   if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
+    // });
+  },
+  $initBags ({ commit, dispatch, state, getters }) {
+
+    
+
+      /*getters.getSettings[0].bags = {};
+      var size = getters.getSettings[0].size||24;
+
+      for(var i=0; i < size; i++){
+        Vue.set(getters.getBags,'#'+i,{})
+      }*/
+
+      console.log('initBags',getters.getConfig.size);
+
+      var ledTemplate = [
+      3,2,1,0,12,13,14,15,
+      7,6,5,4,16,17,18,19,
+      11,10,9,8,20,21,22,23];
+
+      getters.getConfig.bags = [...new Array(Number(getters.getConfig.size)||24)].map((x,i) => { 
+        return {ppi:'#'+i,led:ledTemplate[i%24],ppn:null,wpi:{},batch:[]}
+      });
+
+      getters.getConfig.leds = [...new Array(getters.getConfig.size/24)].map((x,i) => { 
+        return '192.168.10.10'
+      });
+      getters.getLastBag.isErrorBag = true;
+  
+    // TODO Rewrite to Promise Chain
+    /*
+    dispatch('salesAdd',cart).then(()=>{
+
+      commit(types.CHECKOUT_CART, cart)
+      commit(types.SALE_SEQ_INCREMENT)
+      commit(types.FISCALIZE_PENDING)
+    })
+    */
+  },
+  $save({ commit, dispatch, state, getters }){
+    dispatch('settingsUpdate',getters.getSettingsSelected);
+  },
   $clear ({ commit, dispatch, state, getters }) {
     console.debug('clearing');
     state.response = null;
@@ -65,17 +143,10 @@ const actions = {
     state.barcode = null;
     state.status = null;
     state.error = null;
-
-    // dispatch('$clearInserted');
     // state.selected = null; // если очищать selected то если модалка открыта, и если произошла ошибка то он тоже очищается,
   },
   $clearSelected({ commit, dispatch, state, getters }){
     state.selected = null;
-  },
-  $clearInserted({ commit, dispatch, state, getters }){
-    getters.getBags.forEach((bag,i)=>{
-      Vue.delete(bag,'color');
-    })
   },
   $clearCloseResponse({ commit, dispatch, state, getters }){
     state.closeResponse = null;
@@ -85,7 +156,6 @@ const actions = {
       try{
         findBag(getters.getBags,ppi);
         state.selected = ppi
-        $leds.xon({status:'selectbag',color:'all',led:getters.getSelectedBag.led,thor:getters.thor});
         // state.selected.bag = this.bags[ppi];
         state.status = 'selectbag';
         resolve(ppi)
@@ -98,7 +168,6 @@ const actions = {
   },
   $deselectBag({ commit, dispatch, state, getters }) {
     state.status = 'deselectbag';
-    $leds.xon({status:'deselectbag',color:'all',led:getters.getSelectedBag.led,thor:getters.thor});
     // state.selected = null
     window.setTimeout(()=>{
       state.selected = null
@@ -130,8 +199,8 @@ const actions = {
 
     barcode = barcode.toUpperCase().replace(/\s/g,"");
 
-    // state.barcode = barcode
-    // state.status = 'search';
+    state.barcode = barcode
+    state.status = 'search';
 
     if(barcode in getters.getSelectedBag.wpi){
       state.status = 'pull';
@@ -144,38 +213,30 @@ const actions = {
 
       
       
-      return $smartsort.forcePutToBag(barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      return $smartsort.forcePutToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
       .then((resp)=>{
 
-        checkUniqueBarcode(getters.getBags,barcode);
+        checkUniqueBarcode(getters.getBags,state.barcode);
         response = resp.data
+        state.status = 'forcepush';
+        console.log('2 forcePutToBag barcode',state.barcode,response.parentPostIndex);
 
-        dispatch('$consoleStatus',{color:'R',req:{status:'forcepush',response}});
+        console.log('3 forcePutToBag barcode',barcode,response);
+        state.response = response
 
-        console.debug('2 forcePutToBag barcode',barcode,response.parentPostIndex);
-
-        /*var val = {}; val[barcode] = response; val[barcode].forcepush = true;
+        var val = {}; val[barcode] = response; val[barcode].forcepush = true;
         var currentVal = getters.getSelectedBag.wpi;
           val = {...val,...currentVal};
-        Vue.set(getters.getSelectedBag,'wpi',val)*/
-
-
-        var selectBag = getters.getSelectedBag;
-
-        getters.getBags.forEach((bag,i)=>{
-          if(bag.ppi == selectBag.ppi){
-            response.forcepush = true;
-            Vue.set(bag.wpi,barcode,response);
-          }
-        })
+        Vue.set(getters.getSelectedBag,'wpi',val)
 
         dispatch('$save');
 
         return response;
 
       }).catch((error)=>{
-        error = error.message?error.message:error.resultInfo;
-        dispatch('$consoleStatus',{color,req:{barcode,status:'error',response:error,error}});
+        state.status = 'error';
+        response = {error};
+        state.error = error.message?error.message:error.resultInfo;
       });
 
       
@@ -184,60 +245,92 @@ const actions = {
   },
   $putToBag ({ commit, dispatch, state, getters },{barcode,color}) {
 
-      barcode = barcode.toUpperCase().replace(/\s/g,"");
-      dispatch('$consoleStatus',{color,req:{status:'search',response:null,barcode}});
+      dispatch('$clear');
 
-      return $smartsort.putToBag(barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      barcode = barcode.toUpperCase().replace(/\s/g,"");
+
+      state.barcode = barcode
+      state.status = 'search';
+
+
+      // console.log('$smartsort.putToBag',state.barcode,state.depcode,state.user);
+
+      //$http.get(this.barcode).then((resp)=>{
+      return $smartsort.putToBag(state.barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
       .then((resp)=>{
 
+        // console.log('putToBag',resp);
+
         resp = resp.data 
+
+        // console.log('1 ZputToBag barcode',state.barcode,resp.parentPostIndex);
+
         // checking if bag is found in plan
-        checkUniqueBarcode(getters.getBags,barcode);
-        // Laizy Initialization of Bags, TODO! Need to rename it
-        findBag(getters.getBags,resp.parentPostIndex,barcode);
-        // setting console
-        dispatch('$consoleStatus',{color,req:{status:'push',response:resp}});
+        checkUniqueBarcode(getters.getBags,state.barcode);
+        // findBag(getters.getBags,resp.parentPostIndex,state.barcode);
 
-        // Putting to bug
-        getters.getBags.forEach((bag,i)=>{
-          if(bag.color && bag.color[color]){
-            Vue.delete(bag.color,color); // removing color
-          }
-          if(bag.ppi == resp.parentPostIndex){
-            state.inserted = bag.ppi
-            Vue.set(bag.wpi,barcode,resp);
-            if(!bag.color) Vue.set(bag,'color',{}) // initialize color
-            Vue.set(bag.color,color,kolor(color));
-            // $leds.xon({status:'push',color:bag.color,led:bag.led,thor:getters.thor});
+        state.response = resp
+        state.status = 'push';
 
-            $leds.xon({status:'push',color,led:bag.led,thor:getters.thor});
-          }  
+        dispatch('$selectBag',{ppi:resp.parentPostIndex}).then(()=>{
+           Vue.set(getters.getSelectedBag.wpi,barcode,resp)
         })
 
+
+
+
+        // state.selected = resp.parentPostIndex
+        // ложим посылку в корзину
+
+
+        // console.log('2 ZputToBag barcode',state.barcode,state.selected);
+
+        //////////////// ARRAY MANAGMENT
+
+        /*    var val = {}; val[barcode] = resp;
+
+            var pos = getters.cursor;
+
+            if(pos > -1){
+              var currentVal = getters.getSelectedBag.wpi;
+              val = {...val,...currentVal};
+            } else {
+              pos = renameEmptyKey(getters.getBags,state.selected);
+            }
+
+            var bag = getters.getBags[pos];
+
+            Vue.set(bag,'wpi',val)
+            Vue.set(bag,'selected',color)
+
+            bag = null;
+
+        */
+
         dispatch('$save');
+
+
+        /////////////
+
 
         return resp;
 
       }).catch((error)=>{
+        state.status = 'error';
+        state.error = error.message?error.message:error;
 
-        error = error.message?error.message:error
-        dispatch('$consoleStatus',{color,req:{barcode,status:'error',response:null,error}});
+        // console.log('errorzzz',error);
 
-        // Putting to error bags
-        getters.getBags.forEach((bag,i)=>{
-          if(bag.isErrorBag) {
-            state.inserted = bag.ppi;
-            Vue.set(bag.wpi,barcode,error);
-            if(!bag.color) Vue.set(bag,'color',{}) // initialize color
-            Vue.set(bag.color,color,kolor(color));
-
-            $leds.xon({status:'error',color,led:bag.led,thor:getters.thor});
-          }
-        });
-
+        var val = {}; val[barcode] = state.error;
+        var currentVal = getters.getLastBag.wpi;
+            val = {...val,...currentVal};
+        Vue.set(getters.getLastBag,'wpi',val)
         dispatch('$save');
 
         throw error;
+        // this.status = 'notfound';
+        // this.status = 'notbind';
+        // this.status = 'notfoundnextplan';
       });
 
     // TODO Rewrite to Promise Chain
@@ -367,6 +460,98 @@ const actions = {
       });
 
   },
+  $fillBags ({ commit, dispatch, state, getters },{plan}) {
+      /*Object.entries(plan).forEach((k)=>{
+        renameEmptyKey(getters.getBags,k[0])
+        // getters.getBags[k[0]] = {toIndex:k[1]};
+      });*/
+      // var bags = new Array();
+      
+      // plan.forEach((item,i)=>{
+      //   return bags.push({ppi:item.techindex,led:null,ppn:item.nameRu,wpi:{}});
+      // })
+
+      var bags = getters.getConfig.bags;
+
+      bags.forEach((item,i)=>{
+        if(plan[i]) getters.getConfig.bags[i] = { ...item, ppi:plan[i].techindex,ppn:plan[i].nameRu, wpi:{} };
+      }),
+
+      dispatch('$save');
+
+  },
+  $fetchSortplan({ commit, dispatch, state, getters },{depcode}){
+    return $smartsort.sortplan(depcode).then((resp)=>{
+      state.sortplan = resp.data.parentPostIndexes
+      console.log("sortplan",state.sortplan)
+      Vue.set(getters.getConfig,'sortplan',state.sortplan);
+      dispatch('$save');
+      return resp;
+    }).catch((error)=>{
+      state.sortplan = null
+      state.status = 'error';
+      state.error = error;
+      throw error;
+    });
+  },
+  $login({ commit, dispatch, state, getters },{user}){
+    return $smartsort.auth(user,getters.getDepcode).then((resp)=>{
+       console.log('login',user,getters.getDepcode,resp);
+       state.status = 'login';
+       Vue.set(getters.getConfig,'user',{login:user,name:resp.data.name});
+       dispatch('$save');
+    }).catch((error)=>{
+      state.status = 'error';
+      state.loginResponse = error;
+      throw error;
+    });
+  },
+  $logout({ commit, dispatch, state, getters }){
+      Vue.set(getters.getConfig,'user',null);
+      state.status = 'logout';
+      dispatch('$save');
+  },
+  $fetchDemoRPO({ commit, dispatch, state, getters }){
+    return $smartsort.fetchDemoRPO(getters.getDepcode).then((resp)=>{
+       state.demoBarcodes = resp.data.mails;
+       console.log('fetchRPO',state.demoBarcodes);
+    }).catch((error)=>{
+      state.status = 'error';
+      state.error = error;
+      throw error;
+    });
+  },
+  $registerDepcode({ commit, dispatch, state, getters },{depcode}){
+    getters.getConfig.depcode = depcode;
+    console.log('$registerdepcode',depcode);
+    state.status = 'registerpoint';
+    dispatch('$save');
+    dispatch('$fetchSortplan',{depcode});
+    
+  },
+  $togleDemo({ commit, dispatch, state, getters },{val}){
+    // console.log('togleDemo',val)
+    // console.log('demo1',val,getters.getConfig.isDemo);
+    if(val !== undefined)
+      getters.getConfig.isDemo = val
+    else
+      getters.getConfig.isDemo = !getters.getConfig.isDemo;
+    // console.log('demo2',val,getters.getConfig.isDemo);
+    return dispatch('$save');
+
+  },
+  $togleLed({ commit, dispatch, state, getters },{val}){
+    if(val !== undefined)
+      getters.getConfig.isLedOn = val
+    else 
+      getters.getConfig.isLedOn = !getters.getConfig.isLedOn;
+
+    return dispatch('$save');
+  },
+  $setColor({ commit, dispatch, state, getters },color){
+    console.log('$setColor',color);
+      state.color = color
+  },
   $remapPpi({ commit, dispatch, state, getters },{i,ppi}){
 
     console.debug('calibrateMapBagBarcode',ppi,i);
@@ -385,22 +570,6 @@ const actions = {
         console.debug('calibrateMapBagBarcode not found ppi in sortplan',ppi);
     }
 
-  },
-  $consoleStatus({ commit, dispatch, state, getters },{color,req}){
-
-    // var led = getters.selectedBag && getters.selectedBag.led !== null ? getters.selectedBag.led : getters.cursor;
-    console.debug('consoleStatus',color,req.status);
-
-    commit(types.CONSOLE_SET,{color,req});
-    // commit(types.LED_SET,{thor:getters.thor,led,color,status:req.status});
-
-    state.consoles[color].timeout = setTimeout(() => {
-      commit(types.CONSOLE_CLEAR,color);
-      getters.getBags.forEach((bag,i)=>{
-        if(bag.color && bag.color[color])
-          Vue.delete(bag.color,color);
-      })
-    },req.error?5000:10000);
   }
   // $remapSelectedBag({ commit, dispatch, state, getters },{ppi,led}){
   //   // findBag(getters.getBags,ppi);// just for check
@@ -420,35 +589,7 @@ const mutations = {
   },
   ['CLEAR_BAG'] (state,ppi) {
     Vue.set(state.bags,ppi,{})
-  },
-  ['STATUS_SET'] (state,status) {
-    // console.debug('consoleStatus',color,status,led,getters.thor);
-    // var led = getters.selectedBag && getters.selectedBag.led !== null ? getters.selectedBag.led : getters.cursor;
-    // if(getters.ledOn) $leds.on(status,led,getters.thor,color);
-  },
-  ['CONSOLE_SET'] (state,payload) {
-
-    //Lazy init consoles
-    if(!state.consoles[payload.color]){
-      Vue.set(state.consoles,payload.color,{
-        req:null, color:payload.color, bgColor:kolor(payload.color)
-      })
-    }
-
-    // Autotimeout
-    if(state.consoles[payload.color] && state.consoles[payload.color].timeout) clearTimeout(state.consoles[payload.color].timeout);
-
-    state.consoles[payload.color].req = payload.req;
-
-    // state.consoles[payload.color].timeout = setTimeout((s,c) => {
-    //   s.consoles[c] = null
-    // },10000,state,payload.color);
-  },
-  ['CONSOLE_CLEAR'] (state,color) {
-    if(state.consoles[color] && state.consoles[color].timeout) clearTimeout(state.consoles[color].timeout);
-    state.consoles[color].req = null;
-  },
-  
+  }
 }
 
 function findBag(bags,ppi,barcode){
@@ -479,15 +620,14 @@ function renameEmptyKey(obj,newKey){
 }
 
 
-export function kase(val,map,els){
-  // console.log('kase',val);
+function kase(val,map,els){
+  console.log('kase',val);
   if(val)
     return map[val] || els;
   else 
     return els;
 }
-
-export function kolor(val){ return kase(val,{'G':'success','B':'primary','random':'dark'},'danger') };
+  // return {
 
 export default {
     state,

@@ -69,13 +69,16 @@ doctype html
                 @keyup.enter.native.stop="enterBarcodeManualy($event.target.value); $event.target.value = ''; $event.target.blur(); " 
                 placeholder="Поиск поссылок  ...") 
               b-input-group-append
-                b-dropdown(variant="danger")
-                  b-dropdown-item
+                b-dropdown(:variant="kolor(colorPrefix)" :dropup="colorPrefixRandom")
+                  b-dropdown-item(@click="setUserColorPrefix('R')")
                     .text-danger Red
-                  b-dropdown-item
+                  b-dropdown-item(@click="setUserColorPrefix('G')")
                     .text-success Green
-                  b-dropdown-item
+                  b-dropdown-item(@click="setUserColorPrefix('B')")
                     .text-primary Blue
+                  b-dropdown-divider
+                  b-dropdown-item(@click="setUserColorPrefix('random')")
+                    .text-secondary Random
             
 
           b-nav-item(right v-b-modal.user v-if="!user") 
@@ -107,7 +110,11 @@ doctype html
         | | 
         b-link(v-b-modal.help="") Manual 
         | | 
-        b-link(v-b-modal.stats="") Stats
+        b-link(v-b-modal.stats="") Stats 
+        | | 
+        b-link(v-b-modal.debug="") 
+          i.fa.fa-bug.ml-1
+                
 
   Keyboard
 
@@ -115,15 +122,15 @@ doctype html
 
 
   b-modal#depcode(title="Технологический Индекс" centered size="sm"  ok-only @ok="registerDepcode(tmpDepcode);" @hide="tmpDepcode=''")
-    b-form-input.nokeyboard(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="tmpDepcode = '220081'")
+    b-form-input.nokeyboard(v-model="tmpDepcode" autofocus :placeholder="depcode" @dblclick.native="demo?tmpDepcode = '220081':null")
 
   b-modal#user(size="sm" title="Авторизация*" :modal-class="{'isLoginError':loginResponse}" @hide="tmpUser=''" centered="")
     b-form-group(:invalid-feedback="'Ошибка! [' + tmpUser + '] '+ loginResponse" :state="!loginResponse")
-      b-form-input.nokeyboard(v-model="tmpUser" size="lg" @dblclick.native="tmpUser = 'test.ast17.sc1'" placeholder="Ваш логин в ПУС" autofocus)
-    b-button-group
-      b-btn(variant="danger"): i.fa.fa-user.mr-2
-      b-btn(variant="outline-success"): i.fa.fa-user.mr-2
-      b-btn(variant="outline-primary"): i.fa.fa-user.mr-2
+      b-form-input.nokeyboard(v-model="tmpUser" size="lg" @dblclick.native="demo?tmpUser = 'test.ast17.sc1':null" placeholder="Ваш логин в ПУС" autofocus)
+    //- b-button-group
+    //-   b-btn(variant="danger" @click.stop="setConsoleColor('R')"): i.fa.fa-user.mr-2
+    //-   b-btn(variant="outline-success" @click.stop="setConsoleColor('G')"): i.fa.fa-user.mr-2
+    //-   b-btn(variant="outline-primary" @click.stop="setConsoleColor('B')"): i.fa.fa-user.mr-2
     
     //- b-row
     //-   b-col 
@@ -149,6 +156,8 @@ doctype html
   b-modal#diagnostic(title="Диагностика" lazy hide-footer)
     DiagnosticModal
 
+  b-modal#debug(hide-header size="lg" hide-footer scrollable  body-bg-variant="dark")
+    pre {{bags}}
   
   MultiLedModal
 
@@ -161,6 +170,7 @@ var code128= new Encoder()
 import { mapGetters, mapActions } from 'vuex'
 import Keyboard from '@/components/misc/Keyboard'
 import {$smartsort,$http,$leds} from '@/store/api/http'
+import {kolor} from '@/store/modules/polka'
 import {mock,mockDevice} from '@/store/api/mock'
 import populateData from '@/store/idb/data.js'
 import SortplanModal from '@/components/SortplanModal'
@@ -187,6 +197,8 @@ export default {
       tmResponse:null,
       isSortplanModalOpen:false,
       demoIndex:0,
+      colorPrefix:'R',
+      colorPrefixRandom:false,
       showDemo:false,
       ws:{
         isOpen : false,
@@ -201,6 +213,8 @@ export default {
     // this.$bus.$on('keyboard:keydown:enter:13',this.enterBarcode);
     this.$bus.$on('keyboard:keydown:enter:t',this.registerDepcode);
     this.$bus.$on('keyboard:keydown:enter:u',this.loginViaBarcode);
+
+    this.demoIndex = Number(localStorage.getItem('demoIndex'));
     
   },
   created(){
@@ -261,7 +275,9 @@ export default {
       '$registerDepcode',
       '$togleDemo',
       '$togleLed',
+      '$setColor'
     ]), 
+    kolor,
     encode(val){
       return code128.encode(val)
     },
@@ -274,6 +290,7 @@ export default {
       } else {
         if(this.demoIndex == this.demoBarcodes.length) this.demoIndex = 0;
         this.enterBarcodeManualy(this.demoBarcodes[this.demoIndex++]);
+        localStorage.setItem('demoIndex',this.demoIndex);
       }
     },
     // enterBarcode(val){
@@ -281,12 +298,26 @@ export default {
     //   this.$store.state.polka.barcode = val
     // },
     enterBarcodeManualy(barcode){
-      console.log('enterBarcodeManualy',barcode);
-      this.$bus.$emit('keyboard:keydown:enter:13',barcode);  
+      if(this.colorPrefixRandom) {
+        var prefix = Math.ceil(Math.random()*10);
+        this.colorPrefix = (prefix>3?(prefix>6?'G':'B'):'R');
+      }
+      console.log('enterBarcodeManualy',barcode,this.colorPrefix);
+      this.$bus.$emit('keyboard:keydown:enter:13',barcode,this.colorPrefix);  
     },
-    enterBagManualy(bagno){
-      // console.log('enterBagManualy',bagno);
-      this.$bus.$emit('keyboard:keydown:enter:p',bagno)
+    // enterBagManualy(bagno){
+    //   // console.log('enterBagManualy',bagno);
+    //   this.$bus.$emit('keyboard:keydown:enter:p',bagno)
+    // },
+    setUserColorPrefix(prefix){
+      if(prefix == 'random') {
+        this.colorPrefix = 'R'
+        this.colorPrefixRandom = true;
+      }
+      else {
+        this.colorPrefix = prefix
+        this.colorPrefixRandom = false;
+      }
     },
     registerDepcode(depcode){
       console.log('registerdepcode',depcode);
@@ -411,6 +442,42 @@ export default {
 <style lang="stylus">
 
 
+body.dark
+  background-color #435267 !important
+  
+  .bd-navbar
+    background-color #435267 !important
+  
+  
+  .bd-footer a
+    color #6c757d 
+  
+  .polkas,  .consoles, .nav-pills, .navbar
+    .card, .nav-link, .form-control, .badge 
+      border none
+      border-color rgba(255,255,255,0.1)
+    
+    .card
+      background-color rgba(255,255,255,0.1)
+      
+    .card, .card-header, .card-body, .card-footer, .nav-link, .form-control,  .badge, .dropdown-toggle
+      border-radius 0
+      color #f0f0f0
+      
+      &::placeholder
+        color #b0b0b0
+      
+    .card-header, .card-body, .card-footer
+      border none
+      
+    .card-header
+      background-color transparent
+    
+
+    .card:nth-child(4), .card:nth-child(8n+4), 
+    .card:nth-child(5), .card:nth-child(8n+5), .nav-link.active, .form-control
+      background-color rgba(255,255,255,0.3)
+
 #app
   
   &:before
@@ -462,6 +529,14 @@ export default {
   margin-left 20px
   margin-top -5px
   opacity 0.5
+  
+
+
+#debug pre 
+  color #4f4 !important
+  font-size 11px
+  overflow hidden
+  line-height 11px
 
     
 

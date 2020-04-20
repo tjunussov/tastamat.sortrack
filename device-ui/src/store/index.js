@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
 import VueIdb from './idb'
 import polka from './modules/polka'
+import polkaUtils from './modules/polka.utils'
+
 
 // import * as actions from './actions'
 // import * as getters from './getters'
@@ -21,7 +23,8 @@ export default new Vuex.Store({
   },
   modules: {
     ...VueIdb.modules,
-    polka
+    polka,
+    polkaUtils
   },
   getters: {
     hydrated: state => state.hydrated

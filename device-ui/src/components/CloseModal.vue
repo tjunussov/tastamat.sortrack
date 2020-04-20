@@ -241,7 +241,7 @@ export default {
         selected:'getSelected',
         config:'getConfig',
         demo: 'getDemo',
-        error: 'getError',
+        error: 'getCloseError',
         selectedBag:'getSelectedBag',
         bags: 'getBags',
         weightTotal: 'getWeight',

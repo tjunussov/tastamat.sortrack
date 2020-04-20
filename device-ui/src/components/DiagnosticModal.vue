@@ -8,14 +8,14 @@
       b-input-group
         b-input-group-prepend(is-text) Тест
         b-form-input.nokeyboard#input-wpi(v-model="wpi" placeholder="Штрихкод Cканера" @blur="testScanerState = null" autofocus :state="testScanerState" @keyup="testScaner")
-        b-form-valid-feedback#input-wpi Успешно пройдет, сканер настроен 😊!
+        b-form-valid-feedback#input-wpi Успешно пройден, сканер настроен 😊!
         b-form-invalid-feedback#input-wpi У сканера не настроен ENTER
 
     b-card-footer   
       b-input-group
         b-input-group-prepend(is-text) Тест
         b-form-input.nokeyboard#input-weight(v-model="weight" placeholder="Электронных Весов" @blur="testWeightState = null" :state="testWeightState" @keyup="testWeight")
-        b-form-valid-feedback#input-weight Успешно пройдет, Весы настроены 😊!
+        b-form-valid-feedback#input-weight Успешно пройден, Весы настроены 😊!
         b-form-invalid-feedback#input-weight У Весов не настроен ENTER
 
   b-card(no-body).mt-2

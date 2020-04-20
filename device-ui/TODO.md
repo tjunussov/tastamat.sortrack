@@ -137,6 +137,25 @@ TODO 6.0
 - закрашивать header или badge если выбран тестовый API ПУС
 - закрашивать header или badge если зашли на ТЕСТОВЫЙ сервер
 
+
+TODO 7.0 Multiuser
++ Keyboard handle color selector
++ AppDropdown barcodeManual color Selector
++ App NavBar show parallel color sessions
++ Console: color bag respect color
++ Console: findBag split to colored parallel sessions
++ Console: REFACTOR vuex code to multiple session
++ Issues with CloseBag, ManualWPI
++ findBag Led respect color
+- statuses sync with audio and leds ( login, select etc )
+- Leds: handle LED ON separately from colors
+- Leds: handle LED OFF separately from colors
+- Leds: handle LED ERROR separatly
+- Leds And Sounds special Actions
++ Fill Main Color if multiple colors at same time
++ Login: user set color by login menu
+! Paralel findBag only, No Parallel closeBag!
+
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager
 2) автоподключение к сорттак вафай сети

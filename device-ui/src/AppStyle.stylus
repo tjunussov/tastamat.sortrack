@@ -2,8 +2,16 @@ html
   width 1024px
   
 
-// #app
+#app
+  width 1024px
+  
+  .fixed-top, .fixed-bottom
+    right auto !important
+    width 1024px
 //   background-color #fff
+
+  .container
+    max-width 960px !important
 
 pre
   line-height 17px
@@ -39,7 +47,7 @@ input.inline
   border 1px solid transparent
   
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link
-  background-color #0157a5 !important
+  background-color #0157a5
   color #fff
 
 // .modal-header 
@@ -311,6 +319,12 @@ input.inline
   50%
     visibility visible
     
+@-webkit-keyframes blinkopacity
+  from,to
+    opacity 0
+  50%
+    opacity 1
+    
 @-webkit-keyframes blinkoutline
   from,to
     border-color transparent
@@ -326,6 +340,9 @@ input.inline
   
 .shake .modal-content
   border 1px solid #28a745
+  -webkit-animation: shake .5s linear;
+  
+.shake.card
   -webkit-animation: shake .5s linear;
   
 
