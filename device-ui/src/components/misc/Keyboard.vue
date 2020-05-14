@@ -50,32 +50,36 @@ export default {
       }
 
 
-      console.log('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
+      console.debug('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
 
 
-      if (event.keyCode == 13 || this.keyText.length == 13) { // ENTER or BARCODE Length
+      if (event.keyCode == 13 ){
+
+        var firstLetter = this.keyText.substr(0,1);
+        var color = 'R';
+
+
+        if(this.keyText.length == 14) { //BARCODE with color Length
+          var color = firstLetter;
+          if( 'gbBG'.indexOf(color) >= 0){
+            color = color.toUpperCase();
+            // $leds.setColor(color);
+            this.keyText = this.keyText.slice(1);
+            console.debug('color change detected',this.keyText, color);
+          }
+        } 
+
+        if (this.keyText.length == 13) { // ENTER or BARCODE Length
+          console.debug('emitting 13 len key text',this.keyText, color);
+        } else {
+          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText,color);
+        }
+
         //if(!isNaN(this.keyText)) {
-
-
-        if(this.keyText.length == 13 && event.keyCode == 13 ) return;// IF keyText length 13 and after pressed ENTER, skip it
+        // if(this.keyText.length == 13 && event.keyCode == 13 ) return;// IF keyText length 13 and after pressed ENTER, skip it
 
         if(this.keyText != "") {
-
-
-          var firstLetter = this.keyText.substr(0,1);
-          var color = firstLetter;
-
-          if( color.indexOf('gbBG') > -1){
-            color = color.toUpperCase();
-            $leds.setColor(color);
-            this.keyText = this.keyText.slice(1);
-          } else {
-            $leds.setColor('r');
-            color = 'R';
-          }
-
           this.$bus.$emit('keyboard:keydown:enter:'+this.keyText.length,this.keyText,color);
-          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.substr(1),color);
           this.$bus.$emit('keyboard:keydown:enter',this.keyText,color);
           this.keyText = ""
           event.preventDefault();
@@ -85,7 +89,7 @@ export default {
       window.clearTimeout(captureTM)
       captureTM = window.setTimeout(()=>{
         this.keyText = ""
-        $sound.play('error_notplan');
+        $sound.play('error_expire_keyboard');
       },1000)
     },
   }

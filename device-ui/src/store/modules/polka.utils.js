@@ -48,7 +48,7 @@ const actions = {
     // $device.defaults.baseURL = getters.config.ledUrl;
 
     // no led if timeout
-    $device.init(getters.config.leds,getters.config.size,getters.getLastBag.led,(error)=>{
+    $device.init(getters.config.leds,getters.config.isLedOn,getters.config.size,getters.getLastBag.led,(error)=>{
       // console.error('ErroZZZ',error ) 
       // if (error == 'Error: timeout of 1000ms exceeded') getters.config.isLedOn = false;
     });

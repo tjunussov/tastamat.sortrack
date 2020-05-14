@@ -271,6 +271,7 @@ input.inline
     width 100%
     font-size 85%
     font-weight 100
+    z-index 2000
     a
         font-weight 500
         color #495057

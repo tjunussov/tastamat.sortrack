@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import {$leds,$smartsort,$http,$device} from '@/store/api/http'
+import {$leds,$smartsort,$http,$sound} from '@/store/api/http'
 import * as types from '@/store/types'
 
 const state = {
@@ -85,9 +85,11 @@ const actions = {
       try{
         findBag(getters.getBags,ppi);
         state.selected = ppi
+        state.inserted = ppi
         $leds.xon({status:'selectbag',color:'all',led:getters.getSelectedBag.led,thor:getters.thor});
         // state.selected.bag = this.bags[ppi];
-        state.status = 'selectbag';
+        // state.status = 'selectbag';
+        dispatch('$consoleStatus',{color:'R',req:{status:'selectbag'}});
         resolve(ppi)
       } catch(e){
         state.error = e
@@ -97,7 +99,10 @@ const actions = {
     });
   },
   $deselectBag({ commit, dispatch, state, getters }) {
-    state.status = 'deselectbag';
+    // state.status = 'deselectbag';
+
+    dispatch('$consoleStatus',{color:'all',req:{status:'deselectbag'}});
+
     $leds.xon({status:'deselectbag',color:'all',led:getters.getSelectedBag.led,thor:getters.thor});
     // state.selected = null
     window.setTimeout(()=>{
@@ -391,7 +396,12 @@ const actions = {
     // var led = getters.selectedBag && getters.selectedBag.led !== null ? getters.selectedBag.led : getters.cursor;
     console.debug('consoleStatus',color,req.status);
 
+    $sound.play(req.status);
+
+    if(color == 'all') return;
+
     commit(types.CONSOLE_SET,{color,req});
+
     // commit(types.LED_SET,{thor:getters.thor,led,color,status:req.status});
 
     state.consoles[color].timeout = setTimeout(() => {

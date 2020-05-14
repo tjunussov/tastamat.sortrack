@@ -157,6 +157,7 @@ doctype html
     DiagnosticModal
 
   b-modal#debug(hide-header size="lg" hide-footer scrollable  body-bg-variant="dark")
+    pre {{consoles}}
     pre {{bags}}
   
   MultiLedModal
@@ -247,6 +248,7 @@ export default {
         error: 'getError',
         user:'getUser',
         depcode:'getDepcode',
+        consoles: 'getConsoles',
         calibrating:'getCalibrating',
         demoBarcodes:'getDemoBarcodes'
     }),

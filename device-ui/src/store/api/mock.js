@@ -523,6 +523,9 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 export const mockDevices = [];
 
 $device.onInit = (axioses)=>{
+
+  console.debug('$device.onInit',axioses);
+
   axioses.forEach((v,i)=>{
     mockDevices[i] = new MockAdapter(v).onAny().reply((cfg)=>{
       console.debug('led mock received ' + i,cfg.url,cfg.params);
