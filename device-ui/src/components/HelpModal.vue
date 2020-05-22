@@ -47,6 +47,9 @@ b-card(no-body)
       h5 Модуль
       p Прошивку можно 
         a(href="static/firware/sortrack.fmw") скачать тут 
+      h5 Сканер штрихкода
+      p Настройка мультиюзера 
+        a(href="static/docs/symbol2207_multiuser.pdf") скачать тут 
 
 </template>
 

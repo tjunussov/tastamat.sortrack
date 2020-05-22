@@ -1,18 +1,18 @@
 import Vue from 'vue'
-import {$leds} from '@/store/api/http'
+import {$leds,$sound} from '@/store/api/http'
 
 export const bindMixin = {
   methods:{
     calibrateStart(){
       this.bind.cursor = -1;
-      $sounds.play('bindstart');
+      $sound.play('bindstart');
       this.calibrateNext();
     },
     calibrateStop(){
       this.bind.cursor = null;
       this.bind.selectedBag = null;
-      $sounds.play('bindend');
-      $leds.lastLed = this.lastBag.led;
+      $sound.play('bindend');
+      // $leds.lastLed = this.lastBag.led;
       this.clearAll();
       this.$clearSelected();
       this.$save();
@@ -33,7 +33,10 @@ export const bindMixin = {
     calibrateNext(){
       this.bind.cursor++;
       console.log('THOR',this.tabIndex);
-      if(this.ledOn) $leds.on('bind',this.bind.cursor,this.tabIndex);
+      if(this.ledOn) {
+        $leds.xon({status:'bind',color:'all',led:this.bind.cursor,thor:this.tabIndex});
+        //$leds.on('bind',this.bind.cursor,this.tabIndex);
+      }
     },
     /*wizardToggle(){
       console.log('wizardToggle');

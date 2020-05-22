@@ -374,7 +374,7 @@ export default {
       // if(state !== null)
       //   this.$store.state.polka.calibrating = state
       // else
-        this.$store.state.polka.calibrating = !this.$store.state.polka.calibrating;
+        this.$store.state.polkaUtils.calibrating = !this.$store.state.polkaUtils.calibrating;
     },
     togleDemo(val){
       console.log('togleDemo',val);

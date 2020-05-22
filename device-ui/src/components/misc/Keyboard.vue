@@ -53,7 +53,7 @@ export default {
       console.debug('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
 
 
-      if (event.keyCode == 13 ){
+      if (event.keyCode == 13){ // || this.keyText.length == 13 || this.keyText.length == 14 
 
         var firstLetter = this.keyText.substr(0,1);
         var color = 'R';
@@ -61,7 +61,7 @@ export default {
 
         if(this.keyText.length == 14) { //BARCODE with color Length
           var color = firstLetter;
-          if( 'gbBG'.indexOf(color) >= 0){
+          if( 'gb'.indexOf(color) >= 0){
             color = color.toUpperCase();
             // $leds.setColor(color);
             this.keyText = this.keyText.slice(1);
