@@ -72,7 +72,7 @@ export default {
         if (this.keyText.length == 13) { // ENTER or BARCODE Length
           console.debug('emitting 13 len key text',this.keyText, color);
         } else {
-          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText,color);
+          this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.slice(1),color);
         }
 
         //if(!isNaN(this.keyText)) {
