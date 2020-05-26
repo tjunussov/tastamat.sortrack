@@ -50,7 +50,7 @@ export default {
       }
 
 
-      console.debug('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
+      // .console.debug('documentKeydown',this.keyText, event.keyCode, String.fromCharCode(event.keyCode));
 
 
       if (event.keyCode == 13){ // || this.keyText.length == 13 || this.keyText.length == 14 
@@ -72,6 +72,7 @@ export default {
         if (this.keyText.length == 13) { // ENTER or BARCODE Length
           console.debug('emitting 13 len key text',this.keyText, color);
         } else {
+          console.debug('emitting POIP',firstLetter,this.keyText.slice(1), color);
           this.$bus.$emit('keyboard:keydown:enter:'+firstLetter,this.keyText.slice(1),color);
         }
 

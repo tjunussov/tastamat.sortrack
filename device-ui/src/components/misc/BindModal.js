@@ -7,6 +7,13 @@ export const bindMixin = {
       this.bind.cursor = -1;
       $sound.play('bindstart');
       this.calibrateNext();
+      this.$bvToast.toast(
+        'Нажмите двойным щелчком по мигающиему ящику для калибровки лампочки и индекса', 
+      {
+        title: 'Режим калибровки запущен!',
+        autoHideDelay: 5000,
+        appendToast: true
+      })
     },
     calibrateStop(){
       this.bind.cursor = null;

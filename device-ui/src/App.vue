@@ -25,7 +25,7 @@ doctype html
       b-collapse(is-nav id="nav_collapse" v-if="depcode")
 
         b-navbar-nav
-          b-nav-item-dropdown(right id="loginPopover")
+          b-nav-item-dropdown(right ref="loginPopover"  @show="onShow" @toggle="onToggle")
             template(slot="button-content")
               i.fa.fa-map-marker.mr-2
               | {{depcode}}
@@ -201,6 +201,7 @@ export default {
       colorPrefix:'R',
       colorPrefixRandom:false,
       showDemo:false,
+      preventKeyboardDropdown:false,
       ws:{
         isOpen : false,
         start: false,
@@ -341,6 +342,21 @@ export default {
         this.timeout(3000);
         this.$root.$emit('bv::show::modal', 'user')
       });
+    },
+    onToggle(event){
+      if(event.keyCode){
+        this.preventKeyboardDropdown = true
+        return false;
+      }
+      // console.error('onToggle invoked',event)
+    },
+    onShow(bvEvt){
+      // console.error('onShow invoked',bvEvt)
+      if(this.preventKeyboardDropdown){
+        bvEvt.preventDefault();
+        this.preventKeyboardDropdown = false
+      }
+      
     },
     clear(){
       this.$store.state.polka.loginResponse = null;

@@ -9,7 +9,7 @@ b-row.flex-xl-nowrap2
           b-card(no-body align="center"
             v-for="(b,i) in filteredBags(p)"
             :key="i" 
-            :class="{'text-muted':!Object.keys(b.wpi)[0],'outlined':bind.cursor == b.led || b.led == null || cursor == i,'isErrorBag':b.isErrorBag,'inserted':b.color && Object.keys(b.color).length}"
+            :class="{'text-muted':!Object.keys(b.wpi)[0] && !calibrating,'binding-led':bind.cursor == b.led,'outlined': b.led == null || cursor == i,'isErrorBag':b.isErrorBag,'inserted':b.color && Object.keys(b.color).length}"
             :disabled="calibrating && b.led != null"
             :bg-variant="b.color? Object.values(b.color)[0]:''" 
             @click="selectBag(b.ppi,i,p,b.isErrorBag)"
@@ -283,6 +283,13 @@ export default {
     
     &.outlined
       outline 2px solid #fff
+      
+    &.binding-led 
+      
+      .card-header
+        background-color #fff2
+        -webkit-animation 1s blink step-end infinite
+      
     
     &.closed
       -webkit-animation 0.5s blink step-end infinite
@@ -341,10 +348,10 @@ export default {
       left 0.2rem
       top -2px
       position absolute
-      color #ddd
+      color #eee
       
       &.remapped
-        color #f99
+        color #ff0
     
   // .card:nth-child(5),.card:nth-child(13),.card:nth-child(21),.card:nth-child(29)
   .card:nth-child(5),.card:nth-child(8n+5)
