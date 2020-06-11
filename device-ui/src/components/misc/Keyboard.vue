@@ -56,18 +56,23 @@ export default {
       if (event.keyCode == 13){ // || this.keyText.length == 13 || this.keyText.length == 14 
 
         var firstLetter = this.keyText.substr(0,1);
-        var color = 'R';
+        var color = firstLetter;
 
+        // console.debug('c--->',firstLetter, color);
 
-        if(this.keyText.length == 14) { //BARCODE with color Length
-          var color = firstLetter;
-          if( 'gb'.indexOf(color) >= 0){
-            color = color.toUpperCase();
-            // $leds.setColor(color);
-            this.keyText = this.keyText.slice(1);
-            console.debug('color change detected',this.keyText, color);
-          }
-        } 
+        // if(this.keyText.length == 14) { //BARCODE with color Length
+        
+        if( 'gb'.indexOf(color) >= 0){
+          color = color.toUpperCase();
+          // $leds.setColor(color);
+          this.keyText = this.keyText.slice(1);
+          console.debug('color change detected',this.keyText, color);
+        } else {
+          color = 'R';
+        }
+        // }
+
+        firstLetter = this.keyText.substr(0,1);
 
         if (this.keyText.length == 13) { // ENTER or BARCODE Length
           console.debug('emitting 13 len key text',this.keyText, color);

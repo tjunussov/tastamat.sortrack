@@ -1,7 +1,7 @@
 <template lang="pug">
 doctype html
 
-#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode}"  Zclass="{'bg-danger text-white':error,'bg-success text-white':response}")
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode}"  class="{'dark':isDark}")
 
  
 
@@ -255,6 +255,9 @@ export default {
     }),
     offline(){
       return this.$root.offline
+    },
+    isDark(){
+      return this.$root.isDark
     },
     mqttOnline(){
       return this.$root.mqttOnline

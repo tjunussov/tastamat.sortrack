@@ -73,6 +73,7 @@ new Vue({
       offline:false,
       mqttOnline:false,
       isInFocusInput:false,
+      isDark:false,
       version:process.env.VERSION
     }
   },

@@ -156,6 +156,19 @@ TODO 7.0 Multiuser
 + Login: user set color by login menu
 ! Paralel findBag only, No Parallel closeBag!
 
+
+TODO 8.0 Polish
+- ui:calibrate bug: after sortplan loaded, remapbag not refreshing index
+- ui bug: editBox when typing name, index reset to original index
+- ui: edit bag indexes like Excel Modal
++ ui: bug with Dropdown, on enter shows Dropdown
+- keyboard: colored prefixes, b and g also use for calibrate
+- keyboard: u for user prefix not working
+- подксказки сделать
+- калибровка индексов
+- калибровка лампочек отделить
+- калибровка лампочек подсвечивать только след лампочку, мигание не работает!
+
 HARDWARE TODO
 1) установка IP адреса статичного через WIFI Manager
 2) автоподключение к сорттак вафай сети

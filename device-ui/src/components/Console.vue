@@ -259,7 +259,14 @@ export default {
   background-color #f00
   color #fff
 
+.dark .card
   
+  &.text-muted
+    opacity 0.2 
+  
+  .text-muted
+    opacity 0.5
+
 
 .polkas
   user-select none
@@ -267,7 +274,7 @@ export default {
   // grid-column-gap: 50px;
     
   &.calibrating .card.outlined
-    -webkit-animation: 1s blinkoutline step-end infinite;
+    -webkit-animation: 1s blinkoutline step-end infinite
     
   
   .card
@@ -278,9 +285,6 @@ export default {
     cursor pointer
     transition  background 0.2s ease-out, color 0.2s ease-out, border-color 0.5s ease-out
     
-    .text-muted
-      opacity 0.5
-    
     &.outlined
       outline 2px solid #fff
       
@@ -288,7 +292,7 @@ export default {
       
       .card-header
         background-color #fff2
-        -webkit-animation 1s blink step-end infinite
+        -webkit-animation 1s blink step-end infinite !important
       
     
     &.closed
@@ -304,9 +308,6 @@ export default {
       
       .card-footer
         -webkit-animation 0.1s blink step-end 10
-
-    &.text-muted
-      opacity 0.2
       
     &.isErrorBag
       background-image linear-gradient(180deg, rgba(254,195,0,1) 0%, rgba(252,0,0,1) 100%) !important
