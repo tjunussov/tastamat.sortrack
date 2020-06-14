@@ -1,7 +1,7 @@
 <template lang="pug">
 doctype html
 
-#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode}"  class="{'dark':isDark}")
+#app(v-if="hydrated" @paste="enterBarcodeManualy($event.clipboardData.getData('text'));" :class="{'disabled':!user && !calibrating,'isDemo':demo, 'isLedOff':ledOn,'notechindex':!depcode,'dark':isDark}")
 
  
 
@@ -160,7 +160,7 @@ doctype html
     pre {{consoles}}
     pre {{bags}}
   
-  MultiLedModal
+  SettingsModal
 
 </template>
 
@@ -183,7 +183,7 @@ import BadgeModal from '@/components/BadgeModal'
 import StatsModal from '@/components/StatsModal'
 import DiagnosticModal from '@/components/DiagnosticModal'
 
-import MultiLedModal from '@/components/MultiLedModal'
+import SettingsModal from '@/components/SettingsModal'
 
 
 var webSocket;
@@ -329,15 +329,15 @@ export default {
       console.log('registerdepcode',depcode);
       this.$registerDepcode({depcode});
     },
-    loginViaBarcode(user){
+    loginViaBarcode(user,color){
       if(this.user && this.user.login == user) 
         this.$logout();
       else 
-        this.login(user);
+        this.login(user,color);
     },
-    login(user){
+    login(user,color){
       this.tmpUser = user;
-      this.$login({user}).then((resp)=>{
+      this.$login({user,color}).then((resp)=>{
          console.log('login',user);
          this.tmpUser = null;
          this.$root.$emit('bv::hide::modal', 'user', '#btnLogin')
@@ -449,7 +449,7 @@ export default {
     DemoPrintModal,
     AboutModal,
     BadgeModal,
-    MultiLedModal,
+    SettingsModal,
     StatsModal,
     DiagnosticModal
   },

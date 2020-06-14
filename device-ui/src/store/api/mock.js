@@ -351,6 +351,8 @@ export const mock = new MockAdapter($http,{delayResponse:50})
         return [200,{"result": "success","name": "demo:Мырзанова Гульмира"}];
     else if(cfg.params.login == 'test')
         return [200,{"result": "success","name": "demo:Азамат Алимбаев"}];
+    else if(cfg.params.login == 'demo')
+        return [200,{"result": "success","name": "demo:Demo Demoаев"}];
     else
         return [200,{"result": "error","resultInfo": "demo:user by login not found"}];
 })

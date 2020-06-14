@@ -12,9 +12,9 @@ const state = {
   inserted:null,
   status:null,
   index:null, 
-
+  login:null,
   consoles:{
-    'R':{ req:null, color:'R', bgColor:'danger' },
+    // 'R':{ req:null, color:'R', bgColor:'danger', login:null },
     // 'G':{ req:null, color:'G', bgColor:'success'},
     // 'B':{ req:null, color:'B', bgColor:'primary' }
   }
@@ -149,7 +149,7 @@ const actions = {
 
       
       
-      return $smartsort.forcePutToBag(barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      return $smartsort.forcePutToBag(barcode,getters.getDepcode,getters.getUserLogin)
       .then((resp)=>{
 
         checkUniqueBarcode(getters.getBags,barcode);
@@ -192,7 +192,9 @@ const actions = {
       barcode = barcode.toUpperCase().replace(/\s/g,"");
       dispatch('$consoleStatus',{color,req:{status:'search',response:null,barcode}});
 
-      return $smartsort.putToBag(barcode,getters.getDepcode,getters.getUser?getters.getUser.login:null)
+      var user = getters.getConsoles[color].login;
+
+      return $smartsort.putToBag(barcode,getters.getDepcode,user)
       .then((resp)=>{
 
         resp = resp.data 
@@ -400,6 +402,13 @@ const actions = {
 
     if(color == 'all') return;
 
+    //Lazy init consoles
+    if(!state.consoles[color]){
+      Vue.set(state.consoles,color,{
+        req:null, color:color, bgColor:kolor(color), login:getters.getUserLogin
+      })
+    }
+
     commit(types.CONSOLE_SET,{color,req});
 
     // commit(types.LED_SET,{thor:getters.thor,led,color,status:req.status});
@@ -438,12 +447,7 @@ const mutations = {
   },
   ['CONSOLE_SET'] (state,payload) {
 
-    //Lazy init consoles
-    if(!state.consoles[payload.color]){
-      Vue.set(state.consoles,payload.color,{
-        req:null, color:payload.color, bgColor:kolor(payload.color)
-      })
-    }
+    
 
     // Autotimeout
     if(state.consoles[payload.color] && state.consoles[payload.color].timeout) clearTimeout(state.consoles[payload.color].timeout);

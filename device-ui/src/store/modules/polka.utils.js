@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {$smartsort,$http,$device} from '@/store/api/http'
+import {kolor} from '@/store/modules/polka'
 
 const state = {
   sortplan:null,
@@ -26,6 +27,7 @@ const getters = {
   getDemo : (state,getters) => getters.config?getters.config.isDemo:null,
   getDemoBarcodes: (state) => state.demoBarcodes,
   getUser : (state,getters) => getters.config?getters.config.user:null,
+  getUserLogin: (state,getters) => getters.getUser?getters.getUser.login:null,
   getLoginResponse : (state) => state.loginResponse,
   getCloseError : (state) => (state.closeModal)?state.closeModal.error:null,
   
@@ -137,10 +139,15 @@ const actions = {
       throw error;
     });
   },
-  $login({ commit, dispatch, state, getters },{user}){
+  $login({ commit, dispatch, state, getters },{user,color}){
     return $smartsort.auth(user,getters.getDepcode).then((resp)=>{
        state.status = 'login';
        Vue.set(getters.getConfig,'user',{login:user,name:resp.data.name});
+
+       Vue.set(getters.getConsoles,color,{
+          req:null, color:color, bgColor:kolor(color), login:user
+        })
+
        dispatch('$save');
     }).catch((error)=>{
       state.status = 'error';

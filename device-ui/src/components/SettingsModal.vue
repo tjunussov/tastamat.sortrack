@@ -56,6 +56,8 @@ b-modal#settings(title="Настройки LED" size="md" lazy hide-header cente
             b-form-checkbox(:checked="!ledOn" @change="togleLed()")
           b-form-group(label="Demo" horizontal)
             b-form-checkbox(:checked="demo" @change="togleDemo()")
+          b-form-group(label="Dark" horizontal)
+            b-form-checkbox(:checked="isDark" @change="togleDark()")
     
 </template>
 
@@ -65,7 +67,7 @@ import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'MultiLedModal',
+  name: 'SettingsModal',
   data () {
     return {
       test:null,
@@ -76,7 +78,10 @@ export default {
         settings: 'getSettingsSelected',
         ledOn: 'getLedOn',
         demo: 'getDemo',
-    })
+    }),
+    isDark(){
+      return this.$root.isDark
+    },
   },
   methods:{
     ...mapActions([
@@ -105,6 +110,18 @@ export default {
       // if(this.ledOn) {
       //   mockDevice.restore();
       // }
+    },
+    togleDark(){
+      const el = document.body;
+      this.$root.isDark = !this.$root.isDark;
+
+
+
+      if (this.$root.isDark) {
+        el.classList.add("dark");
+      } else {
+        el.classList.remove("dark");
+      }
     },
     close(){
       this.$root.$emit('bv::hide::modal', 'settings', '')
