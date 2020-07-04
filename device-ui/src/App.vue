@@ -83,12 +83,12 @@ doctype html
 
           b-nav-item(right v-b-modal.user v-if="!user") 
             | Войти
-          b-nav-item-dropdown(right v-else @click="$logout()")
+          b-nav-item-dropdown.ml-2(right v-else @click="$logout()")
             template(slot="button-content")
-              i.fa.fa-user.mr-2/
-              | {{user.name?user.name:user.login}} 
-              .username(v-if="user.name") {{user.login}}
-            b-dropdown-item(v-b-modal.user="") Сменить пользователя
+              i.fa.fa-gear.mr-2/
+              //- | {{user.name?user.name:user.login}} 
+              //- .username(v-if="user.name") {{user.login}}
+            b-dropdown-item(v-b-modal.user="") Войти как
             b-dropdown-item( @click="$logout()") Выход
 
       b-navbar-nav.ml-auto(v-else)
@@ -127,16 +127,16 @@ doctype html
   b-modal#user(size="sm" title="Авторизация*" :modal-class="{'isLoginError':loginResponse}" @hide="tmpUser=''" centered="")
     b-form-group(:invalid-feedback="'Ошибка! [' + tmpUser + '] '+ loginResponse" :state="!loginResponse")
       b-form-input.nokeyboard(v-model="tmpUser" size="lg" @dblclick.native="demo?tmpUser = 'test.ast17.sc1':null" placeholder="Ваш логин в ПУС" autofocus)
-    //- b-button-group
-    //-   b-btn(variant="danger" @click.stop="setConsoleColor('R')"): i.fa.fa-user.mr-2
-    //-   b-btn(variant="outline-success" @click.stop="setConsoleColor('G')"): i.fa.fa-user.mr-2
-    //-   b-btn(variant="outline-primary" @click.stop="setConsoleColor('B')"): i.fa.fa-user.mr-2
+    b-button-group
+      b-btn(:variant="colorPrefix=='R'?'danger':'outline-danger'" @click.stop="setUserColorPrefix('R')"): i.fa.fa-user.mr-2
+      b-btn(:variant="colorPrefix=='G'?'success':'outline-success'" @click.stop="setUserColorPrefix('G')"): i.fa.fa-user.mr-2
+      b-btn(:variant="colorPrefix=='B'?'primary':'outline-primary'" @click.stop="setUserColorPrefix('B')"): i.fa.fa-user.mr-2
     
     //- b-row
     //-   b-col 
     //-    .barcode {{encode('u'+user)}}
     template(slot="modal-footer")
-      b-btn(variant="primary" :disabled="!tmpUser" @click="login(tmpUser)") Вход
+      b-btn(variant="primary" :disabled="!tmpUser" @click="login(tmpUser,colorPrefix)") Вход
 
   b-modal#help(title="Инструкция" lazy size="lg" :hide-footer="true")
     HelpModal

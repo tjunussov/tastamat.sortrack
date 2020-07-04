@@ -33,11 +33,12 @@ b-row.flex-xl-nowrap2
     b-card-group(deck)
       b-card.mr-1(no-body v-for="(c,k,i) in consoles" :key="k" :class="{shake:c.req && c.req.error}")
         b-card-header.pt-1.pb-0(:header-bg-variant="c.bgColor")
-        b-card-header(:header-bg-variant="c.req?c.bgColor:''" header-text-variant="white") ШПИ 
-          template(v-if="c.req")
-            b {{c.req.barcode}} 
+        b-card-header(:header-bg-variant="c.req?c.bgColor:''" :header-text-variant="c.req?'white':''")
+          div(v-if="c.req") ШПИ 
+            b {{c.req.barcode}}
             b-btn.close(@click.stop="clearAll")  &times;
               //- b-link(@click="wizardToggle" size="sm" v-bind:class="{'bg-primary text-white':bind.started}") {{!bind.started?'Bind Start':'Bind Stop'}}
+          i.fa.fa-user.mr-2/ {{c.login}} 
         b-card-body.p-3(:body-bg-variant="c.req && c.req.error?'danger':'' " :body-text-variant="c.req && c.req.error?'white':''")
           template(v-if="c.req")
             b-progress(v-if="c.req.status=='search'" :variant="c.bgColor" :value="100" :max="100" striped animated)
@@ -53,6 +54,7 @@ b-row.flex-xl-nowrap2
               b {{c.req.response.postIndex}}
               span.text-muted.ml-5 
               | {{c.req.response.mailInfo.toFullName}}
+              
 
             //- template(v-if="c.req.response && c.req.response.packetListNo")
             //-   h4.card-title B Накладная {{c.req.response.packetListNo}}

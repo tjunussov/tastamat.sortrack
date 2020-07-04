@@ -155,7 +155,7 @@ const actions = {
         checkUniqueBarcode(getters.getBags,barcode);
         response = resp.data
 
-        dispatch('$consoleStatus',{color:'R',req:{status:'forcepush',response}});
+        dispatch('$consoleStatus',{color:'R',req:{status:'forcepush',response,barcode}});
 
         console.debug('2 forcePutToBag barcode',barcode,response.parentPostIndex);
 
@@ -203,7 +203,7 @@ const actions = {
         // Laizy Initialization of Bags, TODO! Need to rename it
         findBag(getters.getBags,resp.parentPostIndex,barcode);
         // setting console
-        dispatch('$consoleStatus',{color,req:{status:'push',response:resp}});
+        dispatch('$consoleStatus',{color,req:{barcode,status:'push',response:resp}});
 
         // Putting to bug
         getters.getBags.forEach((bag,i)=>{
