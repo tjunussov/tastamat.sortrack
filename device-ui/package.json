@@ -13,7 +13,7 @@
     "pushprod": "./../git push prod master"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bootstrap-vue": "^2.0.4",
     "code-128-encoder": "^2.3.1",
     "cyrillic-to-translit-js": "^2.1.0",
